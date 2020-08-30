@@ -4,6 +4,7 @@
       "3.1.8": [
             "[ + ] added compatibility for arivia",
             "[ + ] added func SelectFirst( ) for tabulation",
+            "[ + ] added obj > checkbox v2",
             "[ - ] removed dhtml pnl for rbubble"
       ],
       "3.1.7": [

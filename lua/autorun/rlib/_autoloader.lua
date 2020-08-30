@@ -51,7 +51,7 @@ function rlib.autoload:Run( parent )
     mf.repo                     = 'https://github.com/im-richard/rlib/'
     mf.docs                     = 'https://docs.rlib.io/'
     mf.about                    = [[rlib is a glua library written for garrys mod which contains a variety of commonly used functions that are required for certain scripts to run properly. Package includes both rlib + rcore which act as the overall foundation which other scripts will rest within as a series of modules. ]]
-    mf.released                 = 1598768732
+    mf.released                 = 1598819607
     mf.version                  = { 3, 1, 8 }
     mf.showcopyright            = true
 
@@ -140,7 +140,7 @@ function rlib.autoload:Run( parent )
         udm =
         {
             branch              = 'https://udm.rlib.io/rlib/%s',
-            hash                = '079499033360712b69b01ef59731776ddb949311',
+            hash                = '567e56d07e1c250356801c63630152411e648ba7',
             response            = { },
         },
         auth                    = 'https://auth.rlib.io/',
