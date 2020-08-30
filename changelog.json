@@ -1,0 +1,140 @@
+{
+    "unreleased": [],
+    "releases": {
+      "3.1.8": [
+            "[ + ] added compatibility for arivia",
+            "[ + ] added func SelectFirst( ) for tabulation",
+            "[ - ] removed dhtml pnl for rbubble"
+      ],
+      "3.1.7": [
+            "[ + ] rlib.diag",
+            "[ + ] circle generation module",
+            "[ + ] design.rcir",
+            "[ + ] calc.ease.gen, calc.ease.tab, calc.min",
+            "[ + ] railway font family",
+            "[ + ] rcc => rlib.map.ents",
+            "[ + ] base.sys:Debug( )",
+            "[ ^ ] tips now fade out if mouse cursor over",
+            "[ ^ ] rhook, rnet now have registered count function",
+            "[ ^ ] pmeta:setalias( ) moved to pmeta file",
+            "[ ^ ] helper.str:isempty => helper.str:ok",
+            "[ ^ ] prep for numerous areas of code to be deprecated soon for cleanup",
+            "[ ^ ] mviewer => mdlv",
+            "[ ^ ] lib fonts moved to /resource/fonts/rlib",
+            "[ % ] xcr was attached to wrong initializing hook",
+            "[ - ] deprecated numerous function aliases no longer used"
+      ],
+      "3.1.6": [
+            "[ + ] uclass: onrclick, onmclick, vbar, logic_sl, anim_fadein",
+            "[ ^ ] rcfg interface updates",
+            "[ ^ ] updated rlib to add additional compatibility for upcoming arivia v3",
+            "[ ^ ] numerous uclass functions now support gmod pnls and rlib registered pnls",
+            "[ % ] library incorrectly filtering asay command"
+      ],
+      "3.1.5": [
+            "[ + ] uclass: option, spawnicon, sico",
+            "[ + ] numerous functions added to be utilized by Arivia",
+            "[ ^ ] module loading structure updated",
+            "[ % ] uclass mislabeled odc => obc, value_cbox => cbox_val",
+            "[ - ] removed various uclass aliases that are now deprecated"
+      ],
+      "3.1.4": [
+            "[ + ] uclass: thbox, connect, register, unregister",
+            "[ + ] uclass alias: ui.reg => ui.rlib",
+            "[ ^ ] modules:require( ) no longer requires 2nd param to retrieve prefix",
+            "[ ^ ] rnet data validation enhanced to allow for blank data types to be sent in net request",
+            "[ % ] fixed issue with tips getting stuck in rare circumstances",
+            "[ - ] removed various uclass aliases that are now deprecated"
+      ],
+      "3.1.3": [
+            "[ + ] get => name",
+            "[ + ] emeta",
+            "[ + ] new silence enum for msgs / logging",
+            "[ ^ ] design.indicator can now support blank materials",
+            "[ ^ ] additional alias base.modules.require => base.modules.req",
+            "[ ^ ] refreshing files with hooks now refreshes hook",
+            "[ ^ ] updated code for included ulx modules",
+            "[ % ] fixed issue with certain gamemodes halo feature not working (RenderHalos)"
+      ],
+      "3.1.2": [
+            "[ + ] timex => basewars playtime format func",
+            "[ ^ ] uclass ui:ok(), ui:register(), ui:load(), ui:call(), ui:unregister() now utilize registered module env pnl calls"
+      ],
+      "3.1.1": [
+            "[ + ] concommand rlib.modules.reload",
+            "[ + ] darkrp pmeta:getsalary()",
+            "[ + ] helper -> keybinds",
+            "[ + ] font collection",
+            "[ + ] uclass unregister",
+            "[ ^ ] added bSecs param to timex.sh_cols",
+            "[ ^ ] rearranged palias priority order ( Name() => SteamName() )",
+            "[ ^ ] now supports /cfg/ folder - recursive loading",
+            "[ ^ ] access:ulx() now supports perm table",
+            "[ % ] fixed module version reporting report"
+      ],
+      "3.1.0": [
+            "[ + ] new debug system to assist developer with issues",
+            "[ + ] rlib.v ( convar structure and data )",
+            "[ + ] sub-object 'rlib.calls.commands'",
+            "[ + ] changelog.json",
+            "[ + ] autorun/rlib/cvar",
+            "[ + ] autorun/rlib/cvar/cl_, sh_",
+            "[ + ] autorun/rlib/rcc",
+            "[ + ] autorun/rlib/rcc/cl_, sh_, sv_",
+            "[ + ] rcc.prepare( )",
+            "[ + ] rcc.get( )",
+            "[ + ] checksum:valid( )",
+            "[ + ] concommand rlib.rcc.rehash",
+            "[ + ] includes/modules/promise.lua",
+            "[ + ] autoloader uses sv_hibernate_think 1",
+            "[ + ] rcfg feature released",
+            "[ ^ ] cleaned console output code with new helper functions",
+            "[ ^ ] updated rlib.get:gm() to accept additional parameter (bClean)",
+            "[ ^ ] base rlib concommand revised for better command searching",
+            "[ ^ ] migrated concommands rlib.utils => rcc.calls",
+            "[ ^ ] all concommands are now local and registered",
+            "[ ^ ] pco service now -s unused gmod hooks as part of optimization tasks",
+            "[ ^ ] pco setting + to cfg.lua to toggle hook removals as part of task list",
+            "[ ^ ] helper:cvar_* functions migrated to /cvars/ folder",
+            "[ ^ ] commands now support aliases",
+            "[ ^ ] optimized rcc code",
+            "[ ^ ] migrated all modules over to new versioning system",
+            "[ ^ ] set delay on resolution think time",
+            "[ ^ ] hooks that cannot be accessed by regular users are now -d",
+            "[ ^ ] re-worked rlib help module for easier assistance",
+            "[ ^ ] rlib.modules:bInstalled( ) => rlib.modules:bInstalled( )",
+            "[ ^ ] rlib.calls:register_cmds( ) => rlib.calls.commands:Register( )",
+            "[ ^ ] rlib.pkgs:register( ) => rlib.package:Register( )",
+            "[ - ] rlib.utils",
+            "[ - ] rlib.cc",
+            "[ - ] rlib.pkgs",
+            "[ - ] helper.cvar",
+            "[ - ] helper.rp",
+            "[ - ] rlib.modules:load( )",
+            "[ - ] concommand assoc func param",
+            "[ - ] autorun/rlib/patches.lua",
+            "[ - ] autorun/rlib/commands.lua"
+      ],
+      "3.0.2": [
+            "[ + ] includes/modules/hook.lua - new hook module which optimizes the speed of hook executions",
+            "[ ^ ] updated helper.get.id and pmeta associative id funcs to support achievement names",
+            "[ ^ ] rlib outdate messages now more visible in console",
+            "[ ^ ] enhanced logging structure now places logs in folders categorized by session id",
+            "[ % ] fixed issue with sms.umsg causing notifications to display as blank",
+            "[ % ] rlib.d now called in client-side rlib file that deals with notifications",
+            "[ % ] fixed scale640 func"
+      ],
+      "3.0.1": [
+            "[ + ] calc module: int2hex, hex2int",
+            "[ + ] uclass module, allowinput, setautoupdate",
+            "[ + ] modules: ipcrypt, rbit",
+            "[ + ] sms broadcasting, pmeta",
+            "[ + ] rcore/rlib timers, and hooks + to official calls table",
+            "[ ^ ] updated str:isempty to be more accurate",
+            "[ ^ ] notifications now have highest zpos priority",
+            "[ ^ ] deprecated numerous old funcs no longer needed",
+            "[ ^ ] implemented rlib netmsg loader",
+            "[ % ] fixed issue with error occurring if rlib loaded without modules"
+      ]
+    }
+  }
