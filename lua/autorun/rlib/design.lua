@@ -1460,8 +1460,7 @@ function design.indicator_t2( text, text_sub, uid, font, font2, dur )
     *   load materials
     */
 
-    local mat_t         = Material( 'rlib/interface/grunge/deco/dividers/glow_w_full_02.png', 'noclamp smooth' )
-    local mat_b         = Material( 'rlib/interface/grunge/deco/dividers/glow_w_full_02.png', 'noclamp smooth' )
+    local mat_div       = Material( 'rlib/general/fx/dividers/glow_w_full_01.png', 'noclamp smooth' )
     local grad          = Material( 'gui/center_gradient', 'noclamp smooth' )
 
     local time_fade     = 2
@@ -1500,10 +1499,10 @@ function design.indicator_t2( text, text_sub, uid, font, font2, dur )
         local clr_alpha = math.Clamp( alpha, 0, 255 )
 
         design.mat(  ( ScrW( ) / 2 ) - ( ScrW( ) / 2 ), ( ScrH( ) / 2 ) - ( 200 / 2 ) + ( 36 / 2 ), ScrW( ), 200, grad, Color( 5, 5, 5, clr_alpha ) )
-        design.mat( ( ScrW( ) / 2 ) - ( 512 / 2 ), bar_t_pos_s, 512, 36, mat_t, Color( 255, 255, 255, clr_alpha ) )
+        design.mat( ( ScrW( ) / 2 ) - ( 512 / 2 ), bar_t_pos_s, 512, 36, mat_div, Color( 255, 255, 255, clr_alpha ) )
         draw.SimpleText( text, font, ScrW( ) / 2, ScrH( ) / 2 - 10, Color( 255, 255, 255, clr_alpha ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
         draw.SimpleText( text_sub, font2, ScrW( ) / 2, ScrH( ) / 2 + 40, Color( 195, 136, 45, clr_alpha ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-        design.mat( ( ScrW( ) / 2 ) - ( 512 / 2 ), bar_b_pos_s, 512, 36, mat_b, Color( 255, 255, 255, clr_alpha ) )
+        design.mat( ( ScrW( ) / 2 ) - ( 512 / 2 ), bar_b_pos_s, 512, 36, mat_div, Color( 255, 255, 255, clr_alpha ) )
 
     end
     hook.Add( 'HUDPaint', uid .. 'd2s.indicator', draw2screen )
