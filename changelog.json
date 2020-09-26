@@ -5,6 +5,7 @@
             "[ + ] added compatibility for arivia",
             "[ + ] added func SelectFirst( ) for tabulation",
             "[ + ] added obj > checkbox v2",
+            "[ + ] added SAM admin mod compatibility",
             "[ - ] removed dhtml pnl for rbubble"
       ],
       "3.1.7": [

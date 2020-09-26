@@ -76,7 +76,7 @@ end
 *   @param  : str txt
 */
 
-function PANEL:SetData( txt )
+function PANEL:SetData( txt, ir )
 
     /*
     *   data > define
@@ -85,6 +85,7 @@ function PANEL:SetData( txt )
     local content                   = self:SetContent( txt )
     local clr                       = self:GetTextColor( )
     local font                      = self:GetFont( )
+    ir                              = isnumber( ir ) and ir or 0
 
     /*
     *   data > container
@@ -98,7 +99,7 @@ function PANEL:SetData( txt )
     */
 
     self.entry                      = ui.new( 'entry', self.ct              )
-    :fill                           (                                       )
+    :fill                           ( 'm', 0, 0, ir, 0                      )
     :text                           ( self.content                          )
     :mline                          ( true                                  )
     :drawbg                         ( false                                 )

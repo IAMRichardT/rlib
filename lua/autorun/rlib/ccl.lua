@@ -351,6 +351,20 @@ function access:initialize( perms )
             serverguard.permission:Add( id )
             sw = lang( 'perms_type_sg' )
 
+        elseif SAM_LOADED and sam then
+
+            /*
+            *   permissions > sam
+            */
+
+            id          = ( isstring( v.sam ) and v.sam ) or ( isstring( v.name ) and v.name ) or k
+            cat         = perms[ k ].category or cat
+            local grp   = perms[ k ].access or perms[ k ].usrlvl or 'superadmin'
+
+            sam.permissions.add( id, cat, grp )
+
+            sw = lang( 'perms_type_sam' )
+
         end
 
         rlib:log( RLIB_LOG_PERM, lang( 'perms_add', sw, perms[ k ].id ) )

@@ -35,6 +35,12 @@ local cfg                   = base.settings
 local mf                    = base.manifest
 
 /*
+*   localization > glua
+*/
+
+local sf                    = string.format
+
+/*
 *   Localized translation func
 */
 
@@ -74,12 +80,6 @@ function PANEL:Init( )
     */
 
     local ui_w, ui_h                = cfg.rcfg.ui.width, cfg.rcfg.ui.height
-
-    /*
-    *   localized colorization
-    */
-
-    local sf                        = string.format
 
     /*
     *   declarations > parent pnl
@@ -214,7 +214,7 @@ function PANEL:Init( )
     *   subparent pnl
     */
 
-    self.sub                        = ui.new( 'pnl', self                   )
+    self.ct_sub                     = ui.new( 'pnl', self                   )
     :fill                           ( 'm', 5, 0, 5, 0                       )
     :padding                        ( 0                                     )
 
@@ -226,7 +226,7 @@ function PANEL:Init( )
     *   content pnl
     */
 
-    self.ct_content                 = ui.new( 'pnl', self.sub               )
+    self.ct_content                 = ui.new( 'pnl', self.ct_sub            )
     :fill                           ( 'm', 0                                )
     :padding                        ( 3                                     )
 
@@ -248,7 +248,7 @@ function PANEL:Init( )
                                     end )
 
     /*
-    *   item > right
+    *   sel > right
     */
 
     self.ct_right                   = ui.new( 'pnl', self.ct_content        )
@@ -260,15 +260,23 @@ function PANEL:Init( )
                                     end )
 
     /*
-    *   item > coming soon
+    *   sel > right > content
     */
 
-    self.ct_soon                    = ui.new( 'pnl', self.ct_right          )
+    self.ct_right_cont              = ui.new( 'pnl', self.ct_content        )
+    :nodraw                         (                                       )
+    :fill                           ( 'm', 10                               )
+
+    /*
+    *   sel > right > content > coming soon
+    */
+
+    self.ct_soon                    = ui.new( 'pnl', self.ct_right_cont     )
     :nodraw                         (                                       )
     :fill                           ( 'm', 0, 0, 0, 0                       )
 
                                     :draw( function( s, w, h )
-                                        design.text( 'COMING SOON', w / 2, h / 2, Color( 255, 255, 255, 20 ), pref( 'rcfg_soon' ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+                                        design.text( 'Select a module', w / 2, h / 2, Color( 255, 255, 255, 20 ), pref( 'rcfg_soon' ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
                                     end )
 
     /*
@@ -318,7 +326,7 @@ function PANEL:Init( )
         *   item > parent
         */
 
-        self.item                   = ui.new( 'pnl', self.dsp               )
+        self.lst_i                  = ui.new( 'pnl', self.dsp               )
         :nodraw                     (                                       )
         :top                        ( 'm', 0, 0, 15, 1                      )
         :tall                       ( sz_item - 10                          )
@@ -346,7 +354,7 @@ function PANEL:Init( )
         *   item > sub
         */
 
-        self.item_sub               = ui.new( 'pnl', self.item              )
+        self.lst_i_sub              = ui.new( 'pnl', self.lst_i             )
         :nodraw                     (                                       )
         :fill                       ( 'm', 0                                )
 
@@ -354,50 +362,34 @@ function PANEL:Init( )
         *   item > right
         */
 
-        self.item_r                 = ui.new( 'pnl', self.item_sub          )
+        self.lst_i_r                = ui.new( 'pnl', self.lst_i_sub         )
         :nodraw                     (                                       )
         :fill                       ( 'm', 0                                )
 
                                     :draw( function( s, w, h )
-                                        design.text( m_name:upper( ), 5, h / 2, self.clr_title, pref( 'rcfg_item_name' ), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
+                                        design.text( m_name:upper( ), 5, h / 2, self.clr_title, pref( 'rcfg_lst_name' ), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
                                     end )
 
         /*
         *   item > ver
         */
 
-        self.item_r_ver             = ui.new( 'pnl', self.item_sub          )
+        self.lst_i_r_ver            = ui.new( 'pnl', self.lst_i_sub         )
         :nodraw                     (                                       )
         :right                      ( 'm', 0                                )
         :wide                       ( 100                                   )
 
                                     :draw( function( s, w, h )
                                         design.rbox( 4, ( w / 2 ) - ( 50 / 2 ), ( h / 2 ) - ( 15 / 2 ) - 8, 50, 14, self.clr_ver_box )
-                                        design.text( m_ver, w / 2, h / 2 - 8, self.clr_ver_txt, pref( 'rcfg_item_ver' ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-                                        design.text( m_rel, w / 2 - 1, h / 2 + 10, self.clr_rel_txt, pref( 'rcfg_item_rel' ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+                                        design.text( m_ver, w / 2, h / 2 - 8, self.clr_ver_txt, pref( 'rcfg_lst_ver' ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+                                        design.text( m_rel, w / 2 - 1, h / 2 + 10, self.clr_rel_txt, pref( 'rcfg_lst_rel' ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
                                     end )
-
-        /*
-        *   item > right > desc
-        */
-
-        self.item_r_desc            = ui.new( 'dt', self.item_r             )
-        :top                        ( 'm', 5, 0                             )
-        :tall                       ( 20                                    )
-        :drawbg                     ( false                                 )
-        :mline	                    ( false 				                )
-        :ascii	                    ( false 				                )
-        :canedit	                ( false 				                )
-        :scur	                    ( Color( 255, 255, 255, 255 ), 'beam'   )
-        :txt	                    ( m_desc, self.clr_des_txt, pref( 'rcfg_item_desc' ) )
-        :ocnf                       ( true                                  )
-        :hide                       (                                       )
 
         /*
         *   image > container
         */
 
-        self.item_ct_img            = ui.new( 'pnl', self.item_sub          )
+        self.lst_i_ct_img           = ui.new( 'pnl', self.lst_i_sub         )
         :left                       ( 'm', 4                                )
         :wide                       ( sz_item - 15                          )
 
@@ -409,12 +401,12 @@ function PANEL:Init( )
         *   image > dhtml src
         */
 
-        self.item_av_url            = ui.new( 'dhtml', self.item_ct_img     )
+        self.lst_i_av_url           = ui.new( 'dhtml', self.lst_i_ct_img    )
         :nodraw                     (                                       )
         :fill                       ( 'm', 1                                )
         :sbar                       ( false                                 )
 
-                                    self.item_av_url:SetHTML(
+                                    self.lst_i_av_url:SetHTML(
                                     [[
                                         <body style='overflow: hidden; height: 100%; width: 100%; margin:0px;'>
                                             <img width='100%' height='100%' style='width:100%;height:100%;' src=']] .. m_img .. [['>
@@ -425,12 +417,12 @@ function PANEL:Init( )
         *   image > dhtml src
         */
 
-        self.item_av_def            = ui.new( 'dhtml', self.item_ct_img     )
+        self.lst_i_av_def           = ui.new( 'dhtml', self.lst_i_ct_img    )
         :nodraw                     (                                       )
         :fill                       ( 'm', 1                                )
         :sbar                       ( false                                 )
 
-                                    self.item_av_url:SetHTML(
+                                    self.lst_i_av_url:SetHTML(
                                     [[
                                         <body style='overflow: hidden; height: 100%; width: 100%; margin:0px;'>
                                             <img width='100%' height='100%' style='width:100%;height:100%;' src=']] .. m_def .. [['>
@@ -441,16 +433,20 @@ function PANEL:Init( )
         *   image > btn
         */
 
-        self.item_b_hover           = ui.new( 'btn', self.item              )
+        self.lst_i_b_hover          = ui.new( 'btn', self.lst_i             )
         :bsetup                     (                                       )
         :notext                     (                                       )
         :fill                       ( 'm', 0                                )
-        :openurl                    ( m_url                                 )
+
 
                                     :draw( function( s, w, h )
                                         if s.hover then
                                             design.rbox( 4, w - 5, 0, 5, h, self.clr_item_hvr_box )
                                         end
+                                    end )
+
+                                    :oc( function( s )
+                                        self:SetData( v )
                                     end )
 
         /*
@@ -494,6 +490,110 @@ function PANEL:Init( )
 end
 
 /*
+*   SetData
+*
+*   @param  : tbl module
+*/
+
+function PANEL:SetData( module )
+
+    /*
+    *   declare > parent
+    */
+
+    local parent                    = self.ct_right_cont
+    parent:Clear( )
+
+    /*
+    *   declare > module info
+    */
+
+    local sel_name                  = module.name or 'Untitled Module'
+    local sel_ver                   = sf( '%s', rlib.get:ver2str_mf( module ) )
+    local sel_desc                  = module.desc or 'No description'
+    local sel_sid                   = module.owner or 'Unregistered'
+    local sel_id                    = module.script_id or '0000'
+
+    /*
+    *   declare > parent
+    */
+
+    local sel_oid = nil
+    steamworks.RequestPlayerInfo( sel_sid, function( steamName )
+            sel_oid = helper.str:ok( steamName )  and steamName or 'Unregistered'
+    end )
+
+    /*
+    *   module > selected > name
+    */
+
+    self.sel_par                    = ui.new( 'pnl', parent                 )
+    :nodraw                         (                                       )
+    :top                            ( 'm', 5, 0, 0, 0                       )
+    :tall                           ( 50                                    )
+
+    /*
+    *   module > selected > name
+    */
+
+    self.sel_name                   = ui.new( 'dt', self.sel_par            )
+    :fill                           ( 'm', 0, 0, 0, 0                       )
+    :tall                           ( 31                                    )
+    :drawbg                         ( false                                 )
+    :mline	                        ( false 				                )
+    :ascii	                        ( false 				                )
+    :canedit	                    ( false 				                )
+    :scur	                        ( Color( 255, 255, 255, 255 ), 'beam'   )
+    :txt	                        ( sel_name, Color( 31, 133, 222, 210 ), pref( 'rcfg_sel_name' ) )
+    :ocnf                           ( true                                  )
+
+    /*
+    *   module > selected > ver
+    */
+
+    self.sel_ver                    = ui.new( 'dt', self.sel_par            )
+    :right                          ( 'm', 0, 0, 0, 0                       )
+    :tall                           ( 20                                    )
+    :drawbg                         ( false                                 )
+    :mline	                        ( false 				                )
+    :ascii	                        ( false 				                )
+    :canedit	                    ( false 				                )
+    :scur	                        ( Color( 255, 255, 255, 255 ), 'beam'   )
+    :txt	                        ( sel_ver, Color( 222, 222, 222, 244 ), pref( 'rcfg_sel_ver' ) )
+    :ocnf                           ( true                                  )
+
+    /*
+    *   module > selected > desc
+    */
+
+
+    self.sel_desc 				    = ui.new( 'rlib.elm.text', parent       )
+    :fill                           ( 'm', 5, 0, 0, 0                       )
+    :param                          ( 'SetTextColor', Color( 255, 255, 255, 100 ) )
+    :param                          ( 'SetFont', pref( 'rcfg_sel_desc' )    )
+    :paramv                         ( 'SetData', sel_desc, 15               )
+    :param                          ( 'SetAlwaysVisible', true              )
+
+    /*
+    *   module > selected > owner
+    */
+
+    self.sel_oid                    = ui.new( 'pnl', parent                 )
+    :nodraw                         (                                       )
+    :bottom                         ( 'm', 5, 0, 0, 0                       )
+    :tall                           ( 30                                    )
+
+                                    :draw( function( s, w, h )
+                                        draw.SimpleText( 'Owner:', pref( 'rcfg_sel_ver' ), 0, 5, Color( 176, 83, 83, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
+                                        draw.SimpleText( sel_oid, pref( 'rcfg_sel_ver' ), 50, 5, Color( 222, 222, 222, 244 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
+
+                                        draw.SimpleText( 'Script:', pref( 'rcfg_sel_ver' ), 0, 23, Color( 176, 83, 83, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
+                                        draw.SimpleText( sel_id, pref( 'rcfg_sel_ver' ), 50, 23, Color( 222, 222, 222, 244 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
+                                    end )
+
+end
+
+/*
 *   Think
 */
 
@@ -529,12 +629,12 @@ function PANEL:Think( )
     end
 
     if ( self.Hovered and self.m_bSizable and mousex > ( self.x + self:GetWide( ) - 20 ) and mousey > ( self.y + self:GetTall( ) - 20 ) ) then
-        self:SetCursor( 'sizenwse' )
+        self:SetCursor  ( 'sizenwse' )
         return
     end
 
     if ( self.Hovered and self:GetDraggable( ) and mousey < ( self.y + 24 ) ) then
-        self:SetCursor( 'sizeall' )
+        self:SetCursor  ( 'sizeall' )
         return
     end
 

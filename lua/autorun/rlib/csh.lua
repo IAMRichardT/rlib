@@ -1480,6 +1480,9 @@ function access:validate( pl, perm )
     elseif serverguard then
         perm = ( istable( perm ) and ( perm.name or perm.id ) ) or isstring( perm ) and perm
         if serverguard.player:HasPermission( pl, perm ) then return true end
+    elseif SAM_LOADED and sam then
+        perm = ( istable( perm ) and ( perm.sam or perm.name or perm.id ) ) or isstring( perm ) and perm
+        if pl:HasPermission( perm ) then return true end
     end
 
     return false
@@ -1533,6 +1536,9 @@ function access:allow( pl, perm, mod )
     elseif serverguard then
         perm = ( istable( perm ) and ( perm.name or perm.id ) ) or isstring( perm ) and perm
         if serverguard.player:HasPermission( pl, perm ) then return true end
+    elseif SAM_LOADED and sam then
+        perm = ( istable( perm ) and ( perm.sam or perm.name or perm.id ) ) or isstring( perm ) and perm
+        if pl:HasPermission( perm ) then return true end
     end
 
     return false
@@ -1564,7 +1570,10 @@ function access:strict( pl, perm, mod )
         return false
     end
 
+    if pl:IsSuperAdmin( ) then return true end
+
     if not isstring( perm ) then return false end
+
     if mod then
         perm = self:getperm( perm, mod )
     end
@@ -1586,6 +1595,9 @@ function access:strict( pl, perm, mod )
     elseif serverguard then
         perm = ( istable( perm ) and ( perm.name or perm.id ) ) or isstring( perm ) and perm
         if serverguard.player:HasPermission( pl, perm ) then return true end
+    elseif SAM_LOADED and sam then
+        perm = ( istable( perm ) and ( perm.sam or perm.name or perm.id ) ) or isstring( perm ) and perm
+        if pl:HasPermission( perm ) then return true end
     end
 
     return false

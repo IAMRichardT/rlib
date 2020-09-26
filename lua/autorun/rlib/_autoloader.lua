@@ -41,19 +41,19 @@ function rlib.autoload:Run( parent )
     *   base definitions
     */
 
-    local base                  = rlib
-    local mf                    = base.manifest or { }
-    mf.name                     = 'rlib'
-    mf.author                   = 'Richard'
-    mf.prefix                   = 'rlib.'
-    mf.folder                   = 'autorun/rlib'
-    mf.site                     = 'https://rlib.io/'
-    mf.repo                     = 'https://github.com/im-richard/rlib/'
-    mf.docs                     = 'https://docs.rlib.io/'
-    mf.about                    = [[rlib is a glua library written for garrys mod which contains a variety of commonly used functions that are required for certain scripts to run properly. Package includes both rlib + rcore which act as the overall foundation which other scripts will rest within as a series of modules. ]]
-    mf.released                 = 1598819607
-    mf.version                  = { 3, 1, 8 }
-    mf.showcopyright            = true
+    local base                      = rlib
+    local mf                        = base.manifest or { }
+    mf.name                         = 'rlib'
+    mf.author                       = 'Richard'
+    mf.prefix                       = 'rlib.'
+    mf.folder                       = 'autorun/rlib'
+    mf.site                         = 'https://rlib.io/'
+    mf.repo                         = 'https://github.com/im-richard/rlib/'
+    mf.docs                         = 'https://docs.rlib.io/'
+    mf.about                        = [[rlib is a glua library written for garrys mod which contains a variety of commonly used functions that are required for certain scripts to run properly. Package includes both rlib + rcore which act as the overall foundation which other scripts will rest within as a series of modules. ]]
+    mf.released                     = 1601100128
+    mf.version                      = { 3, 1, 8 }
+    mf.showcopyright                = true
 
     /*
     *   packages
