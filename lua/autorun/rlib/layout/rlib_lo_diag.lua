@@ -69,83 +69,27 @@ AccessorFunc( PANEL, 'm_bDraggable', 'Draggable', FORCE_BOOL )
 function PANEL:Init( )
 
     /*
-    *   sizing
+    *   declarations
     */
 
-    local state, r, g, b            = 0, 255, 0, 0          -- rgb
-    local sz_ui_w                   = 320                   -- main         : width, height
-    local ui_w_min                  = 1                     -- main         : width minimum
-    local sz_header_h               = 30                    -- header       : height
-    local sz_header_t               = 5                     -- header       : top margin
-    local sz_sub_t                  = 5                     -- sub          : top margin
-    local sz_sub_b                  = 10                    -- sub          : bottom margin
-    local sz_dico_h                 = 76                    -- dico         : item height
-    local sz_dico_w                 = 95                    -- dico         : item width
-    local sz_dico_pad               = 5                     -- dico         : spacing
-    local sz_r1_h                   = 230                   -- fps graph    : height
-    local sz_r1_t                   = 20                    -- fps graph    : top margin
-    local sz_r1_hdr_h               = 30                    -- fps graph    : header height
-    local sz_r1_hdr_t               = 7                     -- fps graph    : top margin
-
-    self.ui_w                       = sz_ui_w
-    self.ui_h                       = sz_header_h + sz_header_t + sz_sub_t + sz_sub_b + ( sz_dico_h * 2 ) + ( sz_dico_pad * 2 ) + sz_r1_t + sz_r1_h + 20
-
-    /*
-    *   localized colorization
-    */
-
-    local clr_header                = Color( 255, 255, 255, 255 )
-    local clr_title                 = Color( 194, 57, 83, 255 )
-    local clr_value                 = Color( 255, 255, 255, 255 )
+    self:_Declarations( )
 
     /*
     *   parent pnl
     */
 
-    self:SetPaintShadow             ( true                                  )
-    self:SetSize                    ( self.ui_w, self.ui_h                  )
-    self:SetMinWidth                ( self.ui_w * ui_w_min                  )
-    self:SetMinHeight               ( self.ui_h * ui_w_min                  )
-    self:DockPadding                ( 2, 34, 2, 3                           )
-    self:MakePopup                  (                                       )
-    self:SetTitle                   ( ''                                    )
-    self:SetSizable                 ( true                                  )
-    self:ShowCloseButton            ( false                                 )
-    self:SetScreenLock              ( true                                  )
-
-    /*
-    *   defaults
-    */
-
-    self.Alpha                      = 255
-    self.is_visible                 = true
-    self.v_servip                   = game.GetIPAddress( )
-    self.cvar_id                    = GetConVar( 'rlib_diag_refreshrate' )
-    self.th_fps_ch 	                = 0
-    self.th_fps                     = 0
-    self.th_cur                     = 0
-    self.th_cti                     = 0
-    self.th_ply                     = 0
-    self.th_net                     = 0
-    self.th_hook                    = 0
-    self.v_cur                      = 0
-    self.v_fps                      = 0
-    self.v_cti                      = 0
-    self.v_ply                      = 0
-    self.v_net                      = 0
-    self.v_hook                     = 0
-    self.ghistory 		            = { }
-
-    /*
-    *   display parent :: static || animated
-    */
-
-    if cvar:GetBool( 'rlib_animations_enabled' ) then
-        self:SetPos( ScrW( ) - self.ui_w - 20, ScrH( ) + self.ui_h )
-        self:MoveTo( ScrW( ) - self.ui_w - 20, ScrH( ) - self.ui_h - 20, 0.4, 0, -1 )
-    else
-        self:SetPos( ScrW( ) - self.ui_w - 20, ScrH( ) - self.ui_h - 20 )
-    end
+    self                            = ui.get( self                          )
+    :shadow                         ( true                                  )
+    :sz                             ( self.ui_w, self.ui_h                  )
+    :wmin                           ( self.ui_w * self.ui_w_min             )
+    :hmin                           ( self.ui_h * self.ui_w_min             )
+    :padding                        ( 2, 34, 2, 3                           )
+    :popup                          (                                       )
+    :notitle                        (                                       )
+    :canresize                      ( true                                  )
+    :canclose                       ( false                                 )
+    :scrlock                        ( true                                  )
+    :appear                         ( 3                                     )
 
     /*
     *   titlebar
@@ -157,27 +101,8 @@ function PANEL:Init( )
     :clr                            ( Color( 255, 255, 255, self.Alpha )    )
 
                                     :draw ( function( s, w, h )
-                                        if ( state == 0 ) then
-                                            g = g + 1
-                                            if ( g == 255 ) then state = 1 end
-                                        elseif ( state == 1 ) then
-                                            r = r - 1
-                                            if ( r == 0 ) then state = 2 end
-                                        elseif ( state == 2 ) then
-                                            b = b + 1
-                                            if ( b == 255 ) then state = 3 end
-                                        elseif ( state == 3 ) then
-                                            g = g - 1
-                                            if ( g == 0 ) then state = 4 end
-                                        elseif ( state == 4 ) then
-                                            r = r + 1
-                                            if ( r == 255 ) then state = 5 end
-                                        elseif ( state == 5 ) then
-                                            b = b - 1
-                                            if ( b == 0 ) then state = 0 end
-                                        end
-
-                                        local clr_rgb = Color( r, g, b, self.Alpha )
+                                        self.state, self.r, self.g, self.b  = design.rgb( self.state, self.r, self.g, self.b, self.Alpha )
+                                        local clr_rgb = Color( self.r, self.g, self.b, self.Alpha )
 
                                         draw.SimpleText( utf8.char( 9930 ), pref( 'konsole_icon' ), 0, 8, clr_rgb, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
                                         draw.SimpleText( self:GetTitle( ), pref( 'konsole_title' ), 25, h / 2, Color( 237, 237, 237, self.Alpha ), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
@@ -194,14 +119,11 @@ function PANEL:Init( )
     :bsetup                         (                                       )
     :notext                         (                                       )
     :tip                            ( lang( 'ui_tip_close' )                )
+    :ocr                            ( self                                  )
 
                                     :draw ( function( s, w, h )
                                         local clr_txt = s.hover and Color( 200, 55, 55, self.Alpha ) or Color( 237, 237, 237, self.Alpha )
                                         draw.SimpleText( helper.get:utf8( 'x' ), pref( 'diag_ctrl_exit' ), w / 2 - 1, 4, clr_txt, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-                                    end )
-
-                                    :oc( function( s )
-                                        self:Destroy( )
                                     end )
 
     /*
@@ -233,18 +155,18 @@ function PANEL:Init( )
 
     self.sub                        = ui.new( 'pnl', self                   )
     :nodraw                         (                                       )
-    :fill                           ( 'm', 10, sz_sub_t, 10, sz_sub_b )
+    :fill                           ( 'm', 10, self.sz_sub_t, 10, self.sz_sub_b )
 
     /*
     *   header
     */
 
     self.hdr                        = ui.new( 'pnl', self.sub               )
-    :top                            ( 'm', 0, 0, 0, sz_header_t             )
-    :tall                           ( sz_header_h                           )
+    :top                            ( 'm', 0, 0, 0, self.sz_header_t        )
+    :tall                           ( self.sz_header_h                      )
 
                                     :draw( function( s, w, h )
-                                        design.rbox( 6, 0, 0, w, h, Color( 25, 25, 25, 200 ) )
+                                        design.rbox( 6, 0, 0, w, h, self.clr_g_hdr_box )
                                     end )
 
     /*
@@ -253,10 +175,10 @@ function PANEL:Init( )
 
     self.hdr_l                      = ui.new( 'pnl', self.hdr               )
     :left                           ( 'm', 10, 0, 10, 0                     )
-    :wide                           ( sz_ui_w / 2                           )
+    :wide                           ( self.ui_w / 2                         )
 
                                     :draw( function( s, w, h )
-                                        draw.SimpleText( self.v_servip, pref( 'diag_hdr_value' ), 5, h / 2, clr_header, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
+                                        draw.SimpleText( self.v_servip, pref( 'diag_hdr_value' ), 5, h / 2, self.clr_g_hdr_txt, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
                                     end )
 
     /*
@@ -265,10 +187,10 @@ function PANEL:Init( )
 
     self.hdr_r                      = ui.new( 'pnl', self.hdr               )
     :right                          ( 'm', 10, 0, 10, 0                     )
-    :wide                           ( sz_ui_w / 2                           )
+    :wide                           ( self.ui_w / 2                         )
 
                                     :draw( function( s, w, h )
-                                        draw.SimpleText( string.format( '%i x %i', ScrW( ), ScrH( ) ), pref( 'diag_hdr_value' ), w - 5, h / 2, clr_header, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
+                                        draw.SimpleText( string.format( '%i x %i', ScrW( ), ScrH( ) ), pref( 'diag_hdr_value' ), w - 5, h / 2, self.clr_g_hdr_txt, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
                                     end )
 
     /*
@@ -282,169 +204,163 @@ function PANEL:Init( )
     *   commands > icon layout
     */
 
-    self.dico                       = ui.new( 'dico', self.body             )
+    self.seg                        = ui.new( 'dico', self.body             )
     :nodraw                         (                                       )
     :fill                           ( 'm', 0, 0, 0, 0                       )
-    :spacing                        ( sz_dico_pad, sz_dico_pad              )
-
-                                    :logic( function ( s )
-                                        --local x = self.spnl.VBar.Enabled and 10 or 0
-                                        --s:DockMargin( 0, 0, x, 0 )
-                                    end )
+    :spacing                        ( self.sz_dico_pad, self.sz_dico_pad    )
 
     /*
-    *   element > fps
+    *   segment > fps
     */
 
-    self.fps                        = ui.new( 'pnl', self.dico, 1           )
-    :size                           ( sz_dico_w, sz_dico_h                  )
+    self.seg.fps                    = ui.new( 'pnl', self.seg               )
+    :size                           ( self.sz_dico_w, self.sz_dico_h        )
 
                                     :logic( function( s )
                                         if self.th_fps > CurTime( ) then return end
-                                        self.v_fps = base.sys:GetFPS( true )
-                                        self.th_fps = CurTime( ) + ( self.cvar_val or 0.5 )
+                                        self.gr_fps     = base.sys:GetFPS( true )
+                                        self.th_fps     = CurTime( ) + ( self.cvar_val or 0.5 )
                                     end )
 
                                     :draw( function( s, w, h )
-                                        design.rbox( 6, 0, 0, w, h, Color( 25, 25, 25, 200 ) )
-                                        draw.SimpleText( lang( 'diag_lbl_fps' ), pref( 'diag_title' ), w / 2, h / 2 - 13, clr_title, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-                                        draw.SimpleText( self.v_fps, pref( 'diag_value' ), w / 2, h / 2 + 10, clr_value, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+                                        design.rbox( 6, 0, 0, w, h, self.clr_g_seg_box )
+                                        draw.SimpleText( lang( 'diag_lbl_fps' ), pref( 'diag_title' ), w / 2, h / 2 - 13, self.clr_g_seg_txt, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+                                        draw.SimpleText( self.gr_fps, pref( 'diag_value' ), w / 2, h / 2 + 10, self.clr_g_seg_val, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
                                     end )
 
     /*
-    *   element > players
+    *   segment > players
     */
 
-    self.ply                        = ui.new( 'pnl', self.dico, 1           )
-    :size                           ( sz_dico_w, sz_dico_h                  )
+    self.seg.ply                    = ui.new( 'pnl', self.seg               )
+    :size                           ( self.sz_dico_w, self.sz_dico_h        )
 
                                     :logic( function( s )
                                         if self.th_ply > CurTime( ) then return end
-                                        self.v_ply      = player.GetCount( )
+                                        self.sg_ply     = player.GetCount( )
                                         self.th_ply     = CurTime( ) + 5
                                     end )
 
                                     :draw( function( s, w, h )
-                                        design.rbox( 6, 0, 0, w, h, Color( 25, 25, 25, 200 ) )
-                                        draw.SimpleText( lang( 'diag_lbl_ply' ), pref( 'diag_title' ), w / 2, h / 2 - 13, clr_title, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-                                        draw.SimpleText( self.v_ply, pref( 'diag_value' ), w / 2, h / 2 + 10, clr_value, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+                                        design.rbox( 6, 0, 0, w, h, self.clr_g_seg_box )
+                                        draw.SimpleText( lang( 'diag_lbl_ply' ), pref( 'diag_title' ), w / 2, h / 2 - 13, self.clr_g_seg_txt, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+                                        draw.SimpleText( self.sg_ply, pref( 'diag_value' ), w / 2, h / 2 + 10, self.clr_g_seg_val, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
                                     end )
 
     /*
-    *   element > curtime
+    *   segment > curtime
     */
 
-    self.cur                        = ui.new( 'pnl', self.dico, 1           )
-    :size                           ( sz_dico_w, sz_dico_h                  )
+    self.seg.cur                    = ui.new( 'pnl', self.seg               )
+    :size                           ( self.sz_dico_w, self.sz_dico_h        )
 
                                     :logic( function( s )
                                         if self.th_cur > CurTime( ) then return end
                                         local cur       = CurTime( )
-                                        self.v_cur      = math.Round( cur )
+                                        self.sg_cur     = math.Round( cur )
                                         self.th_cur     = CurTime( ) + 1
                                     end )
 
                                     :draw( function( s, w, h )
-                                        design.rbox( 6, 0, 0, w, h, Color( 25, 25, 25, 200 ) )
-                                        draw.SimpleText( lang( 'diag_lbl_cur' ), pref( 'diag_title' ), w / 2, h / 2 - 13, clr_title, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-                                        draw.SimpleText( self.v_cur, pref( 'diag_value' ), w / 2, h / 2 + 10, clr_value, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+                                        design.rbox( 6, 0, 0, w, h, self.clr_g_seg_box )
+                                        draw.SimpleText( lang( 'diag_lbl_cur' ), pref( 'diag_title' ), w / 2, h / 2 - 13, self.clr_g_seg_txt, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+                                        draw.SimpleText( self.sg_cur, pref( 'diag_value' ), w / 2, h / 2 + 10, self.clr_g_seg_val, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
                                     end )
 
 
     /*
-    *   element > timers
+    *   segment > timers
     */
 
-    self.timers                     = ui.new( 'pnl', self.dico, 1           )
-    :size                           ( sz_dico_w, sz_dico_h                  )
+    self.seg.timers                 = ui.new( 'pnl', self.seg               )
+    :size                           ( self.sz_dico_w, self.sz_dico_h        )
 
                                     :logic( function( s )
                                         if self.th_cti > CurTime( ) then return end
-                                        self.v_cti      = timex.count( true )
+                                        self.sg_cti     = timex.count( true )
                                         self.th_cti     = CurTime( ) + 0.5
                                     end )
 
                                     :draw( function( s, w, h )
-                                        design.rbox( 6, 0, 0, w, h, Color( 25, 25, 25, 200 ) )
-                                        draw.SimpleText( lang( 'diag_lbl_timers' ), pref( 'diag_title' ), w / 2, h / 2 - 13, clr_title, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-                                        draw.SimpleText( self.v_cti, pref( 'diag_value' ), w / 2, h / 2 + 10, clr_value, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+                                        design.rbox( 6, 0, 0, w, h, self.clr_g_seg_box )
+                                        draw.SimpleText( lang( 'diag_lbl_timers' ), pref( 'diag_title' ), w / 2, h / 2 - 13, self.clr_g_seg_txt, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+                                        draw.SimpleText( self.sg_cti, pref( 'diag_value' ), w / 2, h / 2 + 10, self.clr_g_seg_val, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
                                     end )
 
-
     /*
-    *   element > net
+    *   segment > net
     */
 
-    self.net                        = ui.new( 'pnl', self.dico, 1           )
-    :size                           ( sz_dico_w, sz_dico_h                  )
+    self.seg.net                    = ui.new( 'pnl', self.seg               )
+    :size                           ( self.sz_dico_w, self.sz_dico_h        )
 
                                     :logic( function( s )
                                         if self.th_net > CurTime( ) then return end
-                                        self.v_net      = rnet.count( )
+                                        self.sg_net     = rnet.count( )
                                         self.th_net     = CurTime( ) + 0.5
                                     end )
 
                                     :draw( function( s, w, h )
-                                        design.rbox( 6, 0, 0, w, h, Color( 25, 25, 25, 200 ) )
-                                        draw.SimpleText( lang( 'diag_lbl_net' ), pref( 'diag_title' ), w / 2, h / 2 - 13, clr_title, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-                                        draw.SimpleText( self.v_net, pref( 'diag_value' ), w / 2, h / 2 + 10, clr_value, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+                                        design.rbox( 6, 0, 0, w, h, self.clr_g_seg_box )
+                                        draw.SimpleText( lang( 'diag_lbl_net' ), pref( 'diag_title' ), w / 2, h / 2 - 13, self.clr_g_seg_txt, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+                                        draw.SimpleText( self.sg_net, pref( 'diag_value' ), w / 2, h / 2 + 10, self.clr_g_seg_val, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
                                     end )
 
     /*
-    *   element > hooks
+    *   segment > hooks
     */
 
-    self.hooks                      = ui.new( 'pnl', self.dico, 1           )
-    :size                           ( sz_dico_w, sz_dico_h                  )
+    self.seg.hooks                  = ui.new( 'pnl', self.seg               )
+    :size                           ( self.sz_dico_w, self.sz_dico_h        )
 
                                     :logic( function( s )
                                         if self.th_hook > CurTime( ) then return end
-                                        self.v_hook     = rhook.count( )
+                                        self.sg_hook    = rhook.count( )
                                         self.th_hook    = CurTime( ) + 0.5
                                     end )
 
                                     :draw( function( s, w, h )
-                                        design.rbox( 6, 0, 0, w, h, Color( 25, 25, 25, 200 ) )
-                                        draw.SimpleText( lang( 'diag_lbl_hook' ), pref( 'diag_title' ), w / 2, h / 2 - 13, clr_title, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-                                        draw.SimpleText( self.v_hook, pref( 'diag_value' ), w / 2, h / 2 + 10, clr_value, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+                                        design.rbox( 6, 0, 0, w, h, self.clr_g_seg_box )
+                                        draw.SimpleText( lang( 'diag_lbl_hook' ), pref( 'diag_title' ), w / 2, h / 2 - 13, self.clr_g_seg_txt, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+                                        draw.SimpleText( self.sg_hook, pref( 'diag_value' ), w / 2, h / 2 + 10, self.clr_g_seg_val, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
                                     end )
 
     /*
-    *   row > 2
+    *   graph > container
     */
 
-    self.r1                         = ui.new( 'pnl', self.body, 1           )
-    :bottom                         ( 'm', 0, sz_r1_t, 0, 0                 )
-    :tall                           ( sz_r1_h                               )
+    self.gr                         = ui.new( 'pnl', self.body, 1           )
+    :bottom                         ( 'm', 0, self.sz_r1_t, 0, 0            )
+    :tall                           ( self.sz_r1_h                          )
 
                                     :draw( function( s, w, h )
                                         design.rbox( 5, 0, 0, w, h, Color( 25, 25, 25, self.Alpha ) )
                                     end )
 
     /*
-    *   row 1 > header
+    *   graph > header
     */
 
-    self.r1.hdr                     = ui.new( 'pnl', self.r1, 1             )
-    :top                            ( 'm', 7, sz_r1_hdr_t, 7, 0             )
-    :tall                           ( sz_r1_hdr_h                           )
+    self.gr.h                       = ui.new( 'pnl', self.gr, 1             )
+    :top                            ( 'm', 7, self.sz_r1_hdr_t, 7, 0        )
+    :tall                           ( self.sz_r1_hdr_h                      )
 
                                     :draw( function( s, w, h )
                                         design.box( 0, 0, w, h, Color( 35, 35, 35, self.Alpha ) )
                                     end )
 
     /*
-    *   slider > ct
+    *   slider > container
     */
 
-    self.slider                     = ui.new( 'pnl', self.r1.hdr, 1         )
+    self.sli                        = ui.new( 'pnl', self.gr.h, 1           )
     :fill                           ( 'm', 10, 8, 25, 0                     )
 
     /*
     *   slider > ct
     */
 
-    self.slider.amt                 = ui.new( 'lbl', self.slider, 1         )
+    self.sli.amt                    = ui.new( 'lbl', self.sli, 1            )
     :left                           ( 'm', 0, 0, 5, 7                       )
     :wide                           ( 35                                    )
     :txt                            ( self.cvar_id:GetFloat( )              )
@@ -455,7 +371,7 @@ function PANEL:Init( )
     *   slider > element
     */
 
-    self.slider.elm                 = ui.new( 'rlib.ui.slider', self.slider )
+    self.sli.elm                    = ui.new( 'rlib.ui.slider', self.sli    )
     :fill                           ( 'm', 10, 0, 0, 5                      )
     :minmax                         ( 0, 1                                  )
     :val                            ( self.cvar_id:GetFloat( )              )
@@ -465,10 +381,10 @@ function PANEL:Init( )
 
                                     :ovc( function( s )
                                         self.cvar_id:SetFloat( s:GetValue( ) )
-                                        self.slider.amt:SetText( s:GetValue( ) )
+                                        self.sli.amt:SetText( s:GetValue( ) )
                                     end )
 
-    self:MakeChart( )
+    self:GenGraph( )
 
     /*
     *   calc tall
@@ -479,20 +395,18 @@ function PANEL:Init( )
 end
 
 /*
-*   VData
+*   GetValue
 *
 *   validates the data
 *
-*   @param  : int i
+*   @param  : int int
 *   @return : int
 */
 
-function PANEL:VData( i )
-    if i ~= i or i == math.huge then
-        return 'No data'
-    end
+function PANEL:GetValue( int )
+    if ( not int ) or int ~= int or int == math.huge then return 'Bad Data' end
 
-    return math.Round( i )
+    return math.Round( int )
 end
 
 /*
@@ -500,148 +414,181 @@ end
 */
 
 function PANEL:GetFPS( )
-    self.ghistory = self.ghistory or { }
-    if not istable( self.ghistory ) then return end
+    self.gr_plots   = self.gr_plots or { }
+                    if not istable( self.gr_plots ) then return end
 
-    local fps = base.sys:GetFPS( true )
-    table.insert( self.ghistory, fps )
+    local point     = self.gr_bCalibrate and self.gr_calibrate_i or base.sys:GetFPS( true )
+    self.gr_fps     = point
 
-    self.th_fps_ch = CurTime( ) + ( self.cvar_val or 0.5 )
+    table.insert( self.gr_plots, point )
+
+    self.gr_fps_ch  = CurTime( ) + ( self.cvar_val or 0.5 )
 end
 
 /*
-*   DrawPoints
+*   PlotGraph
 *
-*   @param  : tbl tbl
+*   @param  : tbl coords
 *   @param  : int x
 *   @param  : int y
+*   @param  : int h
+*   @param  : int z
 */
 
-function PANEL:DrawPoints( tbl, x, y )
-    if not istable( tbl ) then return end
-    x = isnumber( x ) and x or 0
+function PANEL:PlotGraph( coords, x, y, h, z )
+    if not istable( coords ) then return end
 
-    local clr_line  = Color( 229, 213, 35, 255 )
+    x                   = x or 0
+    y                   = y or 0
+    h                   = h or 0
+    z                   = z or 0
 
-    for i, v in helper.get.table( tbl, ipairs ) do
-        local ch_sta 	    = tbl[ i ]
-        local ch_end 		= tbl[ i + 1 ]
-        if i == #tbl then
-            ch_end 		= v
-        end
+    local y_pos         = y - 1
+    local z_dif         = h - z
 
-        design.line( ch_sta[ 1 ], ch_sta[ 2 ] + y, ch_end[ 1 ], ch_end[ 2 ] + y, clr_line )
-        design.line( ch_sta[ 1 ], ch_sta[ 2 ] + 1 + y, ch_end[ 1 ], ch_end[ 2 ] + 1 + y, clr_line )
-        design.line( ch_sta[ 1 ], ch_sta[ 2 ] - 1 + y, ch_end[ 1 ], ch_end[ 2 ] - 1 + y, clr_line )
+    for i, v in helper.get.table( coords, ipairs ) do
+        local a, b 	    = coords[ i ], coords[ i + 1 ]
+                        if i == #coords then b = v end
+
+        /*
+        *   double lines > thicc
+        */
+
+        local a_x, b_x  = a[ 1 ], b[ 1 ]
+
+        local a_y       = a[ 2 ] + y_pos
+        a_y             = math.Clamp( a_y, 0, z_dif )
+
+        local b_y       = b[ 2 ] + y_pos
+        b_y             = math.Clamp( b_y, 0, z_dif )
+
+        design.line( a_x, a_y, b_x, b_y, self.clr_gr_plot )
+        design.line( a_x, a_y + 1, b_x, b_y + 1, self.clr_gr_plot )
     end
 end
 
 /*
-*   MakeChart
+*   GenGraph
 */
 
-function PANEL:MakeChart( )
-
-    local rm            = table.remove
-
-    local data 	        = table.Reverse( self.ghistory )
-    local a 	        = 0     -- grid : lowest
-    local b 	        = 350   -- grid : highest
-    local axis_y_w      = 45    -- y axis label width
-    local margin_y      = 16
-    local top_y         = 8     -- top padding for y axis
-    local mult 		    = 2     -- multiple for graph points. lower = more detail, causes performance issues with table storing too much
-    local clr_axis      = Color( 255, 255, 255, 50 )
-
-    for _, v in helper.get.table( data, ipairs ) do
-        if v < a then a = v continue end
-        if v > b then b = v continue end
-    end
-
-    local legend_i  = 7
-    local axis_y 	= { a }
-    for i = 2, legend_i do
-        axis_y[ i ] = math.Round( Lerp( i / legend_i, a, b ) )
-    end
-    axis_y 			= table.Reverse( axis_y )
+function PANEL:GenGraph( )
 
     /*
-    *   chart
+    *   create graph labels
     */
 
-    self.chart                      = ui.new( 'pnl', self.r1                )
+    local labels    = { self.gr_val_min }
+    for i = 2, self.gr_leg_i do
+        labels[ i ] = math.Round( Lerp( i / self.gr_leg_i, self.gr_val_min, self.gr_val_max ) )
+    end
+
+    /*
+    *   flip labels
+    *
+    *   lowest ( btm ) > highest ( top )
+    */
+
+    labels 			                = table.Reverse( labels )
+
+    /*
+    *   graph > container
+    *
+    *   left-side labels
+    */
+
+    self.gr.labels                  = ui.new( 'pnl', self.gr                )
     :fill                           ( 'm', 0                                )
 
                                     :draw( function( s, w, h )
-                                        local y 		= top_y + margin_y
-                                        local size 		= #axis_y
-                                        h 				= s.sub:GetTall( )
+                                        local y 		= self.gr_marg_t + self.gr_marg_o
+                                        local sz 		= #labels or 0
+                                        h 				= self.gr.plots:GetTall( )
 
-                                        -- left side grid labels
-                                        for i, v in helper.get.table( axis_y, ipairs ) do
-                                            local str = self:VData( v )
-                                            draw.SimpleText( str, pref( 'diag_chart_legend' ), axis_y_w / 2, y, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+                                        /*
+                                        *   draw graph labels
+                                        */
 
-                                            local frac 	= i / size
-                                            y 			= y + ( ( 1 / size ) * h )
+                                        for i, v in helper.get.table( labels, ipairs ) do
+                                            local val = self:GetValue( v ) or 9
+
+                                            draw.SimpleText( val, pref( 'diag_chart_legend' ), self.gr_lbl_w / 2, y, self.clr_txt_leg, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+
+                                            y = y + ( ( 1 / sz ) * h )
                                         end
                                     end )
 
     /*
-    *   chart
+    *   graph > container > plots
     */
 
-    self.chart.sub                  = ui.new( 'pnl', self.chart             )
-    :fill                           ( 'm', axis_y_w, margin_y               )
+    self.gr.plots                   = ui.new( 'pnl', self.gr.labels         )
+    :fill                           ( 'm', self.gr_lbl_w, self.gr_marg_o    )
 
-                                    :draw( function( s, w, h )
-                                        local size 		= #axis_y
-                                        local y 		= top_y
+                                    :logic( function( s )
 
-                                        for i, v in helper.get.table( axis_y, ipairs ) do
-                                            design.line( 0, y, w, y, clr_axis )
-
-                                            local frac 	= i / size
-                                            y 			= y + ( ( 1 / size ) * h )
-                                        end
-
-                                        y = top_y
-                                        h = h - y * 2
+                                        self.coords = { }
 
                                         /*
                                         *   data
                                         */
 
-                                        local tbl 	    = { }
-                                        for i, v in helper.get.table( self.ghistory, ipairs ) do
-                                            local x 	= -7 + ( 1 + ( ( i + 1 ) * mult ) )
-                                            local y		= 0
+                                        for i, v in helper.get.table( self.gr_plots, ipairs ) do
+                                            local diff  = self.gr_val_max - self.gr_val_min
+                                            local x 	= ( 1 + ( ( i + 1 ) * self.gr_mult ) ) - 1
+                                            local y		= ( ( self.gr_val_min == self.gr_val_max ) and ( 1 - 1 ) * s.h ) or ( ( ( 1 - ( ( v - self.gr_val_min ) / diff ) ) * s.h ) + self.gr_oset ) or 0
 
-                                            if a == b then
-                                                y 		= ( 1 - 1 ) * h
-                                            else
-                                                y 		= ( 1 - ( ( v - a ) / ( b - a ) ) ) * h
+                                            /*
+                                            *   remove hold history if points exceed pnl width
+                                            */
+
+                                            if x >= s.w then
+                                                table.remove( self.gr_plots, 1 )
                                             end
 
-                                            if x >= w then
-                                                rm( self.ghistory, 1 )
-                                            end
-
-                                            table.insert( tbl, { x, y } )
+                                            table.insert( self.coords, { x, y } )
                                         end
-
-                                        /*
-                                        *   draw points
-                                        */
-
-                                        self:DrawPoints( tbl, x, y )
 
                                         /*
                                         *   calc fps
                                         */
 
-                                        if self.th_fps_ch > CurTime( ) then return end
+                                        if self.gr_fps_ch > CurTime( ) then return end
+
+                                        /*
+                                        *   get > fps
+                                        */
+
                                         self:GetFPS( )
+                                    end )
+
+                                    :draw( function( s, w, h )
+                                        s.h, s.w        = h, w
+                                        local sz 		= #labels or 0
+                                        local x         = 0
+                                        local y 		= self.gr_marg_t
+
+                                        /*
+                                        *   graph lines
+                                        */
+
+                                        for i, v in helper.get.table( labels, ipairs ) do
+                                            design.line( 0, y, w, y, self.clr_gr_lines )
+
+                                            y = y + ( ( 1 / sz ) * h )
+                                        end
+
+                                        /*
+                                        *   set y
+                                        */
+
+                                        y = self.gr_marg_t
+
+                                        /*
+                                        *   draw points
+                                        */
+
+                                        self:PlotGraph( self.coords, x, y, h )
+
                                     end )
 
 end
@@ -651,9 +598,9 @@ end
 */
 
 function PANEL:FirstRun( )
-    if ui:ok( self.slider.amt ) then
+    if ui:ok( self.sli.amt ) then
         local amt = math.Round( self.cvar_id:GetFloat( ), 1 )
-        self.slider.amt:SetText( amt )
+        self.sli.amt:SetText( amt )
     end
 
     self.bInitialized = true
@@ -912,17 +859,108 @@ function PANEL:Destroy( )
 end
 
 /*
-*   SetVisible
+*   Declarations
 *
-*   @param  : bool bVisible
+*   all definitions associated to this panel
 */
 
-function PANEL:SetVisible( bVisible )
-    if bVisible then
-        ui:show( self, true )
-    else
-        ui:hide( self, true )
-    end
+function PANEL:_Declarations( )
+
+    /*
+    *   declare > general
+    */
+
+    self.Alpha                      = 255
+    self.is_visible                 = true
+    self.v_servip                   = game.GetIPAddress( )
+    self.cvar_id                    = GetConVar( 'rlib_diag_refreshrate' )
+
+    /*
+    *	declare > clrs
+    */
+
+    self.clr_gr_lines               = Color( 255, 255, 255, 50 )
+    self.clr_gr_plot                = Color( 229, 213, 35, 255 )
+    self.clr_g_hdr_box              = Color( 25, 25, 25, 200 )
+    self.clr_g_hdr_txt              = Color( 255, 255, 255, 255 )
+    self.clr_g_seg_box              = Color( 25, 25, 25, 200 )
+    self.clr_g_seg_txt              = Color( 194, 57, 83, 255 )
+    self.clr_g_seg_val              = Color( 255, 255, 255, 255 )
+
+    /*
+    *	declare > graph vals
+    */
+
+    self.gr_bCalibrate              = false
+    self.gr_calibrate_i             = 100
+    self.gr_fps_ch 	                = 5
+    self.gr_val_r1_h                = 230
+    self.gr_val_r1_hdr_h            = 30
+    self.gr_val_min                 = 0
+    self.gr_val_max                 = 350
+    self.gr_lbl_w                   = 35
+    self.gr_marg_o                  = 16
+    self.gr_marg_t                  = 8
+    self.gr_mult                    = 2
+    self.gr_plots 		            = { }
+    self.gr_leg_i                   = 7
+    self.gr_oset                    = 5
+    self.gr_fps                     = 0
+    self.gr_cv_reftime              = GetConVar( 'rlib_diag_refreshrate' )
+
+    /*
+    *	declare > segments > think
+    */
+
+    self.th_fps                     = 0
+    self.th_cur                     = 0
+    self.th_cti                     = 0
+    self.th_ply                     = 0
+    self.th_net                     = 0
+    self.th_hook                    = 0
+
+    /*
+    *	declare > segments > data
+    */
+
+    self.sg_cur                     = 0
+    self.sg_cti                     = 0
+    self.sg_ply                     = 0
+    self.sg_net                     = 0
+    self.sg_hook                    = 0
+
+    /*
+    *   declare > rgba
+    */
+
+    self.state                      = 0
+    self.r, self.g, self.b          = 0, 0, 0
+
+    /*
+    *   declare > sizing
+    */
+
+    self.sz_ui_w                    = 320                   -- main         : width, height
+    self.ui_w_min                   = 1                     -- main         : width minimum
+    self.sz_header_h                = 30                    -- header       : height
+    self.sz_header_t                = 5                     -- header       : top margin
+    self.sz_sub_t                   = 5                     -- sub          : top margin
+    self.sz_sub_b                   = 10                    -- sub          : bottom margin
+    self.sz_dico_h                  = 76                    -- dico         : item height
+    self.sz_dico_w                  = 95                    -- dico         : item width
+    self.sz_dico_pad                = 5                     -- dico         : spacing
+    self.sz_r1_h                    = 230                   -- fps graph    : height
+    self.sz_r1_t                    = 20                    -- fps graph    : top margin
+    self.sz_r1_hdr_h                = 30                    -- fps graph    : header height
+    self.sz_r1_hdr_t                = 7                     -- fps graph    : top margin
+
+    /*
+    *   declare > sizing > main
+    */
+
+    self.ui_w                       = self.sz_ui_w
+    self.ui_h                       = self.sz_header_h + self.sz_header_t + self.sz_sub_t + self.sz_sub_b + ( self.sz_dico_h * 2 ) + ( self.sz_dico_pad * 2 ) + self.sz_r1_t + self.sz_r1_h + 20
+
 end
 
 /*

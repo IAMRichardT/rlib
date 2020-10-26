@@ -5,13 +5,13 @@
 *   @since          : 2.0.0
 *   @website        : https://rlib.io
 *   @docs           : https://docs.rlib.io
-* 
+*
 *   MIT License
 *
-*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
-*   LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+*   LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 *   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
+*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 *   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
@@ -71,7 +71,7 @@ local function lang( ... )
 end
 
 /*
-*	prefix :: create id
+*	prefix > create id
 */
 
 local function pref( id, suffix )
@@ -94,9 +94,62 @@ local function pid( str, suffix )
 end
 
 /*
-*   storage :: garbage
+*   storage > data > set
 *
-*   loops through the provided table and sets objects to nil rendering them deleted. 
+*   @usage  : storage:Set( mod, 'name', 1 )
+*
+*   @param  : tbl mod
+*   @param  : str id
+*   @param  : str val
+*/
+
+function storage:Set( mod, id, val )
+    if istable( rcore ) and ( isstring( mod ) and rcore.modules[ mod ] ) then
+        rcore.modules[ mod ][ id ] = val
+    elseif istable( mod ) then
+        mod[ id ] = val
+    end
+end
+
+/*
+*   storage > data > get
+*
+*   @usage  : storage:Get( mod, 'name' )
+*
+*   @param  : tbl mod
+*   @param  : str id
+*   @return : mix
+*/
+
+function storage:Get( mod, id )
+    if istable( rcore ) and ( isstring( mod ) and rcore.modules[ mod ] ) then
+        return rcore.modules[ mod ][ id ] or false
+    elseif istable( mod ) then
+        return mod[ id ] or false
+    end
+end
+
+/*
+*   storage > data > clear
+*
+*   @usage  : storage:clear( mod, 'name' )
+*
+*   @param  : tbl mod
+*   @param  : str id
+*/
+
+function storage:clear( mod, id )
+    if istable( rcore ) and ( isstring( mod ) and rcore.modules[ mod ] ) then
+        rcore.modules[ mod ][ id ] = nil
+    elseif istable( mod ) then
+        mod[ id ] = nil
+    end
+end
+
+/*
+*   storage > garbage
+*
+*   loops through the provided table and sets objects to nil rendering them deleted.
 *   Used to cleanup objects no longer needed by the system.
 *
 *   @usage  : storage.garbage( 'id', { object_1, object2, ... } )
@@ -124,7 +177,7 @@ function storage.garbage( id, trash )
 end
 
 /*
-*   storage :: exists
+*   storage > exists
 *
 *   checks if a path / file exists
 *   can support either a data folder path or a manifest path key
@@ -139,7 +192,7 @@ function storage.exists( path )
 end
 
 /*
-*   storage :: dir :: create
+*   storage > dir > create
 *
 *   creates a new directory based on the specified parameters
 *
@@ -157,7 +210,7 @@ function storage.dir.create( name, path )
 end
 
 /*
-*   storage :: dir :: new structure
+*   storage > dir > new structure
 *
 *   creates a new set of folders within the data folder for storage of a feature
 *
@@ -218,7 +271,7 @@ function storage.dir.newstruct( parent, sub, sub2 )
 end
 
 /*
-*   storage :: json :: new
+*   storage > json > new
 *
 *   creates a basic blank json file
 *
@@ -235,7 +288,7 @@ function storage.json.new( path )
 end
 
 /*
-*   storage :: json :: write
+*   storage > json > write
 *
 *   converts table to json and writes to the specified file
 *
@@ -255,7 +308,7 @@ function storage.json.write( path, data )
 end
 
 /*
-*   storage :: json :: read
+*   storage > json > read
 *
 *   returns data stored in a specified data file
 *   converts the data from json to a lua table
@@ -281,7 +334,7 @@ function storage.json.read( path, errmsg )
 end
 
 /*
-*   storage :: json :: valid
+*   storage > json > valid
 *
 *   returns if valid data was found
 *
@@ -304,7 +357,7 @@ function storage.json.valid( data, id )
 end
 
 /*
-*   storage :: manifest :: get
+*   storage > manifest > get
 *
 *   returns a storage path
 *   will output to default bin folder if path does not exist
@@ -322,7 +375,7 @@ function storage.mft:getpath( id )
 end
 
 /*
-*   storage :: file :: del
+*   storage > file > del
 *
 *   deletes a path
 *   can support either a data folder path or a manifest path key
@@ -340,7 +393,7 @@ function storage.file.del( src )
 end
 
 /*
-*   storage :: file :: append
+*   storage > file > append
 *
 *   adds additional data to eof
 *
@@ -377,17 +430,17 @@ function storage.file.append( name, target, data, path )
 end
 
 /*
-*   storage :: data :: manifest
+*   storage > data > manifest
 *
 *   creates new data folders
 *   can support either a data folder path or a manifest path key
 *   checks to ensure a shortcut from the manifest has not be used that is already a file name
 *
 *   @ex :   storage.data.manifest( 'rlib/path' )
-*           ::  creates folder rlib/path
+*           >  creates folder rlib/path
 *
 *   @ex :   storage.data.manifest( 'dir_server' )
-*           ::  creates folder rlib/actions from manifest.paths table key
+*           >  creates folder rlib/actions from manifest.paths table key
 *
 *   @param  : str path
 */
@@ -410,7 +463,7 @@ function storage.data.manifest( path )
 end
 
 /*
-*   storage :: data :: recursive loading
+*   storage > data > recursive loading
 *
 *   cycle through files and folders at root and sub levels
 *
@@ -452,7 +505,7 @@ function storage.data.recurv( name, path, loc )
 end
 
 /*
-*   storage :: data :: get
+*   storage > data > get
 *
 *   returns data from MODULE.datafolder table based on id provided
 *
@@ -496,7 +549,7 @@ function storage.data.get( mod, id, fi, bCombine, bReadOnly )
     end
 
     /*
-    *   define :: MODULE.datafolder[ parent ]
+    *   define > MODULE.datafolder[ parent ]
     */
 
     if data.parent then
@@ -504,7 +557,7 @@ function storage.data.get( mod, id, fi, bCombine, bReadOnly )
     end
 
     /*
-    *   define :: MODULE.datafolder[ sub ]
+    *   define > MODULE.datafolder[ sub ]
     */
 
     if data.sub then
@@ -512,7 +565,7 @@ function storage.data.get( mod, id, fi, bCombine, bReadOnly )
     end
 
     /*
-    *   define :: MODULE.datafolder[ file ]
+    *   define > MODULE.datafolder[ file ]
     */
 
     if not fi and data.file then
@@ -520,7 +573,7 @@ function storage.data.get( mod, id, fi, bCombine, bReadOnly )
     end
 
     /*
-    *   define :: custom file.txt if defined as param
+    *   define > custom file.txt if defined as param
     */
 
     if fi then
@@ -528,7 +581,7 @@ function storage.data.get( mod, id, fi, bCombine, bReadOnly )
     end
 
     /*
-    *   check :: parent folder blank
+    *   check > parent folder blank
     */
 
     if not parent then
@@ -564,7 +617,7 @@ function storage.data.get( mod, id, fi, bCombine, bReadOnly )
 end
 
 /*
-*   storage :: data :: read
+*   storage > data > read
 *
 *   returns data from MODULE.datafolder table based on id provided
 *
@@ -603,7 +656,7 @@ function storage.data.read( mod, id, fi, bCombine )
     end
 
     /*
-    *   define :: MODULE.datafolder[ parent ]
+    *   define > MODULE.datafolder[ parent ]
     */
 
     if data.parent then
@@ -611,7 +664,7 @@ function storage.data.read( mod, id, fi, bCombine )
     end
 
     /*
-    *   define :: MODULE.datafolder[ sub ]
+    *   define > MODULE.datafolder[ sub ]
     */
 
     if data.sub then
@@ -619,7 +672,7 @@ function storage.data.read( mod, id, fi, bCombine )
     end
 
     /*
-    *   define :: MODULE.datafolder[ file ]
+    *   define > MODULE.datafolder[ file ]
     */
 
     if not fi and data.file then
@@ -627,7 +680,7 @@ function storage.data.read( mod, id, fi, bCombine )
     end
 
     /*
-    *   define :: custom file.txt if defined as param
+    *   define > custom file.txt if defined as param
     */
 
     if fi then
@@ -635,7 +688,7 @@ function storage.data.read( mod, id, fi, bCombine )
     end
 
     /*
-    *   check :: parent folder blank
+    *   check > parent folder blank
     */
 
     if not parent then
@@ -663,7 +716,7 @@ function storage.data.read( mod, id, fi, bCombine )
 end
 
 /*
-*   storage :: ent :: get
+*   storage > ent > get
 *
 *   returns the table associated to a specified ent
 *   data comes from module manifest file within MODULE.ents
@@ -680,7 +733,7 @@ function storage.ent:get( mod, id )
 end
 
 /*
-*   storage :: ent :: data
+*   storage > ent > data
 *
 *   looks for a valid manifest data_id value located in the MODULE.ents table.
 *   if missing, will then search the MODULE.datafolder table for the raw table key
@@ -725,7 +778,7 @@ function storage.ent:datafolder( mod, ent, sub2 )
     end
 
     /*
-    *   define :: MODULE.datafolder[ parent ]
+    *   define > MODULE.datafolder[ parent ]
     */
 
     if data.parent then
@@ -733,7 +786,7 @@ function storage.ent:datafolder( mod, ent, sub2 )
     end
 
     /*
-    *   define :: MODULE.datafolder[ sub ]
+    *   define > MODULE.datafolder[ sub ]
     */
 
     if data.sub then
@@ -741,7 +794,7 @@ function storage.ent:datafolder( mod, ent, sub2 )
     end
 
     /*
-    *   define :: MODULE.datafolder[ file ]
+    *   define > MODULE.datafolder[ file ]
     */
 
     if not sub2 and data.file then
@@ -749,7 +802,7 @@ function storage.ent:datafolder( mod, ent, sub2 )
     end
 
     /*
-    *   define :: custom file.txt if defined as param
+    *   define > custom file.txt if defined as param
     */
 
     if sub2 then
@@ -757,7 +810,7 @@ function storage.ent:datafolder( mod, ent, sub2 )
     end
 
     /*
-    *   check :: parent folder blank
+    *   check > parent folder blank
     */
 
     if not parent then
@@ -786,7 +839,7 @@ function storage.ent:datafolder( mod, ent, sub2 )
 end
 
 /*
-*   storage :: ent :: id
+*   storage > ent > id
 *
 *   returns the id ( str ) associated to a specified ent
 *   data comes from module manifest file within MODULE.ents
@@ -807,7 +860,7 @@ function storage.ent.id( mod, id )
 end
 
 /*
-*   storage :: ent :: model
+*   storage > ent > model
 *
 *   returns the model ( str ) associated to a specified ent
 *   data comes from module manifest file within MODULE.ents
@@ -828,10 +881,10 @@ function storage.ent.mdl( mod, id )
 end
 
 /*
-*   storage :: glon :: get
+*   storage > glon > get
 *
 *   returns data from MODULE.datafolder table based on id provided
-*   ensure that bReadOnly = true if performing functions such as 
+*   ensure that bReadOnly = true if performing functions such as
 *   theme hash generation
 *
 *	@call	: storage.glon.get( mod, 1 )
@@ -874,7 +927,7 @@ function storage.glon.get( mod, id, fi, bCombine, bReadOnly )
     end
 
     /*
-    *   define :: MODULE.datafolder[ parent ]
+    *   define > MODULE.datafolder[ parent ]
     */
 
     if data.parent then
@@ -882,7 +935,7 @@ function storage.glon.get( mod, id, fi, bCombine, bReadOnly )
     end
 
     /*
-    *   define :: MODULE.datafolder[ sub ]
+    *   define > MODULE.datafolder[ sub ]
     */
 
     if data.sub then
@@ -890,7 +943,7 @@ function storage.glon.get( mod, id, fi, bCombine, bReadOnly )
     end
 
     /*
-    *   define :: MODULE.datafolder[ file ]
+    *   define > MODULE.datafolder[ file ]
     */
 
     if not fi and data.file then
@@ -898,7 +951,7 @@ function storage.glon.get( mod, id, fi, bCombine, bReadOnly )
     end
 
     /*
-    *   define :: custom file.txt if defined as param
+    *   define > custom file.txt if defined as param
     */
 
     if fi then
@@ -906,7 +959,7 @@ function storage.glon.get( mod, id, fi, bCombine, bReadOnly )
     end
 
     /*
-    *   check :: parent folder blank
+    *   check > parent folder blank
     */
 
     if not parent then
@@ -942,7 +995,7 @@ function storage.glon.get( mod, id, fi, bCombine, bReadOnly )
 end
 
 /*
-*   storage :: glon :: new
+*   storage > glon > new
 *
 *   creates a basic blank glon json file
 *
@@ -960,7 +1013,7 @@ function storage.glon.new( path )
 end
 
 /*
-*   storage :: glon :: save
+*   storage > glon > save
 *
 *   stores data using the glon module into the specified file in the data folder
 *   if no path is specified, data will be saved in /data/rlib
@@ -996,7 +1049,7 @@ function storage.glon.save( data, path )
 end
 
 /*
-*   storage :: glon :: read
+*   storage > glon > read
 *
 *   reads saved data using the glon module from a specified file in the data folder
 *   if no path is specified, data will be saved in /data/rlib

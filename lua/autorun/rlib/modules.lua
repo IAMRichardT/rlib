@@ -20,9 +20,9 @@
 */
 
 local base                  = rlib
+local access                = base.a
 local helper                = base.h
 local storage               = base.s
-local access                = base.a
 local tools                 = base.t
 local konsole               = base.k
 local sys                   = base.sys
@@ -301,15 +301,15 @@ function base.modules:ver2str( mod )
         if isstring( self.modules[ mod ].version ) then
             return self.modules[ mod ].version
         elseif istable( self.modules[ mod ].version ) then
-            local major, minor, patch = self.modules[ mod ].version.major or self.modules[ mod ].version[ 1 ] or 1, self.modules[ mod ].version.minor or self.modules[ mod ].version[ 2 ] or 0, self.modules[ mod ].version.patch or self.modules[ mod ].version[ 3 ] or 0
-            return sf( '%i.%i.%i', major, minor, patch )
+            local major, minor, patch, build = self.modules[ mod ].version.major or self.modules[ mod ].version[ 1 ] or 1, self.modules[ mod ].version.minor or self.modules[ mod ].version[ 2 ] or 0, self.modules[ mod ].version.patch or self.modules[ mod ].version[ 3 ] or 0, self.modules[ mod ].version.build or self.modules[ mod ].version[ 4 ] or 0
+            return sf( '%i.%i.%i %s', major, minor, patch, base._def.builds[ build ] )
         end
     elseif istable( mod ) and mod.version then
         if isstring( mod.version ) then
             return mod.version
         elseif istable( mod.version ) then
-            local major, minor, patch = mod.version.major or mod.version[ 1 ] or 1, mod.version.minor or mod.version[ 2 ] or 0, mod.version.patch or mod.version[ 3 ] or 0
-            return sf( '%i.%i.%i', major, minor, patch )
+            local major, minor, patch, build = mod.version.major or mod.version[ 1 ] or 1, mod.version.minor or mod.version[ 2 ] or 0, mod.version.patch or mod.version[ 3 ] or 0, mod.version.build or mod.version[ 4 ] or 0
+            return sf( '%i.%i.%i %s', major, minor, patch, base._def.builds[ build ] )
         end
     end
     return '1.0.0'

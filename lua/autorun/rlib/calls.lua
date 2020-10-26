@@ -373,8 +373,8 @@ end
 */
 
 function base:call( t, s, ... )
-    local data = base.calls:valid( t )
-    if not data then return end
+    local data  = base.calls:valid( t )
+                if not data then return end
 
     if not isstring( s ) then
         log( 2, lang( 'calls_id_missing' , t ) )

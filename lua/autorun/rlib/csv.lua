@@ -2022,9 +2022,9 @@ function storage.get.env( mod )
 
     local env_id = nil
     if istable( rcore ) and ( isstring( mod ) and rcore.modules[ mod ] and rcore.modules[ mod ].enabled ) then
-        env_id = rcore.modules[ mod ].environment or mod.id or nil
+        env_id = rcore.modules[ mod ].environment or rcore.modules[ mod ].env or mod.id or nil
     elseif istable( mod ) then
-        env_id = mod.environment or mod.id or nil
+        env_id = mod.environment or mod.env or mod.id or nil
     end
 
     if not env_id then

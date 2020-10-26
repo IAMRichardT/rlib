@@ -197,6 +197,48 @@ function design.blurself( clr, amt, amplify )
 end
 
 /*
+*   design > rgb
+*
+*   @param  : int state
+*   @param  : int r
+*   @param  : int g
+*   @param  : int b
+*   @param  : int a
+*   @return : int, int, int, int
+*/
+
+function design.rgb( state, r, g, b, a )
+
+    r = isnumber( r ) and r or 0
+    g = isnumber( g ) and g or 0
+    b = isnumber( b ) and b or 0
+    a = isnumber( a ) and a or 255
+
+    if ( state == 0 ) then
+        g = g + 1
+        if ( g >= 255 ) then state = 1 end
+    elseif ( state == 1 ) then
+        r = r - 1
+        if ( r <= 0 ) then state = 2 end
+    elseif ( state == 2 ) then
+        b = b + 1
+        if ( b >= 255 ) then state = 3 end
+    elseif ( state == 3 ) then
+        g = g - 1
+        if ( g <= 0 ) then state = 4 end
+    elseif ( state == 4 ) then
+        r = r + 1
+        if ( r >= 255 ) then state = 5 end
+    elseif ( state == 5 ) then
+        b = b - 1
+        if ( b <= 0 ) then state = 0 end
+    end
+
+    return state, r, g, b, a
+
+end
+
+/*
 *   design > line
 *
 *   @param  : int x

@@ -543,7 +543,7 @@ end
                 key2        = 48,       -- key: keypad asterisk
                 chat =
                 {
-                    [ '!rdiag' ] = true,
+                    [ '!diag' ] = true,
                 },
             },
         }

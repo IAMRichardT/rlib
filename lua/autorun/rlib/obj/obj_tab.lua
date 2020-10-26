@@ -356,12 +356,20 @@ end
 function PANEL:SetMarker_Norm( name )
     if not isstring( name ) then return end
 
+    /*
+    *   declare > tab
+    */
+
     local tab               = self.tab[ name ]
     tab.clr_txt             = self:GetClrActive( )
 
     local id                = self:Locate( name )
     local x                 = self:GetMargin( )
     x                       = x + self:GetPadding( ) / 2
+
+    /*
+    *   loop > index
+    */
 
     for k, v in helper.get.sorted_k( self.ind, ipairs ) do
         if k >= id then break end
@@ -404,12 +412,20 @@ end
 function PANEL:SetMarker_Anim( name )
     if not isstring( name ) then return end
 
+    /*
+    *   declare > tab
+    */
+
     local tab               = self.tab[ name ]
     tab:anim_lerp_clr       ( 'clr_txt', self:GetClrActive( ) )
 
     local id 	            = self:Locate( name )
     local x 	            = self:GetMargin( )
     x                       = x + self:GetPadding( ) / 2
+
+    /*
+    *   loop > index
+    */
 
     for k, v in helper.get.sorted_k( self.ind, ipairs ) do
         if k >= id then break end

@@ -815,6 +815,110 @@ function ui:setscale( w, h )
 end
 
 /*
+*   ui > position
+*
+*   returns w, h position for a specified pnl
+*   based on the string, int pos desired
+*
+*   @ex     : ui:GetPosition( pnl, 5, 20 )
+*             gets pnl pos based on center-screen with padding of 20
+*
+*   @param  : pnl pnl
+*   @param  : str, int pos
+*   @param  : int pad
+*/
+
+function ui:GetPosition( pnl, pos, pad )
+
+    /*
+    *   check > valid pnl
+    */
+
+    if not self:valid( pnl ) then return 0, 0 end
+
+    /*
+    *   validate > vars
+    */
+
+    pos                     = isnumber( pos ) and pos or isstring( pos ) and pos or 5
+    pad                     = isnumber( pad ) and pad or 0
+
+    /*
+    *   define > vars
+    */
+
+    local pnl_w, pnl_h      = pnl:GetSize( )
+    local w, h              = 0, 0
+
+    /*
+    *   top
+    */
+
+    if ( pos == 't' or pos == 8 ) then
+        w, h        = ScrW( ) / 2 - pnl_w / 2, pad
+
+    /*
+    *   top-right
+    */
+
+    elseif ( pos == 'tr' or pos == 9 ) then
+        w, h        = ScrW( ) - pnl_w - 20, pad
+
+    /*
+    *   right
+    */
+
+    elseif ( pos == 'r' or pos == 6 ) then
+        w, h        = ScrW( ) - pnl_w - pad, ( ( ScrH( ) / 2 ) - ( pnl_h / 2 ) )
+
+    /*
+    *   bottom-right
+    */
+
+    elseif ( pos == 'br' or pos == 3 ) then
+        w, h        = ScrW( ) - pnl_w - pad, ScrH( ) - pnl_h - pad
+
+    /*
+    *   bottom
+    */
+
+    elseif ( pos == 'b' or pos == 2 ) then
+        w, h        = ScrW( ) / 2 - pnl_w / 2, ScrH( ) - pnl_h - pad
+
+    /*
+    *   bottom-left
+    */
+
+    elseif ( pos == 'bl' or pos == 1 ) then
+        w, h        = pad, ScrH( ) - pnl_h - pad
+
+    /*
+    *   left
+    */
+
+    elseif ( pos == 'l' or pos == 4 ) then
+        w, h        = pad, ( ( ScrH( ) / 2 ) - ( pnl_h / 2 ) )
+
+    /*
+    *   top-left
+    */
+
+    elseif ( pos == 'tl' or pos == 7 ) then
+        w, h        = pad, pad
+
+    /*
+    *   center
+    */
+
+    elseif ( pos == 'c' or pos == 5 ) then
+        w, h        = ( ( ScrW( ) / 2 ) - ( pnl_w / 2 ) ), ( ( ScrH( ) / 2 ) - ( pnl_h / 2 ) )
+    end
+
+    return w, h
+
+end
+
+/*
 *   ui > valid
 *
 *   checks validation of a panel
@@ -2817,6 +2921,7 @@ local uclass = { }
         pnl:DockMargin( il, it, ir, ib )
     end
     uclass.docker_m = uclass.docker
+    uclass.mdock    = uclass.docker
 
     /*
     *   uclass > Dock, DockPadding
@@ -2842,6 +2947,7 @@ local uclass = { }
         pnl:Dock( pos )
         pnl:DockPadding( il, it, ir, ib )
     end
+    uclass.pdock    = uclass.docker_p
 
     /*
     *   uclass > DockPadding
@@ -4583,7 +4689,7 @@ local uclass = { }
     */
 
     function uclass.showclose( pnl, b )
-        pnl:ShowCloseButton( helper:val2bool( b ) or true )
+        pnl:ShowCloseButton( helper:val2bool( b ) or false )
     end
     uclass.canclose = uclass.showclose
 
@@ -4618,7 +4724,7 @@ local uclass = { }
     */
 
     function uclass.drawbg_on( pnl, b )
-        pnl:SetPaintBackgroundEnabled( helper:val2bool( b ) or true )
+        pnl:SetPaintBackgroundEnabled( helper:val2bool( b ) or false )
     end
 
     /*
@@ -4630,7 +4736,7 @@ local uclass = { }
     */
 
     function uclass.drawborder( pnl, b )
-        pnl:SetPaintBorderEnabled( helper:val2bool( b ) or true )
+        pnl:SetPaintBorderEnabled( helper:val2bool( b ) or false )
     end
 
     /*
@@ -5160,7 +5266,11 @@ local uclass = { }
 
             timex.create( pid( 'tippy_destroy' ), 5, 1, function( this )
                 if not ui:ok( pnl_tippy ) then return end
-                ui:destroy( pnl_tippy )
+                if ui:ok( pnl_tippy ) then
+                    pnl_tippy:AlphaTo( 0, 0.3, 0.1, function( )
+                        ui:destroy( pnl_tippy )
+                    end )
+                end
             end )
         end
 
@@ -5169,9 +5279,9 @@ local uclass = { }
         */
 
         pnl.OnCursorExited = function( s )
-            if s:IsChildHovered( ) then
+            if s:IsChildHovered( ) and ui:ok( pnl_tippy ) then
                 pnl_tippy:AlphaTo( 0, 0.3, 0.1, function( )
-                    ui:hide ( pnl_tippy )
+                    ui:destroy( pnl_tippy )
                 end )
 
                 return
@@ -5312,6 +5422,49 @@ local uclass = { }
         pnl:MoveTo  ( end_w, end_h, time, 0, -1 )
     end
     ui.anim_tocenter = uclass.anim_tocenter
+
+    /*
+    *   uclass > appear
+    *
+    *   makes pnl appear on-screen
+    *   supports fading effect
+    *
+    *   @param  : pnl pnl
+    *   @param  : int pos
+    *   @param  : str, int from > [optional] > default center
+    *   @param  : func fn
+    */
+
+    function uclass.appear( pnl, pos, time, fn )
+        if not ui:ok( pnl ) then return end
+
+        local bAnim         = cvar:GetBool( 'rlib_animations_enabled' )
+        local pad           = 20
+
+        pos                 = ( isnumber( pos ) and pos or isstring( pos ) and pos ) or 5
+        time                = ( isnumber( time ) and time ) or 0.3
+
+        /*
+        *   declare > default size
+        */
+
+        local w, h          = ui:GetPosition( pnl, pos, pad )
+
+        /*
+        *   panel
+        */
+
+        pnl:SetAlpha        ( 0 )
+        pnl:SetPos          ( w, h )
+        pnl:AlphaTo         ( 255, bAnim and time or 0, 0,
+                            function( )
+                                if isfunction( fn ) then
+                                    fn( )
+                                else
+                                    return
+                                end
+                            end )
+    end
 
     /*
     *   uclass > Frame, Panel > fade in

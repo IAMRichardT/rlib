@@ -51,8 +51,8 @@ function rlib.autoload:Run( parent )
     mf.repo                         = 'https://github.com/im-richard/rlib/'
     mf.docs                         = 'https://docs.rlib.io/'
     mf.about                        = [[rlib is a glua library written for garrys mod which contains a variety of commonly used functions that are required for certain scripts to run properly. Package includes both rlib + rcore which act as the overall foundation which other scripts will rest within as a series of modules. ]]
-    mf.released                     = 1601100128
-    mf.version                      = { 3, 1, 8 }
+    mf.released                     = 1603726733
+    mf.version                      = { 3, 1, 9, 0 }
     mf.showcopyright                = true
 
     /*
@@ -140,7 +140,7 @@ function rlib.autoload:Run( parent )
         udm =
         {
             branch              = 'https://udm.rlib.io/rlib/%s',
-            hash                = '76a6c5fb35f64b780b464c0705d0c9d05149fb5f',
+            hash                = '85451ce983afb2af3cdc477e14081f9e59db1d49',
             response            = { },
         },
         auth                    = 'https://auth.rlib.io/',
@@ -262,7 +262,7 @@ function rlib.autoload:Run( parent )
             base.h = base.h
         else
             base.h = { }
-            local to_helper = { 'ent', 'get', 'msg', 'new', 'now', 'ok', 'ply', 'str', 'util', 'who' }
+            local to_helper = { 'ent', 'get', 'msg', 'new', 'now', 'ok', 'ply', 'str', 'ui', 'util', 'who' }
             for k, v in ipairs( to_helper ) do
                 base.h[ v ] = { }
             end

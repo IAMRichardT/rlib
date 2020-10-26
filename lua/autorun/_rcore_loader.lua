@@ -106,6 +106,8 @@ function rcore.autoload:Run( )
         'gmodsymbolic.ttf',
         'gsym_solid.ttf',
         'gsym_reg.ttf',
+        'gsym_adv.ttf',
+        'gsym_light.ttf',
         'montserrat_black.ttf',
         'montserrat_bold.ttf',
         'montserrat_extrabold.ttf',

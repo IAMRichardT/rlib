@@ -380,9 +380,9 @@ function PANEL:Init( )
         :wide                       ( 100                                   )
 
                                     :draw( function( s, w, h )
-                                        design.rbox( 4, ( w / 2 ) - ( 50 / 2 ), ( h / 2 ) - ( 15 / 2 ) - 8, 50, 14, self.clr_ver_box )
+                                        design.rbox( 4, ( w / 2 ) - ( 74 / 2 ), ( h / 2 ) - ( 15 / 2 ) - 8, 74, 14, self.clr_ver_box )
                                         design.text( m_ver, w / 2, h / 2 - 8, self.clr_ver_txt, pref( 'rcfg_lst_ver' ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-                                        design.text( m_rel, w / 2 - 1, h / 2 + 10, self.clr_rel_txt, pref( 'rcfg_lst_rel' ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+                                        design.text( m_rel, w / 2 - 1, h / 2 + 8, self.clr_rel_txt, pref( 'rcfg_lst_rel' ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
                                     end )
 
         /*
@@ -437,7 +437,6 @@ function PANEL:Init( )
         :bsetup                     (                                       )
         :notext                     (                                       )
         :fill                       ( 'm', 0                                )
-
 
                                     :draw( function( s, w, h )
                                         if s.hover then
@@ -502,7 +501,7 @@ function PANEL:SetData( module )
     */
 
     local parent                    = self.ct_right_cont
-    parent:Clear( )
+                                    parent:Clear( )
 
     /*
     *   declare > module info
@@ -520,7 +519,7 @@ function PANEL:SetData( module )
 
     local sel_oid = nil
     steamworks.RequestPlayerInfo( sel_sid, function( steamName )
-            sel_oid = helper.str:ok( steamName )  and steamName or 'Unregistered'
+        sel_oid = helper.str:ok( steamName )  and steamName or 'Unregistered'
     end )
 
     /*
@@ -529,7 +528,7 @@ function PANEL:SetData( module )
 
     self.sel_par                    = ui.new( 'pnl', parent                 )
     :nodraw                         (                                       )
-    :top                            ( 'm', 5, 0, 0, 0                       )
+    :top                            ( 'm', 5, 0, 15, 0                      )
     :tall                           ( 50                                    )
 
     /*
@@ -551,16 +550,13 @@ function PANEL:SetData( module )
     *   module > selected > ver
     */
 
-    self.sel_ver                    = ui.new( 'dt', self.sel_par            )
+    self.sel_ver                    = ui.new( 'lbl', self.sel_par           )
     :right                          ( 'm', 0, 0, 0, 0                       )
     :tall                           ( 20                                    )
-    :drawbg                         ( false                                 )
     :mline	                        ( false 				                )
-    :ascii	                        ( false 				                )
-    :canedit	                    ( false 				                )
-    :scur	                        ( Color( 255, 255, 255, 255 ), 'beam'   )
     :txt	                        ( sel_ver, Color( 222, 222, 222, 244 ), pref( 'rcfg_sel_ver' ) )
-    :ocnf                           ( true                                  )
+    :align                          ( 6                                     )
+    :wide                           ( 100                                   )
 
     /*
     *   module > selected > desc

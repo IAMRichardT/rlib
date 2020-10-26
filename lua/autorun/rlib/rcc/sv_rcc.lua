@@ -19,7 +19,6 @@
 *   standard tables and localization
 */
 
-rlib                    = rlib or { }
 local base              = rlib
 local mf                = base.manifest
 local pf                = mf.prefix
@@ -31,8 +30,8 @@ local cfg               = base.settings
 */
 
 local helper            = base.h
-local storage           = base.s
 local access            = base.a
+local storage           = base.s
 local tools             = base.t
 local cvar              = base.v
 local sys               = base.sys
@@ -1053,7 +1052,7 @@ local function rcc_modules( pl, cmd, args )
     con             ( pl, 0 )
 
     local c1_l      = sf( '%-20s', 'Module'      )
-    local c2_l      = sf( '%-15s', 'Version'     )
+    local c2_l      = sf( '%-17s', 'Version'     )
     local c3_l      = sf( '%-15s', 'Author'      )
     local c4_l      = sf( '%-20s', ( arg_flag == gcf_path and 'Path' ) or 'Description' )
 
@@ -1062,7 +1061,7 @@ local function rcc_modules( pl, cmd, args )
 
     for v in helper.get.data( rcore.modules, true ) do
         local l1_d  = sf( '%-20s', tostring( helper.str:truncate( v.name, 20, '...' ) or 'err' ) )
-        local l2_d  = sf( '%-15s', tostring( rlib.modules:ver2str( v ) or 'err' ) )
+        local l2_d  = sf( '%-17s', tostring( rlib.modules:ver2str( v ) or 'err' ) )
         local l3_d  = sf( '%-15s', tostring( v.author or 'err' ) )
         local l4_d  = sf( '%-20s', tostring( helper.str:truncate( ( arg_flag == gcf_path and v.path ) or v.desc, 40, '...' ) or 'err' ) )
         local resp  = sf( ' %s %s %s %s', l1_d, l2_d, l3_d, l4_d )
@@ -1781,7 +1780,7 @@ local function rcc_status( pl, cmd, args )
 
     con( pl, 0 )
 
-    local clr_status = clr_y
+    local clr_status    = clr_y
     for v in helper.get.data( rcore.modules ) do
         clr_status      = not v.enabled and clr_r or clr_status
 

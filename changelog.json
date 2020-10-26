@@ -1,6 +1,15 @@
 {
     "unreleased": [],
     "releases": {
+      "3.1.9": [
+            "[ + ] uclass: GetPosition, appear",
+            "[ + ] design: rgb",
+            "[ + ] storage: Set, Get",
+            "[ ^ ] updated tippy",
+            "[ ^ ] updated versioning structure",
+            "[ ^ ] rcc: rdiag changed to diag",
+            "[ ^ ] helper: val2bool func updated"
+      ],
       "3.1.8": [
             "[ + ] added compatibility for arivia",
             "[ + ] added func SelectFirst( ) for tabulation",

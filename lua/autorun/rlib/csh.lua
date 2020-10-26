@@ -2406,12 +2406,15 @@ end
 *
 *   converts a value to a bool
 *
+*   @note   : pending deprecation
+*
 *   @param  : mix val
 *   @return : bool
 */
 
 function helper:val2bool( val )
-    return ( tostring( val ) == 'true' or val == 1 or val == true or tostring( val ) == '1' or tostring( val ) == 'enable' and true ) or false
+    local opt = tostring( val )
+    return helper.util:toggle( opt )
 end
 
 /*
@@ -2500,7 +2503,7 @@ end
 */
 
 function helper.util:toggle( val )
-    if not val then return end
+    if not val then return false end
 
     if ( isstring( val ) ) then
         if ( table.HasValue( options_yes, val ) ) then

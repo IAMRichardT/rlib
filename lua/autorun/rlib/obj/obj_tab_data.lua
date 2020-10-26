@@ -202,6 +202,7 @@ end
 */
 
 function PANEL:PerformLayout( w, h )
+    if not ui:ok( self.data ) then return end
     self.data:SetSize( w, h )
 end
 
