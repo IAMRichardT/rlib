@@ -1809,6 +1809,8 @@ local uclass = { }
     */
 
     function uclass.declare( pnl, fn )
+        pnl.bInitialized = false
+
         if pnl._Declare then
             pnl:_Declare( )
         end
