@@ -1803,6 +1803,25 @@ local uclass = { }
     end
 
     /*
+    *   uclass > declare
+    *
+    *   @param  : func fn
+    */
+
+    function uclass.declare( pnl, fn )
+        if pnl._Declare then
+            pnl:_Declare( )
+        end
+        if pnl._Call then
+            pnl:_Call( )
+        end
+        if isfunction( fn ) then
+            fn( pnl )
+        end
+    end
+    uclass.onload       = uclass.declare
+
+    /*
     *   uclass > NoDraw
     */
 
