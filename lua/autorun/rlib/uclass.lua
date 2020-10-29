@@ -2400,31 +2400,78 @@ local uclass = { }
     uclass.otch       = uclass.ontxtchg
 
     /*
-    *   uclass > noedit
+    *   uclass > DTextEntry > noedit
     *
-    *   supplying bUseForce will automatically reset text each time text changed.
+    *   supplying bNoEdit will automatically reset text each time text changed.
     *   used as a workaround for times when SetEditable simply doesnt work.
     *
-    *   if bUseForce = true, src contains original text to replace box with
+    *   bNoEdit = true      : causes entry to not be scrolled or used at all
+    *
+    *   @alias  : noedit, tlock, txtlock
+    *
+    *   @param  : func fn
+    *   @param  : str orig
+    */
+
+    function uclass.noedit( pnl, orig )
+        pnl[ 'OnTextChanged' ] = function( s, ... )
+            if isstring( orig ) then
+                s:SetText( orig )
+            end
+        end
+    end
+    uclass.tlock    = uclass.noedit
+    uclass.txtlock  = uclass.noedit
+
+    /*
+    *   uclass > DTextEntry > SetEditable
+    *
+    *   @param  : bool b
+    */
+
+    function uclass.canedit( pnl, b )
+        pnl:SetEditable( helper:val2bool( b ) or false )
+    end
+
+    /*
+    *   uclass > DTextEntry > SetEditable
+    */
+
+    function uclass.lbllock( pnl )
+        pnl:SetEditable( false )
+    end
+
+    /*
+    *   uclass > DTextEntry > no input
+    *
+    *   uses AllowInput in order to restrict dtextentry text editing
     *
     *   @alias  : noedit, tlock
     *
-    *   @param  : func fn
-    *   @param  : str src
-    *   @param  : bool bUseForce
+    *   @param  : bool
     */
 
-    function uclass.noedit( pnl, bUseForce, src )
-        if not bUseForce then
-            pnl:SetEditable( false )
-            return
-        end
-        pnl[ 'OnTextChanged' ] = function( s, ... )
-            if not isstring( src ) then return end
-            s:SetText( src )
+    function uclass.noinput( pnl )
+        pnl[ 'AllowInput' ] = function( s, ... )
+            return true
         end
     end
-    uclass.tlock  = uclass.noedit
+
+    /*
+    *   uclass > DTextEntry > AllowInput
+    *
+    *   @param  : func fn
+    */
+
+    function uclass.allowinput( pnl, fn )
+        local name = 'AllowInput'
+        local orig = pnl[ name ]
+
+        pnl[ name ] = function( s, ... )
+            if isfunction( orig ) then orig( s, ... ) end
+            fn( s, ... )
+        end
+    end
 
     /*
     *   uclass > openurl
@@ -3397,17 +3444,6 @@ local uclass = { }
     uclass.focuschg = uclass.onfocuschg
 
     /*
-    *   uclass > DTextEntry > SetEditable
-    *
-    *   @param  : bool b
-    */
-
-    function uclass.canedit( pnl, b )
-        pnl:SetEditable( helper:val2bool( b ) or false )
-    end
-    uclass.editable = uclass.canedit
-
-    /*
     *   uclass > DTextEntry > OnEnter
     *
     *   @param  : func fn
@@ -3415,22 +3451,6 @@ local uclass = { }
 
     function uclass.onenter( pnl, fn )
         local name = 'OnEnter'
-        local orig = pnl[ name ]
-
-        pnl[ name ] = function( s, ... )
-            if isfunction( orig ) then orig( s, ... ) end
-            fn( s, ... )
-        end
-    end
-
-    /*
-    *   uclass > DTextEntry > AllowInput
-    *
-    *   @param  : func fn
-    */
-
-    function uclass.allowinput( pnl, fn )
-        local name = 'AllowInput'
         local orig = pnl[ name ]
 
         pnl[ name ] = function( s, ... )

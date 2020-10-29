@@ -140,7 +140,7 @@ function rlib.autoload:Run( parent )
         udm =
         {
             branch              = 'https://udm.rlib.io/rlib/%s',
-            hash                = 'effc4dfee076d298fbd3349bae50696ec5b5ed85',
+            hash                = '0e94eaadc6c14e63b83c7ea131d9f38b2110db8d',
             response            = { },
         },
         auth                    = 'https://auth.rlib.io/',
