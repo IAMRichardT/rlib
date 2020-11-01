@@ -150,23 +150,23 @@ base.c.commands =
             [ 'search' ]    = { flag = '-s', desc = 'search results' },
         },
     },
-    [ 'rlib_checksum_new' ] =
+    [ 'rlib_cs_new' ] =
     {
         enabled             = true,
-        id                  = 'rlib.checksum.new',
+        id                  = 'rlib.cs.new',
         name                = 'Checksum » New',
         desc                = 'write checksums and deploy lib',
         scope               = 1,
         official            = true,
         ex =
         {
-            'rlib.checksum.new',
+            'rlib.cs.new',
         },
     },
-    [ 'rlib_checksum_verify' ] =
+    [ 'rlib_cs_verify' ] =
     {
         enabled             = true,
-        id                  = 'rlib.checksum.verify',
+        id                  = 'rlib.cs.verify',
         name                = 'Checksum » Verify',
         desc                = 'checks the integrity of lib files',
         args                = '[ <command> ], [ <-flag> <search_keyword> ]',
@@ -174,8 +174,8 @@ base.c.commands =
         official            = true,
         ex =
         {
-            'rlib.checksum.verify',
-            'rlib.checksum.verify -f rlib_core_sv',
+            'rlib.cs.verify',
+            'rlib.cs.verify -f rlib_core_sv',
         },
         flags =
         {
@@ -183,17 +183,17 @@ base.c.commands =
             [ 'filter' ]    = { flag = '-f', desc = 'filter search results' },
         },
     },
-    [ 'rlib_checksum_obf' ] =
+    [ 'rlib_cs_obf' ] =
     {
         enabled             = true,
-        id                  = 'rlib.checksum.obf',
+        id                  = 'rlib.cs.obf',
         name                = 'Checksum » Obf',
         desc                = 'Internal release prepwork',
         scope               = 1,
         official            = true,
         ex =
         {
-            'rlib.checksum.obf',
+            'rlib.cs.obf',
         },
     },
     [ 'rlib_clear' ] =

@@ -455,7 +455,7 @@ local function rcc_checksum_new( pl, cmd, args, str )
     *   define command
     */
 
-    local ccmd = base.calls:get( 'commands', 'rlib_checksum_new' )
+    local ccmd = base.calls:get( 'commands', 'rlib_cs_new' )
 
     /*
     *   scope
@@ -484,7 +484,7 @@ local function rcc_checksum_new( pl, cmd, args, str )
     base.msg:direct( pl, script, not deploy and lang( 'checksum_write_err' ) or lang( 'checksum_write_success' ) )
 
 end
-rcc.register( 'rlib_checksum_new', rcc_checksum_new )
+rcc.register( 'rlib_cs_new', rcc_checksum_new )
 
 /*
 *   rcc > checksum > verify
@@ -499,7 +499,7 @@ local function rcc_checksum_verify( pl, cmd, args, str )
     *   define command
     */
 
-    local ccmd = base.calls:get( 'commands', 'rlib_checksum_verify' )
+    local ccmd = base.calls:get( 'commands', 'rlib_cs_verify' )
 
     /*
     *   scope
@@ -595,7 +595,7 @@ local function rcc_checksum_verify( pl, cmd, args, str )
     con( pl, 1 )
 
 end
-rcc.register( 'rlib_checksum_verify', rcc_checksum_verify )
+rcc.register( 'rlib_cs_verify', rcc_checksum_verify )
 
 /*
 *   rcc > checksum > obf
@@ -609,7 +609,7 @@ local function rcc_checksum_obf( pl, cmd, args, str )
     *   define command
     */
 
-    local ccmd = base.calls:get( 'commands', 'rlib_checksum_obf' )
+    local ccmd = base.calls:get( 'commands', 'rlib_cs_obf' )
 
     /*
     *   scope
@@ -675,7 +675,7 @@ local function rcc_checksum_obf( pl, cmd, args, str )
     con( pl, 1 )
 
 end
-rcc.register( 'rlib_checksum_obf', rcc_checksum_obf )
+rcc.register( 'rlib_cs_obf', rcc_checksum_obf )
 
 /*
 *   rcc > udm

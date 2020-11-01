@@ -5,13 +5,13 @@
 *   @since          : 1.0.0
 *   @website        : https://rlib.io
 *   @docs           : https://docs.rlib.io
-* 
+*
 *   MIT License
 *
-*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
-*   LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+*   LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 *   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
+*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 *   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
@@ -19,12 +19,11 @@
 *   standard tables and localization
 */
 
-rlib                    = rlib or { }
 local base              = rlib
+local cfg               = base.settings
 local mf                = base.manifest
 local pf                = mf.prefix
 local script            = mf.name
-local cfg               = base.settings
 
 /*
 *   localized rlib routes
@@ -41,15 +40,6 @@ local access            = base.a
 *   bit of performance, we need to.
 */
 
-local Color             = Color
-local pairs             = pairs
-local tonumber          = tonumber
-local tostring          = tostring
-local istable           = istable
-local isfunction        = isfunction
-local isnumber          = isnumber
-local isstring          = isstring
-local string            = string
 local sf                = string.format
 
 /*
@@ -249,54 +239,57 @@ local function rcc_panels_registered( pl, cmd, args )
     con( pl, output )
 
     /*
-    *   loop registered panels table
+    *   declare
     */
 
-    local bCatListed        = false
-    local cat_id            = ''
     local tb_pnls           = base.p
 
     if arg_flag and arg_flag == '-s' and arg_srch then
         con( pl, Color( 255, 0, 0 ), ' ', Color( 255, 0, 0 ), lang( 'search_term', arg_srch ) )
     end
 
+    /*
+    *   loop > panels
+    *
+    *   a   : category ( str )
+    *   b   : pnl data ( tbl )
+    */
+
+    local cat = nil
     for a, b in pairs( tb_pnls ) do
 
-        bCatListed = a ~= cat_id and false or bCatListed
-
+        local ent = 0
         for k, v in pairs( b ) do
 
-            if not bCatListed then
-                local cat       = sf( ' %s', a )
+            if not ent or ent == 0 then
+                cat             = sf( ' %s', a )
 
                 con( pl, 0 )
 
                 local c1_l      = sf( '%-15s', cat )
                 local c2_l      = sf( '%-35s', lang( 'col_id' ) )
-                local c3_l      = sf( '%-35s', lang( 'col_ref_id' ) )
+                local c3_l      = sf( '%-35s', lang( 'col_data' ) )
                 local resp      = sf( '%s %s %s', c1_l, c2_l, c3_l )
 
                 con( pl, Color( 255, 255, 255 ), resp )
                 con( pl, 0 )
-
-                bCatListed, cat_id = true, a
             end
 
-            local i = 0
-            for c in helper.get.data( v ) do
-                i = i + 1
-            end
+            ent = ent + 1
 
-            local id, i_fields  = 0, ''
+            local i             = 0
+            local id, i_fields  = 0, 0
             for l, m in pairs( v ) do
                 if arg_srch and not string.match( k, arg_srch ) then continue end
                 i_fields        = i_fields + 1
 
                 if i_fields ~= 1 then id = '' else id = k end
 
+                local data      = tostring( m ) == '[NULL Panel]' and '-' or m
+
                 local c1_d      = sf( '%-15s', tostring( '' ) )
                 local c2_d      = sf( '%-35s', tostring( id ) )
-                local c3_d      = sf( '%-35s', tostring( m ) )
+                local c3_d      = sf( '%-35s', tostring( data ) )
                 local resp      = sf( '%s %s %s ', c1_d, c2_d, c3_d )
 
                 if i_fields == i then
