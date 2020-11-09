@@ -103,11 +103,10 @@ function rcore.autoload:Run( )
     mf.fonts =
     {
         'adventpro_light.ttf',
-        'gmodsymbolic.ttf',
-        'gsym_solid.ttf',
-        'gsym_reg.ttf',
         'gsym_adv.ttf',
         'gsym_light.ttf',
+        'gsym_reg.ttf',
+        'gsym_solid.ttf',
         'montserrat_black.ttf',
         'montserrat_bold.ttf',
         'montserrat_extrabold.ttf',
@@ -386,14 +385,17 @@ function rcore.autoload:Run( )
 
     /*
     *   fonts
+    *
+    *   these fonts only load resource/fonts/rlib/
     */
 
     if istable( mf.fonts ) then
         local fonts = mf.fonts
         if #fonts > 0 then
             for _, f in pairs( fonts ) do
-                resource.AddFile( 'resource/fonts/' .. f )
-                rlib:log( RLIB_LOG_FONT, '+ %s » [ %s ]', 'font', f )
+                local src = string.format( 'resource/fonts/rlib/%s', f )
+                resource.AddFile( src )
+                rlib:log( RLIB_LOG_FONT, '+ %s » [ %s ]', 'font', src )
             end
         end
     end

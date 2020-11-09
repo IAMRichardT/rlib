@@ -435,6 +435,32 @@ function base.modules:ManifestList( )
 end
 
 /*
+*   base > module > registered panels
+*
+*   returns a list of registered pnls based on the specified module
+*
+*   @param  : str, tbl mod
+*   @return : tbl
+*/
+
+function base.modules:RegisteredPnls( mod )
+    local bLoaded = false
+    if mod then
+        if istable( rcore ) and ( isstring( mod ) and rcore.modules[ mod ] ) then
+            return base.p[ mod ]
+        elseif istable( mod ) then
+            return base.p[ mod.id ]
+        end
+    end
+
+    if not bLoaded then
+        local mod_output = isstring( mod ) and mod or 'unspecified'
+        rlib:log( 6, 'missing module [ %s ]\n%s', mod_output, debug.traceback( ) )
+        return false
+    end
+end
+
+/*
 *   base > module > log
 *
 *   logs data to rlib\modules\module_name\logs

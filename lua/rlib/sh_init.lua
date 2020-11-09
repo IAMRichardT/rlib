@@ -968,8 +968,9 @@ local function modules_resources( source )
             local fonts = v.fonts
             if #fonts > 0 then
                 for _, f in pairs( fonts ) do
-                    resource.AddFile( 'resource/fonts/' .. f )
-                    rlib:log( RLIB_LOG_FONT, '+ %s » [ %s ]', v.id, f )
+                    local src = string.format( 'resource/fonts/%s', f )
+                    resource.AddFile( src )
+                    rlib:log( RLIB_LOG_FONT, '+ %s » [ %s ]', v.id, src )
                 end
             end
         end

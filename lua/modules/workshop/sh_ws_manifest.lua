@@ -32,8 +32,8 @@
     MODULE.desc			    = 'workshop content downloader'
     MODULE.owner		    = false
     MODULE.version          = { 2, 0, 0 }
-    MODULE.libreq           = { 3, 1, 7 }
-    MODULE.released		    = 1597549923
+    MODULE.libreq           = { 3, 1, 9 }
+    MODULE.released		    = 1604953461
 
 /*
 *   fonts
@@ -42,44 +42,7 @@
 *   utilizing resource.AddFile( )
 */
 
-    MODULE.fonts =
-    {
-        'adventpro_light.ttf',
-        'gmodsymbolic.ttf',
-        'oswald_light.ttf',
-        'raleway_black.ttf',
-        'raleway_bold.ttf',
-        'raleway_extra_bold.ttf',
-        'raleway_extra_light.ttf',
-        'raleway_light.ttf',
-        'raleway_medium.ttf',
-        'raleway_regular.ttf',
-        'raleway_semibold.ttf',
-        'raleway_thin.ttf',
-        'roboto_bk.ttf',
-        'roboto_black.ttf',
-        'roboto_bold.ttf',
-        'roboto_bold_italic.ttf',
-        'roboto_italic.ttf',
-        'roboto_light.ttf',
-        'roboto_lightitalic.ttf',
-        'roboto_lt.ttf',
-        'roboto_medium.ttf',
-        'roboto_mediumitalic.ttf',
-        'roboto_regular.ttf',
-        'roboto_th.ttf',
-        'roboto_thin.ttf',
-        'roboto_thinitalic.ttf',
-        'robotocondensed_bold.ttf',
-        'robotocondensed_bolditalic.ttf',
-        'robotocondensed_italic.ttf',
-        'robotocondensed_light.ttf',
-        'robotocondensed_lightitalic.ttf',
-        'robotocondensed_regular.ttf',
-        'teko_light.ttf',
-        'titillium_web_light.ttf',
-        'titillium_web_thin.ttf',
-    }
+    MODULE.fonts = { }
 
 /*
 *   workshops

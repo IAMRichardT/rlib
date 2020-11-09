@@ -112,7 +112,7 @@ end
     _f( pref( 'rcfg_sel_rel' ),                     { size = 14, weight = 100, antialias = true, font = 'Segoe UI Light' } )
     _f( pref( 'rcfg_sel_desc' ),                    { size = 17, weight = 100, antialias = true, font = 'Roboto Lt' } )
     _f( pref( 'rcfg_footer_i' ),                    { size = 14, weight = 400, antialias = true, font = 'Roboto' } )
-    _f( pref( 'rcfg_symbol' ),                      { size = 48, weight = 800, antialias = true, font = 'gmodsymbolic', extended = true } )
+    _f( pref( 'rcfg_symbol' ),                      { size = 48, weight = 800, antialias = true, font = 'GSym Light', extended = true } )
     _f( pref( 'rcfg_soon' ),                        { size = 36, weight = 100, antialias = true, font = 'Segoe UI Light' } )
 
 /*

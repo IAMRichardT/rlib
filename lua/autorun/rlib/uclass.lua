@@ -19,7 +19,6 @@
 *   standard tables and localization
 */
 
-rlib                                = rlib or { }
 local base                          = rlib
 local mf                            = base.manifest
 local prefix                        = mf.prefix
