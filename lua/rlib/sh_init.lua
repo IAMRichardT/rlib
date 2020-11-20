@@ -658,7 +658,7 @@ end
 
 function base:modules_initialize( )
 
-    rhook.run.rlib( 'modules_load_pre' )
+    rhook.run.rlib( 'rcore_modules_load_pre' )
 
     autoloader_manifest_modules( )
 
@@ -675,6 +675,7 @@ function base:modules_initialize( )
     rlib:log( 0 )
 
     rhook.run.rlib( 'rcore_modules_load_post', base.modules )
+    rhook.run.rlib( 'rcore_onloaded' )
 
 end
 rhook.new.rlib( 'rcore_loader_post', 'rcore_modules_initialize', base.modules_initialize )
@@ -915,17 +916,25 @@ local function modules_resources( source )
         *       :   MODULE.ws_lst       ( tbl )
         */
 
-        if ( v.workshopsenabled or v.ws_enabled ) and ( v.workshops or v.ws_lst or v.collections ) then
-            local src = istable( v.ws_lst ) and v.ws_lst or istable( v.workshops ) and v.workshops or istable( v.collections ) and v.collections
-            if not istable( src ) then continue end
+        local ws_val = v.ws_lst or v.workshops or v.workshop
+        if ( v.bWorkshop or v.ws_enabled ) and ws_val then
+            local src   = istable( v.ws_lst ) and v.ws_lst or istable( v.workshops ) and v.workshops or istable( v.workshop ) and v.workshop
+                        if not istable( src ) then
+                            src             = { }
+                            local ws_chk    = v.ws_lst or v.workshops or v.workshop
+                                            if helper.str:isempty( ws_chk ) then continue end
+
+                            table.insert( src, ws_chk )
+                        end
+
             for m in helper.get.data( src ) do
                 if SERVER then
                     resource.AddWorkshop( m )
                     rlib:log( RLIB_LOG_WS, '+ %s » [ %s ]', tostring( v.id ), m )
                 elseif CLIENT then
                     steamworks.FileInfo( m, function( res )
-                        if res and res.fileid then
-                            steamworks.Download( res.fileid, true, function( name )
+                        if res and res.id then
+                            steamworks.DownloadUGC( tostring( res.id ), function( name, f )
                                 game.MountGMA( name or '' )
                                 local size = res.size / 1024
                                 rlib:log( RLIB_LOG_WS, '+ %s [ %s ] » %i KB', tostring( v.id ), res.title, math.Round( size ) )
@@ -969,7 +978,7 @@ local function modules_resources( source )
             if #fonts > 0 then
                 for _, f in pairs( fonts ) do
                     local src = string.format( 'resource/fonts/%s', f )
-                    resource.AddFile( src )
+                    resource.AddSingleFile( src )
                     rlib:log( RLIB_LOG_FONT, '+ %s » [ %s ]', v.id, src )
                 end
             end
@@ -983,8 +992,9 @@ local function modules_resources( source )
             local fonts = file.Find( 'resource/fonts/*', 'GAME' )
             if #fonts > 0 then
                 for _, f in pairs( fonts ) do
-                    resource.AddFile( 'resource/fonts/' .. f )
-                    rlib:log( RLIB_LOG_FONT, '+ %s » [ %s ]', v.id, f )
+                    local src = string.format( 'resource/fonts/%s', f )
+                    resource.AddSingleFile( src )
+                    rlib:log( RLIB_LOG_FONT, '+ %s » [ %s ]', v.id, src )
                 end
             end
         end
@@ -1084,6 +1094,106 @@ local function register_sounds( source )
 
 end
 rhook.new.rlib( 'rcore_modules_load_post', 'rcore_modules_snd_register', register_sounds )
+
+/*
+*   mount library
+*
+*   mounts library workshops and fastdl
+*/
+
+local function mount_library( )
+
+    /*
+    *   fonts
+    *
+    *   these fonts only load resource/fonts/rlib/
+    */
+
+    if SERVER and istable( mf.fonts ) then
+        local fonts = mf.fonts
+        if #fonts > 0 then
+            for _, f in pairs( fonts ) do
+                local src = string.format( 'resource/fonts/%s', f )
+                resource.AddSingleFile( src )
+                rlib:log( RLIB_LOG_FONT, '+ %s » [ %s ]', 'font', src )
+            end
+        end
+    end
+
+    /*
+    *   fastdl
+    *
+    *   determines if the script should handle content related to the script via Steam Workshop or FastDL.
+    */
+
+    if SERVER and base.settings.fastdl then
+
+        local path_base = mf.folder or ''
+
+        for v in rlib.h.get.data( mf.fastdl ) do
+            local r_path = v .. '/' .. path_base
+            if v == 'resource' then
+                r_path = v .. '/fonts'
+            end
+
+            local r_files, r_dirs = file.Find( r_path .. '/*', 'GAME' )
+
+            for File in rlib.h.get.data( r_files, true ) do
+                local r_dir_inc = r_path .. '/' .. File
+                resource.AddFile( r_dir_inc )
+                rlib:log( RLIB_LOG_FASTDL, '+ [M] %s', r_dir_inc )
+            end
+
+            for d in rlib.h.get.data( r_dirs ) do
+                local r_subpath = r_path .. '/' .. d
+                local r_subfiles, r_subdirs = file.Find( r_subpath .. '/*', 'GAME' )
+                for _, subfile in SortedPairs( r_subfiles ) do
+                    local r_path_subinc = r_subpath .. '/' .. subfile
+                    resource.AddFile( r_path_subinc )
+                    rlib:log( RLIB_LOG_FASTDL, '+ [M] %s', r_path_subinc )
+                end
+            end
+        end
+
+    end
+
+    /*
+    *   workshop
+    *
+    *   determines if the script should handle content related to the script via Steam Workshop or FastDL.
+    *
+    *       : settings.useworkshop MUST be true
+    *       : manifest.workshops [ table ] must contain valid steam collection ids
+    */
+
+    if mf.workshops then
+        for v in rlib.h.get.data( mf.workshops ) do
+            if SERVER then
+                resource.AddWorkshop( v )
+                rlib:log( RLIB_LOG_WS, '+ %s » [ %s ]', tostring( rlib.manifest.name ), v )
+            else
+                if CLIENT then
+                    steamworks.FileInfo( v, function( res )
+                        if res and res.id then
+                            local ws_id = tostring( res.id )
+                            steamworks.DownloadUGC( tostring( ws_id ), function( name, f )
+                                game.MountGMA( name or '' )
+                                local size = res.size / 1024
+                                rlib:log( RLIB_LOG_WS, '+ %s [ %s ] » %i KB', tostring( rlib.manifest.name ), res.title, math.Round( size ) )
+                            end )
+                        end
+                    end )
+                end
+            end
+
+            rlib.w[ v ]         = { }
+            rlib.w[ v ].id      = v
+            rlib.w[ v ].src     = mf.name or 'unknown'
+        end
+    end
+
+end
+rhook.new.rlib( 'rcore_onloaded', 'rcore_mount_lib', mount_library )
 
 /*
 *   modules > storage > register defaults

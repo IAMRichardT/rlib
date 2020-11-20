@@ -71,7 +71,7 @@ function rcore.autoload:Run( )
 
     mf.workshops =
     {
-        '1767271434'
+        '2280180827'
     }
 
     /*
@@ -104,6 +104,7 @@ function rcore.autoload:Run( )
     {
         'adventpro_light.ttf',
         'gsym_adv.ttf',
+        'gsym_black.ttf',
         'gsym_light.ttf',
         'gsym_reg.ttf',
         'gsym_solid.ttf',
@@ -381,95 +382,6 @@ function rcore.autoload:Run( )
             inc_cl( dir_recur, 3, 'i'   )
         end
 
-    end
-
-    /*
-    *   fonts
-    *
-    *   these fonts only load resource/fonts/rlib/
-    */
-
-    if istable( mf.fonts ) then
-        local fonts = mf.fonts
-        if #fonts > 0 then
-            for _, f in pairs( fonts ) do
-                local src = string.format( 'resource/fonts/rlib/%s', f )
-                resource.AddFile( src )
-                rlib:log( RLIB_LOG_FONT, '+ %s » [ %s ]', 'font', src )
-            end
-        end
-    end
-
-    /*
-    *   fastdl
-    *
-    *   determines if the script should handle content related to the script via Steam Workshop or FastDL.
-    */
-
-    if SERVER and base.settings.fastdl then
-
-        local path_base = mf.folder or ''
-
-        for v in rlib.h.get.data( mf.fastdl ) do
-            local r_path = v .. '/' .. path_base
-            if v == 'resource' then
-                r_path = v .. '/fonts/rlib'
-            end
-
-            local r_files, r_dirs = file.Find( r_path .. '/*', 'GAME' )
-
-            for File in rlib.h.get.data( r_files, true ) do
-                local r_dir_inc = r_path .. '/' .. File
-                resource.AddFile( r_dir_inc )
-                rlib:log( 6, '+ [M] %s', r_dir_inc )
-            end
-
-            for d in rlib.h.get.data( r_dirs ) do
-                local r_subpath = r_path .. '/' .. d
-                local r_subfiles, r_subdirs = file.Find( r_subpath .. '/*', 'GAME' )
-                for _, subfile in SortedPairs( r_subfiles ) do
-                    local r_path_subinc = r_subpath .. '/' .. subfile
-                    resource.AddFile( r_path_subinc )
-                    rlib:log( 6, '+ [M] %s', r_path_subinc )
-                end
-            end
-
-        end
-
-    end
-
-    /*
-    *   workshop
-    *
-    *   determines if the script should handle content related to the script via Steam Workshop or FastDL.
-    *
-    *       : settings.useworkshop MUST be true
-    *       : manifest.workshops [ table ] must contain valid steam collection ids
-    */
-
-    if base.settings.useworkshop and mf.workshops then
-        for v in rlib.h.get.data( mf.workshops ) do
-            if SERVER then
-                resource.AddWorkshop( v )
-                MsgC( Color( 0, 255, 255 ), '[' .. rlib.manifest.name .. '] [M] Workshop: ' .. v .. '\n' )
-            else
-                if CLIENT then
-                    steamworks.FileInfo( v, function( res )
-                        if res and res.fileid then
-                            steamworks.Download( res.fileid, true, function( name )
-                                game.MountGMA( name or '' )
-                                local size = res.size / 1024
-                                MsgC( Color( 0, 255, 255 ), '[' .. rlib.manifest.name .. '] [M] Workshop: ' .. res.title .. ' ( ' .. math.Round( size ) .. 'KB )\n' )
-                            end )
-                        end
-                    end )
-                end
-            end
-
-            rlib.w[ v ]         = { }
-            rlib.w[ v ].id      = v
-            rlib.w[ v ].src     = mf.name or 'unknown'
-        end
     end
 
     if CLIENT then

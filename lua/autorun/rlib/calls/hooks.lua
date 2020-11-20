@@ -33,6 +33,7 @@ base.c.hooks =
     [ 'rlib_udm_notice' ]                       = { 'rlib.udm.notice' },
     [ 'rcore_rnet_register' ]                   = { 'rcore.rnet.register' },
     [ 'rcore_loader_post' ]                     = { 'rcore.loader.post' },
+    [ 'rcore_onloaded' ]                        = { 'rcore.onloaded' },
     [ 'rcore_initialize_stats' ]                = { 'rcore.initialize.stats' },
     [ 'rcore_modules_initialize' ]              = { 'rcore.modules.initialize' },
     [ 'rcore_modules_register' ]                = { 'rcore.modules.register' },

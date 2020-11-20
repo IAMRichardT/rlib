@@ -138,7 +138,7 @@ end
 *   @param  : str id
 */
 
-function storage:clear( mod, id )
+function storage:Clear( mod, id )
     if istable( rcore ) and ( isstring( mod ) and rcore.modules[ mod ] ) then
         rcore.modules[ mod ][ id ] = nil
     elseif istable( mod ) then

@@ -5203,7 +5203,7 @@ local uclass = { }
         *   validate tip
         */
 
-        if not isstring( str ) then return end
+        if not isstring( str ) or helper.str:isempty( str ) then return end
 
         /*
         *   define clrs
@@ -5907,21 +5907,38 @@ local uclass = { }
     *   @param  : clr clr
     *   @param  : int sp_r
     *   @param  : int sp_a
-    *   @param  : int r
+    *   @param  : int, bool a1      ( switch )
+    *   @param  : bool a2           ( switch )
     */
 
-    function uclass.anim_click_circle( pnl, clr, sp_r, sp_a, r )
-        clr         = IsColor( clr ) and clr or Color( 5, 5, 5, 200 )
-        sp_r        = isnumber( sp_r ) and sp_r or 2
-        sp_a        = isnumber( sp_a ) and sp_a or 1
-        r           = 100
+    function uclass.anim_click_circle( pnl, clr, sp_r, sp_a, ... )
+        clr                 = IsColor( clr ) and clr or Color( 5, 5, 5, 200 )
+        sp_r                = isnumber( sp_r ) and sp_r or 2
+        sp_a                = isnumber( sp_a ) and sp_a or 1
 
-        pnl.radius  = 0
-        pnl.a       = 0
-        pnl.pos_x   = 0
-        pnl.pos_y   = 0
+        /*
+        *   assign varargs
+        */
 
-        pnl:run( 'Paint', function( s, w, h )
+        local args          = { ... }
+        local r             = isnumber( args[ 1 ] ) and args[ 1 ] or 100
+        local bNoDraw       = ( args[ 2 ] and helper:val2bool( args[ 2 ] ) ) or ( args[ 1 ] and helper:val2bool( args[ 1 ] ) ) or false
+                            if bNoDraw then return end
+
+        /*
+        *   defaults
+        */
+
+        pnl.radius          = 0
+        pnl.a               = 0
+        pnl.pos_x           = 0
+        pnl.pos_y           = 0
+
+        /*
+        *   PaintOver
+        */
+
+        pnl:run( 'PaintOver', function( s, w, h )
             if s.a < 1 then return end
 
             design.circle_simple( s.pos_x, s.pos_y, s.radius, ColorAlpha( clr, s.a ) )
@@ -5929,6 +5946,10 @@ local uclass = { }
             s.radius    = Lerp( FrameTime( ) * sp_r, s.radius, r or w )
             s.a         = Lerp( FrameTime( ) * sp_a, s.a, 0 )
         end )
+
+        /*
+        *   DoClick
+        */
 
         pnl:run( 'DoClick', function( cir )
             cir.pos_x, cir.pos_y    = cir:CursorPos( )
@@ -5946,19 +5967,36 @@ local uclass = { }
     *   @param  : clr clr
     *   @param  : int sp_r
     *   @param  : int sp_a
-    *   @param  : int r
+    *   @param  : int, bool a1      ( switch )
+    *   @param  : bool a2           ( switch )
     */
 
-    function uclass.anim_click_ol( pnl, clr, sp_r, sp_a, r )
-        clr         = IsColor( clr ) and clr or Color( 5, 5, 5, 200 )
-        sp_r        = isnumber( sp_r ) and sp_r or 2
-        sp_a        = isnumber( sp_a ) and sp_a or 2
-        r           = 125
+    function uclass.anim_click_ol( pnl, clr, sp_r, sp_a, ... )
+        clr                 = IsColor( clr ) and clr or Color( 5, 5, 5, 200 )
+        sp_r                = isnumber( sp_r ) and sp_r or 2
+        sp_a                = isnumber( sp_a ) and sp_a or 2
 
-        pnl.radius  = 0
-        pnl.a       = 0
-        pnl.pos_x   = 0
-        pnl.pos_y   = 0
+        /*
+        *   assign varargs
+        */
+
+        local args          = { ... }
+        local r             = isnumber( args[ 1 ] ) and args[ 1 ] or 125
+        local bNoDraw       = ( args[ 2 ] and helper:val2bool( args[ 2 ] ) ) or ( args[ 1 ] and helper:val2bool( args[ 1 ] ) ) or false
+                            if bNoDraw then return end
+
+        /*
+        *   defaults
+        */
+
+        pnl.radius          = 0
+        pnl.a               = 0
+        pnl.pos_x           = 0
+        pnl.pos_y           = 0
+
+        /*
+        *   PaintOver
+        */
 
         pnl:run( 'PaintOver', function( s, w, h )
             if s.a < 1 then return end
@@ -5968,6 +6006,10 @@ local uclass = { }
             s.radius    = Lerp( FrameTime( ) * sp_r, s.radius, r or w )
             s.a         = Lerp( FrameTime( ) * sp_a, s.a, 0 )
         end )
+
+        /*
+        *   DoClick
+        */
 
         pnl:run( 'DoClick', function( cir )
             cir.pos_x, cir.pos_y    = cir:CursorPos( )

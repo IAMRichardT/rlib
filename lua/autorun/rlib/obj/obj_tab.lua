@@ -114,15 +114,10 @@ function PANEL:PerformLayout( )
 end
 
 /*
-*	SetAnimated
-*/
-
-function PANEL:SetAnimated( val )
-    self.anim = val
-end
-
-/*
 *	CreateTab
+*
+*   @param  : str name
+*   @param  : pnl elm
 */
 
 function PANEL:CreateTab( name, elm )
@@ -145,7 +140,8 @@ function PANEL:CreateTab( name, elm )
     *	default element type
     */
 
-    elm = elm or 'pnl'
+    elm                             = elm or 'pnl'
+    bAnim                           = self:GetbNoAnim( ) or false
 
     /*
     *	insert tab
@@ -163,7 +159,7 @@ function PANEL:CreateTab( name, elm )
     :text                           ( name                                  )
     :font                           ( self:GetFont( )                       )
     :var                            ( 'clr_txt', self:GetClrInactive( )     )
-    :anim_click_ol                  ( Color( 255, 255, 255, 30 ), 0.6, 4    )
+    :anim_click_ol                  ( Color( 255, 255, 255, 30 ), 0.6, 4, bAnim )
 
                                     :draw( function( s, w, h )
                                         s:SetTextColor( s.clr_txt )
@@ -506,6 +502,10 @@ function PANEL:SetActive( name )
         end
     end
 
+    /*
+    *	define > active
+    */
+
     self.active = name
 
     /*
@@ -513,7 +513,7 @@ function PANEL:SetActive( name )
     */
 
     if self.tab[ name ] then
-        if bLoaded then
+        if bLoaded and not self:GetbNoAnim( ) then
             self:SetMarker_Anim( name )
         else
             self:SetMarker_Norm( name )
@@ -860,6 +860,27 @@ end
 
 function PANEL:GetFont( )
     return ( helper.str:ok( self.font ) and self.font ) or pref( 'elm_tab_name' )
+end
+
+/*
+*	bAnim > set
+*
+*	@param	: bool b
+*	@return	: void
+*/
+
+function PANEL:SetbNoAnim( b )
+    self.bNoAnim = b
+end
+
+/*
+*	bAnim > get
+*
+*	@return	: bool
+*/
+
+function PANEL:GetbNoAnim( )
+    return self.bNoAnim and helper:val2bool( self.bNoAnim ) or false
 end
 
 /*

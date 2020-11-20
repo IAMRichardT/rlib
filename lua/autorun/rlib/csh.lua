@@ -1877,7 +1877,7 @@ function helper.str:isempty( str )
     if not isstring( str ) then return false end
 
     local text = str:gsub( '%s', '' )
-    if not isstring( text ) or text == '' or text == 'NULL' or text == NULL then return true end
+    if not isstring( text ) or text == '' or text == 'NULL' or text == NULL or tostring( text ) == 'nil' then return true end
     return false
 end
 
