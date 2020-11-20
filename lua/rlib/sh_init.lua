@@ -1289,7 +1289,8 @@ local function storage_struct_defs( mod_id )
         },
         nav                 =
         {
-            button          = { },
+            btn             = { },
+            button          = { },      -- to be deprecated
             general         = { },
             list            = { },
         },
