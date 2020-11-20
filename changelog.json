@@ -1,6 +1,14 @@
 {
     "unreleased": [],
     "releases": {
+      "3.1.9.1": [
+            "[ + ] added rcore hook rcore_onloaded",
+            "[ + ] local func mount_library which now takes over fastdl / font mounting",
+            "[ ^ ] updated rlib workshop",
+            "[ ^ ] tippy now ignores blank tip strings",
+            "[ ^ ] uclass anim_click_circle now suppors bNoAdmin",
+            "[ % ] fixed fastdl not syncing fonts properly"
+      ],
       "3.1.9": [
             "[ + ] uclass: GetPosition, appear",
             "[ + ] design: rgb",
