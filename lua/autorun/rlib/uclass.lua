@@ -4545,6 +4545,21 @@ local uclass = { }
     end
 
     /*
+    *   uclass > Panel > state
+    *
+    *   toggles panel based on bool
+    */
+
+    function uclass.state( pnl, b )
+        local state = helper:val2bool( b )
+        if state then
+            ui:show( pnl )
+        else
+            ui:hide( pnl )
+        end
+    end
+
+    /*
     *   uclass > Panel > MakePopup
     *
     *   focuses the panel and enables it to receive input.
