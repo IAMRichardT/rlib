@@ -713,7 +713,7 @@ end
 */
 
 function PANEL:SetClrActive( clr )
-    self.clr_marker = clr
+    self.clr_active = clr
 end
 
 /*
