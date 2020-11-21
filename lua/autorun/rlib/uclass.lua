@@ -1809,7 +1809,6 @@ local uclass = { }
 
     function uclass.setup( pnl, fn )
         pnl.bInitialized    = false
-        pnl.Paint           = nil
 
         if pnl._Declare then
             pnl:_Declare( )
