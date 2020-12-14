@@ -1,0 +1,13 @@
+{
+	"name":             "Identix",
+	"author":           "richard",
+	"script":           "6214",
+	"type":             "addon",
+	"description":      "name and profile system",
+	"homepage":         "https://gmodstore.com/scripts/view/6214",
+	"docs":             "https://identix.rlib.io",
+	"version":          "v3.0.1.2",
+	"updated":          "Dec 13, 2020",
+	"workshop":         "2319115673",
+	"rlib-required":    "v3.2.0.0"
+}
