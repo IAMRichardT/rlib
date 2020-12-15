@@ -148,7 +148,7 @@ function ulx.rcore_user_mute_timed( calling_ply, target_plys, dur, reason, shoul
     end
 
 end
-local rcore_user_mute_timed                 = ulx.command( id_mute.category, id_mute.id, ulx.rcore_user_mute_timed, id_mute.pubcmds )
+local rcore_user_mute_timed                 = ulx.command( id_mute.category, id_mute.ulx_id, ulx.rcore_user_mute_timed, id_mute.pubcmds )
 rcore_user_mute_timed:addParam              { type = ULib.cmds.PlayersArg }
 rcore_user_mute_timed:addParam              { type = ULib.cmds.NumArg, min = 0, max = 1800, default = 300, hint = 'Seconds to mute for / 0 = perm', ULib.cmds.optional, ULib.cmds.round }
 rcore_user_mute_timed:addParam              { type = ULib.cmds.StringArg, hint = 'reason', ULib.cmds.optional, ULib.cmds.takeRestOfLine }
@@ -216,7 +216,7 @@ function ulx.rcore_user_gag_timed( calling_ply, target_plys, dur, reason, should
     end
 
 end
-local rcore_user_gag_timed                  = ulx.command( id_gag.category, id_gag.id, ulx.rcore_user_gag_timed, id_gag.pubcmds )
+local rcore_user_gag_timed                  = ulx.command( id_gag.category, id_gag.ulx_id, ulx.rcore_user_gag_timed, id_gag.pubcmds )
 rcore_user_gag_timed:addParam               { type = ULib.cmds.PlayersArg }
 rcore_user_gag_timed:addParam               { type = ULib.cmds.NumArg, min = 0, max = 1800, default = 300, hint = 'Seconds to gag for / 0 = perm', ULib.cmds.optional, ULib.cmds.round }
 rcore_user_gag_timed:addParam               { type = ULib.cmds.StringArg, hint = 'reason', ULib.cmds.optional, ULib.cmds.takeRestOfLine }

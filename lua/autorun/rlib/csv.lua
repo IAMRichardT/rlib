@@ -1135,7 +1135,7 @@ function access:initialize( perms )
 
     for k, v in pairs( perms ) do
         if ( k == ln( 'perms_flag_index' ) or k == ln( 'perms_flag_setup' ) ) then continue end
-        if not serverguard and ( v.is_ext or v.is_interactive or v.bInteractive ) then
+        if not serverguard and ( v.is_ext or v.bExt or v.is_interactive or v.bInteractive ) then
             if ulx then
                 sw = ln( 'perms_type_ulx_int' )
             end

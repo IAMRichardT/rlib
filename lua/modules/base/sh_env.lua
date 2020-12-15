@@ -32,7 +32,7 @@
     MODULE.icon             = ''
     MODULE.version          = { 2, 0, 0, 0 }
     MODULE.libreq           = { 3, 2, 0, 0 }
-    MODULE.released		    = 1607503498
+    MODULE.released		    = 1607993054
 
 /*
 *   content distribution
@@ -121,56 +121,80 @@
         [ 'rcore_user_gag_timed' ] =
         {
             id              = 'rcore_user_gag_timed',
+            name            = 'User » Timed Gag',
+            ulx_id          = 'ulx rcore_user_gag_timed',
+            sam_id          = 'rcore_user_gag_timed',
+            xam_id          = 'rcore_user_gag_timed',
             category        = 'RLib » User',
             desc            = 'Gags a player for a certain duration and then auto un-gags them',
             access          = 'superadmin',
             pubcmds         = { '!timedgag', '!tgag' },
-            is_interactive  = true,
+            bExt            = true,
         },
         [ 'rcore_user_mute_timed' ] =
         {
             id              = 'rcore_user_mute_timed',
+            name            = 'User » Timed Mute',
+            ulx_id          = 'ulx rcore_user_mute_timed',
+            sam_id          = 'rcore_user_mute_timed',
+            xam_id          = 'rcore_user_mute_timed',
             category        = 'RLib » User',
             desc            = 'Mutes a player for a certain duration and then auto un-mutes them',
             access          = 'superadmin',
             pubcmds         = { '!timedmute', '!tmute' },
-            is_interactive  = true,
+            bExt            = true,
         },
         [ 'rcore_tools_mdlv' ] =
         {
             id              = 'rcore_tools_mdlv',
+            name            = 'Tools » MDLV',
+            ulx_id          = 'ulx rcore_tools_mdlv',
+            sam_id          = 'rcore_tools_mdlv',
+            xam_id          = 'rcore_tools_mdlv',
             category        = 'RLib » Tools',
             desc            = 'Model viewer',
             access          = 'superadmin',
             pubcmds         = { '!mdlview', '!mdlviewer', '!mdlv' },
-            is_interactive  = true,
+            bExt            = true,
         },
         [ 'rcore_tools_pco' ] =
         {
             id              = 'rcore_tools_pco',
+            name            = 'Tools » PCO',
+            ulx_id          = 'ulx rcore_tools_pco',
+            sam_id          = 'rcore_tools_pco',
+            xam_id          = 'rcore_tools_pco',
             category        = 'RLib » Tools',
             desc            = 'Player-client-optimization service',
             access          = 'superadmin',
             pubcmds         = { '!pcotool' },
-            is_interactive  = true,
+            bExt            = true,
         },
         [ 'rcore_rp_setjob' ] =
         {
             id              = 'rcore_rp_setjob',
+            name            = 'RP » Set Job',
+            ulx_id          = 'ulx rcore_rp_setjob',
+            sam_id          = 'rcore_rp_setjob',
+            xam_id          = 'rcore_rp_setjob',
             category        = 'RLib » RP',
             desc            = 'Set rp job based on command',
             access          = 'superadmin',
             pubcmds         = { '!setjob' },
-            is_interactive  = true,
+            bExt            = true,
         },
         [ 'rcore_rp_getjob' ] =
         {
             id              = 'rcore_rp_getjob',
+            name            = 'RP » Get Job',
+            ulx_id          = 'ulx rcore_rp_getjob',
+            sam_id          = 'rcore_rp_getjob',
+            xam_id          = 'rcore_rp_getjob',
             category        = 'RLib » RP',
             desc            = 'Get rp job id',
             access          = 'superadmin',
             pubcmds         = { '!getjob' },
-            is_interactive  = true,
+            bExt            = true,
         },
     }
 

@@ -220,7 +220,6 @@ local function module_register_perms( source )
 
     for v in helper.get.data( source ) do
         if not v.enabled or not v.permissions then continue end
-        PrintTable( v.permissions )
         access:initialize( v.permissions )
     end
 end

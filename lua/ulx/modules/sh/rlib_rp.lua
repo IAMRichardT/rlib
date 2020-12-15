@@ -104,7 +104,7 @@ function ulx.rcore_rp_getjob( calling_ply, target_ply, job )
 
     base.msg:route( calling_ply, false, id_setjob.id, 'player:', base.settings.smsg.clrs.t3, target_ply:Name( ), base.settings.smsg.clrs.msg, 'job id:', base.settings.smsg.clrs.t3, tostring( target_ply:Team( ) ), base.settings.smsg.clrs.msg, 'job name:', base.settings.smsg.clrs.t3, tostring( team.GetName( target_ply:Team( ) ) ) )
 end
-local rcore_rp_getjob                       = ulx.command( id_getjob.category, id_getjob.id, ulx.rcore_rp_getjob, id_getjob.pubcmds )
+local rcore_rp_getjob                       = ulx.command( id_getjob.category, id_getjob.ulx_id, ulx.rcore_rp_getjob, id_getjob.pubcmds )
 rcore_rp_getjob:addParam                    { type = ULib.cmds.PlayerArg }
 rcore_rp_getjob:defaultAccess               ( access:ulx( 'rcore_rp_getjob', mod ) )
 rcore_rp_getjob:help                        ( id_setjob.desc )
@@ -158,7 +158,7 @@ function ulx.rcore_rp_setjob( calling_ply, target_ply, job )
     base.msg:route( target_ply, false, id_setjob.id, 'You have been forced to job', base.settings.smsg.clrs.t3, n_job.name )
 
 end
-local rcore_rp_setjob                       = ulx.command( id_setjob.category, id_setjob.id, ulx.rcore_rp_setjob, id_setjob.pubcmds )
+local rcore_rp_setjob                       = ulx.command( id_setjob.category, id_setjob.ulx_id, ulx.rcore_rp_setjob, id_setjob.pubcmds )
 rcore_rp_setjob:addParam                    { type = ULib.cmds.PlayerArg }
 rcore_rp_setjob:addParam                    { type = ULib.cmds.StringArg, hint = 'job cmd', ULib.cmds.takeRestOfLine }
 rcore_rp_setjob:defaultAccess               ( access:ulx( 'rcore_rp_setjob', mod ) )

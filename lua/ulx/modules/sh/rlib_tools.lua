@@ -105,7 +105,7 @@ function ulx.rcore_tools_mdlv( calling_ply )
     net.Send    ( calling_ply       )
 
 end
-local rcore_tools_mdlv                  = ulx.command( id_mdl.category, id_mdl.id, ulx.rcore_tools_mdlv, id_mdl.pubcmds )
+local rcore_tools_mdlv                  = ulx.command( id_mdl.category, id_mdl.ulx_id, ulx.rcore_tools_mdlv, id_mdl.pubcmds )
 rcore_tools_mdlv:defaultAccess          ( access:ulx( 'rcore_tools_mdlv', mod ) )
 rcore_tools_mdlv:help                   ( id_mdl.desc )
 
@@ -135,7 +135,7 @@ function ulx.rcore_tools_pco( calling_ply, target_ply, toggle_options )
     tools.pco:Run( target_ply, toggle, calling_ply )
 
 end
-local rcore_tools_pco                       = ulx.command( id_pco.category, id_pco.id, ulx.rcore_tools_pco, id_pco.pubcmds )
+local rcore_tools_pco                       = ulx.command( id_pco.category, id_pco.ulx_id, ulx.rcore_tools_pco, id_pco.pubcmds )
 rcore_tools_pco:addParam                    { type = ULib.cmds.PlayerArg }
 rcore_tools_pco:addParam                    { type = ULib.cmds.StringArg, completes = ulx.toggle_options, hint = 'option', error = 'invalid option \"%s\" specified', ULib.cmds.restrictToCompletes }
 rcore_tools_pco:defaultAccess               ( access:ulx( 'rcore_tools_pco', mod ) )
