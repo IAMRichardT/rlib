@@ -167,7 +167,7 @@
             desc            = 'Permission example',
             access          = 'superadmin',
             pubcmds         = { '!chatcmd', '!chatcmd2' },
-            is_ext          = true,
+            bExt            = true,
         },
     }
 
