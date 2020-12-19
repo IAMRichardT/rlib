@@ -21,20 +21,17 @@
 *   standard tables and localization
 */
 
-rcore                   = rcore or { }
-local base              = rcore
-local pf                = base.manifest.prefix
+local rlib                  = rlib
+local base                  = rcore
+local pf                    = base.manifest.prefix
 
 /*
 *   Localized rlib routes
-*
-*   : base.h            = helpers
-*   : base.a            = access
 */
 
-local helper            = rlib.h
-local access            = rlib.a
-local design            = rlib.d
+local helper                = rlib.h
+local access                = rlib.a
+local design                = rlib.d
 
 /*
 *   Localized translation func

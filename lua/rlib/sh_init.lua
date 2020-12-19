@@ -21,10 +21,10 @@
 *   standard tables and localization
 */
 
-rcore                       = rcore or { }
+local rlib                  = rlib
 local base                  = rcore
 local mf                    = base.manifest
-local prefix                = mf.prefix
+local pf                    = mf.prefix
 local cfg                   = base.settings
 local sys                   = base.sys
 local helper                = rlib.h
@@ -72,7 +72,7 @@ end
 */
 
 local function pid( str, suffix )
-    local state = ( isstring( suffix ) and suffix ) or ( base and prefix ) or false
+    local state = ( isstring( suffix ) and suffix ) or ( base and pf ) or false
     return rlib.get:pref( str, state )
 end
 
@@ -647,7 +647,7 @@ function base:modules_storage( source )
             return
         end
 
-        mod_id = mod_id or prefix
+        mod_id = mod_id or pf
 
         if not data[ 'parent' ] or not data[ 'sub' ] then
             rlib:log( 2, '[ %s ] failed to specify new datafolder in manifest', mod_id )
