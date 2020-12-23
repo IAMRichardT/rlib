@@ -385,6 +385,14 @@ function PANEL:PerformLayout( )
     end
 
     /*
+    *   vbar > width
+    */
+
+    if ui:ok( self.VBar ) then
+        self.VBar:SetWide( self:GetWidth( ) )
+    end
+
+    /*
     *   offset
     */
 
@@ -630,6 +638,26 @@ end
 
 function PANEL:GetScrollDelay( )
     return self.scrdelay
+end
+
+/*
+*   SetWidth
+*
+*   @param  : int i
+*/
+
+function PANEL:SetWidth( i )
+    self.scrwidth = i
+end
+
+/*
+*   GetWidth
+*
+*   @return : int
+*/
+
+function PANEL:GetWidth( )
+    return self.scrwidth or 20
 end
 
 /*

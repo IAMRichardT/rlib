@@ -277,6 +277,14 @@ function PANEL:Think( )
     end
 
     /*
+    *   vbar > width
+    */
+
+    if ui:ok( self.VBar ) then
+        self.VBar:SetWide( self:GetWidth( ) )
+    end
+
+    /*
     *   kconsole > alpha
     */
 
@@ -624,6 +632,26 @@ end
 
 function PANEL:GetScrollDelay( )
     return self.scrdelay
+end
+
+/*
+*   SetWidth
+*
+*   @param  : int i
+*/
+
+function PANEL:SetWidth( i )
+    self.scrwidth = i
+end
+
+/*
+*   GetWidth
+*
+*   @return : int
+*/
+
+function PANEL:GetWidth( )
+    return self.scrwidth or 8
 end
 
 /*
