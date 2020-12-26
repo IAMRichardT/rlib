@@ -128,6 +128,7 @@ local net_register =
     'rlib.sms.notify',
     'rlib.sms.inform',
     'rlib.sms.bubble',
+    'rlib.sms.rbubble',
     'rlib.tools.pco',
     'rlib.tools.lang',
     'rlib.tools.mdlv',
@@ -210,6 +211,15 @@ end
 function pmeta:bubble( ... )
     local args      = { ... }
     net.Start       ( 'rlib.sms.bubble'     )
+    net.WriteTable  ( args                  )
+    net.Send        ( self                  )
+end
+
+function pmeta:rbubble( dur, ... )
+    dur             = isnumber( dur ) and dur or 5
+    local args      = { ... }
+    net.Start       ( 'rlib.sms.rbubble'    )
+    net.WriteInt    ( dur, 8                )
     net.WriteTable  ( args                  )
     net.Send        ( self                  )
 end
