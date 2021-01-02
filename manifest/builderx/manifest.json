@@ -1,0 +1,13 @@
+{
+	"name":             "Builder-X",
+	"author":           "richard",
+	"script":           "1563",
+	"type":             "addon",
+	"description":      "Build protection",
+	"homepage":         "https://gmodstore.com/scripts/view/1563",
+	"docs":             "https://arivia.rlib.io",
+	"version":          "v2.0.0.0",
+	"updated":          "Jan 1, 2021",
+	"workshop":         "2290446815",
+	"rlib-required":    "v3.2.0.0"
+}
