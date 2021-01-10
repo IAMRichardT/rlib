@@ -553,7 +553,8 @@ function base:translate( mod, str, ... )
     local selg = mod and mod.settings.lang or 'en'
 
     if CLIENT then
-        selg = cvar:GetStrStrict( 'rlib_language', selg ) or selg
+        local selorig   = cvar:GetStrStrict( 'rlib_language', selg )
+        selg            = ( selorig and selorig ~= 'en' ) or selg
     end
 
     local resp = mod.language and mod.language[ selg ] and mod.language[ selg ][ str ]
