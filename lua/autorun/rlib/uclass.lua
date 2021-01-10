@@ -1814,6 +1814,10 @@ local uclass = { }
     function uclass.setup( pnl, fn )
         pnl.bInitialized    = false
 
+        if pnl._Lang then
+            pnl:_Lang( )
+        end
+
         if pnl._Declare then
             pnl:_Declare( )
         end

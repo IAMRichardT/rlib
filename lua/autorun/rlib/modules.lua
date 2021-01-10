@@ -196,6 +196,30 @@ function base.modules:ver2build( mod )
 end
 
 /*
+*   base > module > build
+*
+*   returns module build
+*
+*   @param  : tbl, str mod
+*   @return : str
+*/
+
+function base.modules:build( mod )
+    if not mod then return false end
+
+    local build
+    if istable( rcore ) and ( isstring( mod ) and rcore.modules[ mod ] and rcore.modules[ mod ].build ) then
+        build       = rcore.modules[ mod ].build
+    elseif istable( mod ) and mod.build then
+        build       = mod.build or 0
+    end
+
+    if not build then return base._def.builds[ 0 ] end
+
+    return base._def.builds[ build ]
+end
+
+/*
 *   module > version
 *
 *   returns the version of the installed module as a table

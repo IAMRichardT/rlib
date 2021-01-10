@@ -115,19 +115,22 @@ local function log( ... ) base:log( ... ) end
             return {
                 [ 'major' ] = ver[ 'major' ] or ver[ 1 ] or 1,
                 [ 'minor' ] = ver[ 'minor' ] or ver[ 2 ] or 0,
-                [ 'patch' ] = ver[ 'patch' ] or ver[ 3 ] or 0
+                [ 'patch' ] = ver[ 'patch' ] or ver[ 3 ] or 0,
+                [ 'build' ] = ver[ 'build' ] or ver[ 4 ] or 0,
             }
         elseif istable( src ) then
             return {
                 [ 'major' ] = src.major or src[ 1 ] or 1,
                 [ 'minor' ] = src.minor or src[ 2 ] or 0,
-                [ 'patch' ] = src.patch or src[ 3 ] or 0
+                [ 'patch' ] = src.patch or src[ 3 ] or 0,
+                [ 'build' ] = src.build or src[ 4 ] or 0,
             }
         end
         return {
             [ 'major' ] = 1,
             [ 'minor' ] = 0,
-            [ 'patch' ] = 0
+            [ 'patch' ] = 0,
+            [ 'build' ] = 0,
         }
     end
 
@@ -149,10 +152,10 @@ local function log( ... ) base:log( ... ) end
             return mnfst.version
         elseif istable( mnfst.version ) then
             local major, minor, patch, build = mnfst.version.major or mnfst.version[ 1 ] or 1, mnfst.version.minor or mnfst.version[ 2 ] or 0, mnfst.version.patch or mnfst.version[ 3 ] or 0, mnfst.version.build or mnfst.version[ 4 ] or 0
-            return sf( '%i%s%i%s%i-%s', major, char, minor, char, patch, base._def.builds[ build ] )
+            return sf( '%i%s%i%s%i%s%i', major, char, minor, char, patch, char, build )
         end
 
-        return '1.0.0'
+        return '1.0.0.0'
     end
 
 /*
@@ -230,16 +233,16 @@ local function log( ... ) base:log( ... ) end
 *   returns version tbl as string for rlib packages such as rhook,
 *   timex, calc, etc.
 *
-*   @ex     : rlib.get.ver_pkg( { 1, 4, 5 } )
-*   @ret    : 1.4.5
+*   @ex     : rlib.get.ver_pkg( { 1, 4, 5, 0 } )
+*   @ret    : 1.4.5.0
 *
 *   @param  : tbl ver
 *   @return : str
 */
 
     function base.get:ver_pkg( src )
-        if not src then return '1.0.0' end
-        return ( src and src.__manifest and self:ver2str( src.__manifest.version ) ) or { 1, 0, 0 }
+        if not src then return '1.0.0.0' end
+        return ( src and src.__manifest and self:ver2str( src.__manifest.version ) ) or { 1, 0, 0, 0 }
     end
 
 /*
