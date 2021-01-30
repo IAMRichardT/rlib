@@ -288,6 +288,33 @@ end
 new = create
 
 /*
+*   timex > unique
+*
+*   create a detailed timer only if it currently doesnt exist
+*
+*   @param  : str id
+*   @param  : int delay
+*   @param  : int repscnt
+*   @param  : func fn
+*/
+
+function unique( id, delay, repscnt, fn )
+    id          = gid( id )
+    delay       = delay or 0.1
+    repscnt     = repscnt or 1
+
+    if exists( id ) then return end
+
+    if not fn or not base:isfunc( fn ) then
+        log( 1, '[ %s ] :: unique timer created with no func', pkg_name )
+        fn = function( ) end
+    end
+
+    timer.Create( id, delay, repscnt, fn )
+end
+uni = unique
+
+/*
 *   timex > simple
 *
 *   create a simple timer.

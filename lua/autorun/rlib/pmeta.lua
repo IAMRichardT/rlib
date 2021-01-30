@@ -19,15 +19,14 @@
 *   standard tables and localization
 */
 
-rlib 					= rlib or { }
-local base              = rlib
-local mf                = base.manifest
+local base                  = rlib
+local mf                    = base.manifest
 
 /*
 *   localized rlib routes
 */
 
-local helper            = base.h
+local helper                = base.h
 
 /*
 *   Localized lua funcs
@@ -36,23 +35,19 @@ local helper            = base.h
 *   bit of performance, we need to.
 */
 
-local istable           = istable
-local isfunction        = isfunction
-local isnumber          = isnumber
-local isstring          = isstring
-local debug             = debug
-local util              = util
-local table             = table
-local math              = math
-local string            = string
-local sf                = string.format
+local istable               = istable
+local isfunction            = isfunction
+local isnumber              = isnumber
+local isstring              = isstring
+local debug                 = debug
+local util                  = util
+local table                 = table
+local math                  = math
+local string                = string
+local sf                    = string.format
 
 /*
 *   Localized cmd func
-*
-*   @source : lua\autorun\libs\calls
-*   @param  : str t
-*   @param  : varg { ... }
 */
 
 local function call( t, ... )
@@ -77,7 +72,7 @@ local function pid( str, suffix )
 end
 
 /*
-*	prefix :: getid
+*	prefix > getid
 *
 *   @param  : str id
 */
@@ -129,7 +124,7 @@ end
 end
 
 /*
-*   pmeta :: alias
+*   pmeta > alias
 *
 *   displays their real name (alias) to use on the server
 *   override can be applied to check for valid string first
@@ -147,7 +142,7 @@ function pmeta:palias( override )
 end
 
 /*
-*	pmeta :: player model :: revision 2
+*	pmeta > player model > revision 2
 *
 *   a fix for certain models displaying /models/models/
 *
@@ -163,7 +158,7 @@ function pmeta:getmdl_rev2( )
 end
 
 /*
-*	pmeta :: player model :: get
+*	pmeta > player model > get
 *
 *   returns the current model for the job of a player
 *
@@ -191,7 +186,7 @@ end
 pmeta.getmodel = pmeta.getmdl
 
 /*
-*	pmeta :: uid :: get
+*	pmeta > uid > get
 *
 *   returns unique id or account id of ply
 *
@@ -204,7 +199,7 @@ function pmeta:uid( bUID )
 end
 
 /*
-*	pmeta :: sid :: get
+*	pmeta > sid > get
 *
 *   returns steam64 or steam32 id of ply
 *
@@ -217,7 +212,7 @@ function pmeta:sid( bS32 )
 end
 
 /*
-*	pmeta :: generate id
+*	pmeta > generate id
 *
 *   returns an id based on the players account id
 *   useful for ply specific timer ids, etc.
@@ -237,7 +232,7 @@ function pmeta:gid( suffix, bUseS64 )
 end
 
 /*
-*   helper :: association id
+*   helper > association id
 *
 *   makes an id based on the specified ply unique id
 *       : special chars     => [ . ]
@@ -269,7 +264,7 @@ function pmeta:aid( ... )
 end
 
 /*
-*   helper :: association id :: 64
+*   helper > association id > 64
 *
 *   makes an id based on the specified ply unique id
 *       : special chars     => [ . ]
@@ -301,7 +296,7 @@ function pmeta:aid64( ... )
 end
 
 /*
-*	pmeta :: rp money :: get
+*	pmeta > rp money > get
 *
 *   returns current funds of player
 *
@@ -313,7 +308,7 @@ function pmeta:getmoney( bComma )
 end
 
 /*
-*	pmeta :: rp money :: salary
+*	pmeta > rp money > salary
 *
 *   returns current salary of player
 *
@@ -325,7 +320,7 @@ function pmeta:getsalary( bComma )
 end
 
 /*
-*	pmeta :: prestige :: get
+*	pmeta > prestige > get
 *
 *   returns ply prestige from any addons adding such feature
 */
@@ -335,7 +330,7 @@ function pmeta:getprestige( )
 end
 
 /*
-*	pmeta :: stamina :: get
+*	pmeta > stamina > get
 *
 *   returns pl stamina
 */
@@ -345,7 +340,7 @@ function pmeta:getstamina( )
 end
 
 /*
-*	pmeta :: energy :: get
+*	pmeta > energy > get
 *
 *   returns pl energy
 */
@@ -355,7 +350,7 @@ function pmeta:getenergy( )
 end
 
 /*
-*   pmeta :: group :: get
+*   pmeta > group > get
 *
 *   returns the group assigned to the player
 *
@@ -370,7 +365,7 @@ end
 pmeta.group = pmeta.getgroup
 
 /*
-*	pmeta :: inventory :: get id
+*	pmeta > inventory > get id
 *
 *	id associated with the inventory system
 *   used with itemstore addon for gmodstore
@@ -383,7 +378,7 @@ function pmeta:getinventory( )
 end
 
 /*
-*   pmeta :: get level
+*   pmeta > get level
 *
 *   Gets the current level of the player (relies on the DarkRP Leveling addon)
 *
@@ -396,7 +391,7 @@ end
 pmeta.level = pmeta.getlevel
 
 /*
-*   pmeta :: get year
+*   pmeta > get year
 *
 *   Gets the current year of the player (relies on the DarkRP Leveling addon, for gamemodes such as
 *	hogwartsrp
@@ -410,7 +405,7 @@ end
 pmeta.year = pmeta.getyear
 
 /*
-*   pmeta :: get data
+*   pmeta > get data
 *
 *   returns data associated to the specified ply table
 *
@@ -424,7 +419,7 @@ function pmeta:getdata( id )
 end
 
 /*
-*	pmeta :: get xp
+*	pmeta > get xp
 *
 *   returns the current role of the player
 *
@@ -437,7 +432,7 @@ end
 pmeta.xp = pmeta.xp
 
 /*
-*   pmeta :: get xp max
+*   pmeta > get xp max
 *
 *   returns the max xp a ply can have for a current level / year
 *
@@ -449,7 +444,7 @@ function pmeta:getxpmax( )
 end
 
 /*
-*   pmeta :: give xp
+*   pmeta > give xp
 *
 *   gives the specified player xp
 *
@@ -468,7 +463,7 @@ function pmeta:givexp( xp )
 end
 
 /*
-*	pmeta :: get job
+*	pmeta > get job
 *
 *	returns ply current job
 *
@@ -483,7 +478,7 @@ end
 pmeta.job = pmeta.getjob
 
 /*
-*	pmeta :: get job data
+*	pmeta > get job data
 *
 *	returns the current role of the player
 *	if id provided, you can return values related to that particular user role
@@ -511,13 +506,28 @@ end
 pmeta.jobdata = pmeta.getjobdata
 
 /*
-*	scope :: SERVER
+*   pmeta > distance
+*
+*   calculates distance between player and target
+*
+*   @param  : ent targ
+*   @return : int
+*/
+
+function pmeta:distance( targ )
+    if not IsValid( targ ) then return end
+    return self:GetPos( ):Distance( targ:GetPos( ) ) or 0
+end
+pmeta.dist = pmeta.distance
+
+/*
+*	scope > SERVER
 */
 
 if SERVER then
 
     /*
-    *	pmeta :: rcc
+    *	pmeta > rcc
     *
     *	executes a console command on the specify player
     *
