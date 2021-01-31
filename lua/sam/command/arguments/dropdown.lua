@@ -43,7 +43,16 @@ command.new_argument( 'dropdown' )
 	*   OnExecute
 	*/
 
-	:OnExecute( function( argument, input, ply, _, result )
+	:OnExecute( function( arg, input, ply, _, result )
+		if not arg.options or table.Empty( arg.options ) then
+			ply:sam_send_message( 'no data',
+			{
+				S = 'dropdown', S_2 = input
+			} )
+			return
+		end
+
+
 		table.insert( result, input )
 	end )
 
@@ -68,6 +77,11 @@ command.new_argument( 'dropdown' )
 
 			self:Clear( )
 			self:SetValue( default )
+
+			if not args or not args.options then
+				LocalPlayer( ):sam_send_message( 'dropdown has no options data' )
+				return
+			end
 
 			for k, v in pairs( args.options ) do
 				self:AddChoice( v )
