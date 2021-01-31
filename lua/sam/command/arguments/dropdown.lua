@@ -52,7 +52,6 @@ command.new_argument( 'dropdown' )
 			return
 		end
 
-
 		table.insert( result, input )
 	end )
 
