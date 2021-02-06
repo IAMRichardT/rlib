@@ -51,7 +51,7 @@ function rlib.autoload:Run( parent )
     mf.repo                         = 'https://github.com/im-richard/rlib/'
     mf.docs                         = 'https://docs.rlib.io/'
     mf.about                        = [[rlib is a glua library written for garrys mod which contains a variety of commonly used functions that are required for certain scripts to run properly. Package includes both rlib + rcore which act as the overall foundation which other scripts will rest within as a series of modules. ]]
-    mf.released                     = 1607850986
+    mf.released                     = 1612643581
     mf.version                      = { 3, 2, 0, 0 }
     mf.showcopyright                = true
 
