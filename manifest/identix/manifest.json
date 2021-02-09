@@ -6,8 +6,8 @@
 	"description":      "name and profile system",
 	"homepage":         "https://gmodstore.com/scripts/view/6214",
 	"docs":             "https://identix.rlib.io",
-	"version":          "v3.0.1.2",
-	"updated":          "Dec 13, 2020",
+	"version":          "v3.0.2.0",
+	"updated":          "Feb 08, 2021",
 	"workshop":         "2319115673",
 	"rlib-required":    "v3.2.0.0"
 }
