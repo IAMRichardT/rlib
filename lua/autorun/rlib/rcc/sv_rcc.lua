@@ -489,7 +489,11 @@ local function rcc_checksum_new( pl, cmd, args, str )
     *   confirm msg to pl
     */
 
-    base.msg:direct( pl, script, not deploy and lang( 'checksum_write_err' ) or lang( 'checksum_write_success' ) )
+    if pl and not base.con:Is( pl ) then
+        base.msg:direct( pl, script, not deploy and lang( 'checksum_write_err' ) or lang( 'checksum_write_success' ) )
+    end
+
+    log( RLIB_LOG_SYSTEM, not deploy and lang( 'checksum_write_err' ) or lang( 'checksum_write_success' ) )
 
 end
 rcc.register( 'rlib_cs_new', rcc_checksum_new )

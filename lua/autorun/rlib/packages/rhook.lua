@@ -186,7 +186,16 @@ end
 */
 
 function run.rlib( event, ... )
-    event = gid( event )
+    event       = gid( event )
+    local args  = { ... }
+
+    if args and ( type( args[ 1 ] ) == 'boolean' ) then
+        log( RLIB_LOG_STATUS, '[ %s ] > event id %s', pkg_name, event )
+        hook.Run( event )
+
+        return
+    end
+
     hook.Run( event, ... )
 end
 
@@ -199,6 +208,15 @@ end
 
 function run.gmod( event, ... )
     if not isstring( event ) then return end
+
+    local args = { ... }
+    if args and ( type( args[ 1 ] ) == 'boolean' ) then
+        log( RLIB_LOG_STATUS, '[ %s ] > event id %s', pkg_name, event )
+        hook.Run( event )
+
+        return
+    end
+
     hook.Run( event, ... )
 end
 

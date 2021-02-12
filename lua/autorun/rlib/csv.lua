@@ -225,6 +225,43 @@ function pmeta:rbubble( dur, ... )
 end
 
 /*
+*   event listeners
+*
+*   :   player_connect
+*       : address
+*       : bot
+*       : index
+*       : name
+*       : networkid
+*       : userid
+*
+*   :   player_disconnect
+*       : bot
+*       : name
+*       : networkid
+*       : reason
+*       : userid
+*/
+
+gameevent.Listen( 'player_connect' )
+hook.Add( 'player_connect', pid( '__lib_evn_player_connect' ), function( data )
+    sys.connections = ( sys.connections or 0 ) + 1
+    sys.initialized = true
+
+    if sys.connections == 1 then
+        hook.Run( 'rlib_bInitialized', data )
+        if base.oort and base.oort.PrepareLog then
+            base.oort:PrepareLog( true )
+        end
+    end
+end )
+
+gameevent.Listen( 'player_disconnect' )
+hook.Add( 'player_disconnect', pid( '__lib_evn_player_disconnect' ), function( data )
+    -- storage:logconn( 2, true, '[ Listener ] USER:( %s ) STEAM_ID:( %s ) REASON:( %s )', data.name, data.networkid, ( ts( data.reason ) or 'none' ) )
+end )
+
+/*
 *   oort > sess id
 *
 *   returns oort server sess id
@@ -309,7 +346,7 @@ function base.oort:Stats( bForce )
         oort_stats_query( )
     end )
 end
-hook.Add( pid( 'initialize' ), pid( 'initialize_oort_stats' ), base.oort.Stats )
+hook.Add( pid( '__lib_engine' ), pid( 'initialize_oort_stats' ), base.oort.Stats )
 
 /*
 *   checksum > valid
@@ -796,6 +833,8 @@ local function initialize( )
             base.get:wsinfo( ws_id )
         end
 
+        rhook.run.rlib( 'rlib_server_ready' )
+
     end )
 
     /*
@@ -803,7 +842,7 @@ local function initialize( )
     */
 
     timex.simple( 5, function( )
-        hook.Run( pid( 'initialize' ) )
+        hook.Run( pid( '__lib_engine' ) )
     end )
 end
 hook.Add( 'Initialize', pid( '__lib_initialize' ), initialize )
@@ -839,7 +878,7 @@ local function bInitialized( data )
                     log( 8, ln( 'lib_start_compl', sys.startups ) )
                     log( 0 )
 
-                    rhook.run.rlib( 'rlib_onready_post' )
+                    rhook.run.rlib( 'rlib_server_fjoin' )
                 end
             end )
         end )
@@ -860,8 +899,8 @@ hook.Add( 'rlib_bInitialized', pid( '__lib_bInitialized' ), bInitialized )
 
 local function __lib_initpostentity( )
 
-    hook.Run( pid( 'cmd.register' ) )
-    hook.Run( pid( 'pkg.register' ) )
+    rhook.run.rlib( 'rlib_cmd_register' )
+    rhook.run.rlib( 'rlib_pkg_register' )
 
     /*
     *   register commands
@@ -1455,6 +1494,57 @@ function storage:log( cat, bKonsole, msg, ... )
 
     storage.dir.create  ( path )
     storage.file.append ( path, m_id, resp )
+end
+
+/*
+*   storage > logging > user connections
+*
+*   log action information to the data folder
+*       /rlib/uconn/
+*
+*   to write a log to another directory not associated to /rlib/logs => use
+*       rlib > konsole:log( path, cat, data )
+*
+*   files in the directory are created based on the current date. a new file will be made if a log is
+*   submitted on a day where no file with that date exists.
+*
+*   @call   : storage:logconn( 1, false, 'information to log' )
+*
+*   @param  : int cat
+*   @param  : bool bKonsole
+*   @param  : str msg
+*   @param  : varg { ... }
+*/
+
+function storage:logconn( cat, bKonsole, msg, ... )
+    if not cat then cat = 1 end
+    if bKonsole and ( not isbool( bKonsole ) and bKonsole ~= nil ) then return end
+    if not msg and not isstring( msg ) then return end
+
+    local args          = { ... }
+
+    local result, msg   = pcall( sf, msg, unpack( args ) )
+
+    local c_type        = isnumber( cat ) and '[' .. helper.str:ucfirst( base._def.debug_titles_uconn[ cat ] ) .. ']' or isstring( cat ) and '[' .. cat .. ']' or ln( 'logs_cat_uconn' )
+    local m_pf          = os.date( '%m%d%Y' )
+    local m_id          = sf( 'RL_%s.txt', m_pf )
+
+    local when          = '[' .. os.date( '%I:%M:%S' ) .. ']'
+    local resp          = sf( '%s %s %s', when, c_type:upper( ), msg )
+    local i_boot        = sys.startups or 0
+
+                        if i_boot == 0 or i_boot == '0' then
+                            i_boot = '#boot'
+                        end
+
+    local path          = sf( '%s/%s', path_uconn, i_boot )
+
+    storage.dir.create  ( path )
+    storage.file.append ( path, m_id, resp )
+
+    if bKonsole and konsole then
+        konsole:add_simple( cat, msg )
+    end
 end
 
 /*

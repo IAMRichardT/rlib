@@ -446,10 +446,12 @@ local function initialize( )
                 log( RLIB_LOG_WS, lang( 'ws_registered', res.title, l ) )
             end )
         end
+
+        rhook.run.rlib( 'rlib_server_ready' )
     end )
 
     timex.simple( 10, function( )
-        hook.Run( pid( 'initialize' ) )
+        hook.Run( pid( '__lib_engine' ) )
     end )
 end
 hook.Add( 'Initialize', pid( '__lib_initialize' ), initialize )
@@ -474,9 +476,9 @@ local function __lib_initpostentity( )
     *   hooks > register
     */
 
-    hook.Run( pid( 'cmd.register' ) )
-    hook.Run( pid( 'pkg.register' ) )
-    hook.Run( pid( 'fonts.register' ) )
+    rhook.run.rlib( 'rlib_cmd_register' )
+    rhook.run.rlib( 'rlib_pkg_register' )
+    rhook.run.rlib( 'rlib_fonts_register' )
 
     /*
     *   register commands
