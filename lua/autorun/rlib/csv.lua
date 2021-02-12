@@ -880,7 +880,7 @@ local function __lib_initpostentity( )
     *   run post initialization hook
     */
 
-    hook.Run( pid( 'initialize.post' ) )
+    rhook.run.rlib( 'rlib_initialize_post' )
 
 end
 hook.Add( 'InitPostEntity', pid( '__lib_initpostentity' ), __lib_initpostentity )

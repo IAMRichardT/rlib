@@ -171,7 +171,7 @@ end
 function base.calls:load( bPrefix, affix )
     log( 6, lang( 'calls_register_nlib' ) )
 
-    hook.Run( pid( 'calls_pre' ) )
+    rhook.run.rlib( 'rlib_calls_pre' )
 
     if not base._rcalls[ 'net' ] then
         base._rcalls[ 'net' ] = { }
@@ -186,7 +186,7 @@ function base.calls:load( bPrefix, affix )
         rhook.run.gmod( 'rlib_rnet_register' )
     end
 
-    hook.Run( pid( 'calls_post' ) )
+    rhook.run.rlib( 'rlib_calls_post' )
 end
 
 /*

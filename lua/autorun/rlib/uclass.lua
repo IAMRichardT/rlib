@@ -1879,7 +1879,8 @@ local uclass = { }
     */
 
     function uclass.getdraw( pnl )
-        return pnl.OldPaint
+        if not pnl.OldPaint then return end
+        pnl[ 'Paint' ] = pnl.OldPaint
     end
 
     /*

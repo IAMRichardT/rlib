@@ -1459,9 +1459,15 @@ function base:Register( path, mod, b_isext )
     */
 
     if CLIENT then
-        local name = pid( 'fnt_register', mod_id )
-        rhook.run.gmod( name )
+        local name = pid( 'fonts_register', mod_id )
+        rhook.run.rlib( name )
     end
+
+    /*
+    *   cleanup temp global
+    */
+
+    _G[ mod_id ] = nil
 
 end
 rhook.new.rlib( 'rcore_modules_register', base.Register )

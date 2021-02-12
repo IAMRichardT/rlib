@@ -420,7 +420,6 @@ local function log( ... ) base:log( ... ) end
 *   get > prefix
 *
 *   creates a proper str id based on the params provided
-*   should be called through a localized function
 *
 *   local function pref( str, suffix )
 *       local state = not suffix and mod or isstring( suffix ) and suffix or false
@@ -447,6 +446,36 @@ local function log( ... ) base:log( ... ) end
 
         id              = isstring( id ) and id or 'noname'
         id              = id:gsub( '[%p%c%s]', '.' )
+
+        return sf( '%s%s', affix, id )
+    end
+
+/*
+*   get > prefix > li
+*
+*   creates a proper str id based on the params provided
+*   similar to base.get:pref but allows for underscores
+*
+*   @call   : pref( 'pnl_root' )
+*             returns 'modname.pnl_root'
+*
+*           : pref( 'pnl.root', true )
+*             returns 'rlib.pnl.root'
+*
+*           : pref( 'pnl_root', 'test' )
+*             returns 'test.pnl_root'
+*
+*   @param  : str id
+*   @param  : tbl, str, bool suffix
+*   @return : str
+*/
+
+    function base.get:prefli( id, suffix )
+        local affix     = istable( suffix ) and suffix.id or isstring( suffix ) and suffix or pf
+        affix           = affix:sub( -1 ) ~= '.' and sf( '%s.', affix ) or affix
+
+        id              = isstring( id ) and id or 'noname'
+        id              = id:gsub( '[%c%s]', '.' )
 
         return sf( '%s%s', affix, id )
     end

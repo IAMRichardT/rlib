@@ -463,7 +463,7 @@ hook.Add( 'Initialize', pid( '__lib_initialize' ), initialize )
 *   registration hooks include
 *       : commands      rlib.cmd.register
 *       : packages      rlib.pkg.register
-*       : fonts         rlib.fnt.register
+*       : fonts         rlib.fonts.register
 *
 *   commonly used for actions such as registering permissions, concommands, etc.
 */
@@ -476,7 +476,6 @@ local function __lib_initpostentity( )
 
     hook.Run( pid( 'cmd.register' ) )
     hook.Run( pid( 'pkg.register' ) )
-    hook.Run( pid( 'fnt.register' ) )
     hook.Run( pid( 'fonts.register' ) )
 
     /*
@@ -489,7 +488,7 @@ local function __lib_initpostentity( )
     *   hooks > initialize
     */
 
-    hook.Run( pid( 'initialize.post' ) )
+    rhook.run.rlib( 'rlib_initialize_post' )
 end
 hook.Add( 'InitPostEntity', pid( '__lib_initpostentity' ), __lib_initpostentity )
 

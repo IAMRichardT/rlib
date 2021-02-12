@@ -28,6 +28,9 @@ local base                  = rlib
 base.c.hooks =
 {
     [ 'rlib_loader_post' ]                      = { 'rlib.loader.post' },
+    [ 'rlib_initialize_post' ]                  = { 'rlib.initialize.post' },
+    [ 'rlib_calls_pre' ]                        = { 'rlib.calls.pre' },
+    [ 'rlib_calls_post' ]                       = { 'rlib.calls.post' },
     [ 'rlib_rnet_register' ]                    = { 'rlib.rnet.register' },
     [ 'rlib_onready_post' ]                     = { 'rlib.onready.post' },
     [ 'rcore_rnet_register' ]                   = { 'rcore.rnet.register' },

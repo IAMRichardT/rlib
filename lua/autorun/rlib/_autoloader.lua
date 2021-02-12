@@ -65,6 +65,8 @@ function rlib.autoload:Run( parent )
         {
             { file = 'cfg',                     scope = 2 },
             { file = 'define',                  scope = 2 },
+            { file = 'get',                     scope = 2 },
+            { file = 'base',                    scope = 2 },
             { file = 'register',                scope = 2 },
             { file = 'permissions',             scope = 2 },
             { file = 'cvar/sh_cvar',            scope = 2 },
@@ -75,8 +77,6 @@ function rlib.autoload:Run( parent )
             { file = 'resources',               scope = 2 },
             { file = 'calls/sv_calls',          scope = 1 },
             { file = 'calls/sh_calls',          scope = 2 },
-            { file = 'get',                     scope = 2 },
-            { file = 'base',                    scope = 2 },
             { file = 'csv',                     scope = 1 },
             { file = 'csh',                     scope = 2 },
             { file = 'fonts',                   scope = 3 },
