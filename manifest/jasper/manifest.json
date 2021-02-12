@@ -3,7 +3,7 @@
 	"author":           "richard",
 	"script":           "2936",
 	"type":             "addon",
-	"description":      "motd (message of the day)",
+	"description":      "motd",
 	"homepage":         "https://gmodstore.com/scripts/view/2936",
 	"docs":             "https://jasper.rlib.io",
 	"version":          "v1.1.2.0",

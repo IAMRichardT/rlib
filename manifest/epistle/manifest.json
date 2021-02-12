@@ -3,7 +3,7 @@
 	"author":           "richard",
 	"script":           "4697",
 	"type":             "addon",
-	"description":      "motd (message of the day)",
+	"description":      "motd",
 	"homepage":         "https://gmodstore.com/scripts/view/4697",
 	"docs":             "https://epistle.rlib.io",
 	"version":          "v2.2.0.0",
