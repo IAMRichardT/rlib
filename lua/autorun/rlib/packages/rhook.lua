@@ -132,7 +132,7 @@ session                     = session or { }
 *   determines if debugging mode is enabled
 */
 
-cfg.debug                   = cfg.debug or false
+cfg.debug                   = true
 
 /*
 *	prefix > getid
@@ -187,15 +187,6 @@ end
 
 function run.rlib( event, ... )
     event       = gid( event )
-    local args  = { ... }
-
-    if args and ( type( args[ 1 ] ) == 'boolean' ) then
-        log( RLIB_LOG_STATUS, '[ %s ] > event id %s', pkg_name, event )
-        hook.Run( event )
-
-        return
-    end
-
     hook.Run( event, ... )
 end
 
@@ -208,8 +199,25 @@ end
 
 function run.gmod( event, ... )
     if not isstring( event ) then return end
+    hook.Run( event, ... )
+end
 
-    local args = { ... }
+/*
+*   run > id
+*
+*   similar to run.rlib however throws the event id back
+*   in order to fetch the proper id being called
+*
+*   dont use unless you know what your doing
+*
+*   @param  : str event
+*   @param  : varg ...
+*/
+
+function run.id( event, ... )
+    event       = gid( event )
+    local args  = { ... }
+
     if args and ( type( args[ 1 ] ) == 'boolean' ) then
         log( RLIB_LOG_STATUS, '[ %s ] > event id %s', pkg_name, event )
         hook.Run( event )
@@ -241,6 +249,27 @@ end
 
 function call.gmod( event, ... )
     if not isstring( event ) then return end
+    hook.Call( event, ... )
+end
+
+/*
+*   call > id
+*
+*   @param  : str event
+*   @param  : varg ...
+*/
+
+function call.id( event, ... )
+    event       = gid( event )
+    local args  = { ... }
+
+    if args and ( type( args[ 1 ] ) == 'boolean' ) then
+        log( RLIB_LOG_STATUS, '[ %s ] > event id %s', pkg_name, event )
+        hook.Call( event )
+
+        return
+    end
+
     hook.Call( event, ... )
 end
 
