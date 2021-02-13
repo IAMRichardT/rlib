@@ -1,0 +1,13 @@
+{
+	"name":             "Athena",
+	"author":           "richard",
+	"script":           "1781",
+	"type":             "addon",
+	"description":      "f1 menu",
+	"homepage":         "https://gmodstore.com/scripts/view/1781",
+	"docs":             "https://athena.rlib.io",
+	"version":          "v1.3.0.0",
+	"updated":          "Aug 25, 2016",
+	"workshop":         "561782713",
+	"rlib-required":    "v3.2.0.0"
+}

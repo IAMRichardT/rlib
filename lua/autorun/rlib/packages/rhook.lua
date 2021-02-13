@@ -132,7 +132,7 @@ session                     = session or { }
 *   determines if debugging mode is enabled
 */
 
-cfg.debug                   = true
+cfg.debug                   = cfg.debug or false
 
 /*
 *	prefix > getid

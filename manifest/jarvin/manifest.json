@@ -1,0 +1,13 @@
+{
+	"name":             "Jarvin",
+	"author":           "richard",
+	"script":           "1872",
+	"type":             "addon",
+	"description":      "escape menu",
+	"homepage":         "https://gmodstore.com/scripts/view/1872",
+	"docs":             "https://jarvin.rlib.io",
+	"version":          "v1.1.0.0",
+	"updated":          "July 27, 2016",
+	"workshop":         "585120165",
+	"rlib-required":    "v3.2.0.0"
+}

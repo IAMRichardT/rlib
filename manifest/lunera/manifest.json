@@ -3,7 +3,7 @@
 	"author":           "richard",
 	"script":           "1621",
 	"type":             "addon",
-	"description":      "(motd) message of the day",
+	"description":      "motd",
 	"homepage":         "https://gmodstore.com/scripts/view/1621",
 	"docs":             "https://lunera.rlib.io",
 	"version":          "v3.6.0.0",
