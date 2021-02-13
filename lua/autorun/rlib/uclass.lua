@@ -1910,9 +1910,9 @@ local uclass = { }
     *   @param  : str id
     */
 
-    function uclass.convar( pnl, id )
-        id = isstring( id ) and id or ''
-        pnl:SetConVar( id )
+    function uclass.convar( pnl, name )
+        name = isstring( name ) and name or ''
+        pnl:SetConVar( name )
     end
 
     /*
@@ -1921,7 +1921,7 @@ local uclass = { }
     *   @param  : str val
     */
 
-    function uclass.convar_chg( pnl, val )
+    function uclass.cvar_chg( pnl, val )
         val = isstring( val ) and val or ''
         pnl:ConVarChanged( val )
     end
@@ -1930,7 +1930,7 @@ local uclass = { }
     *   uclass > Panel > ConVarNumberThink
     */
 
-    function uclass.convar_think_int( pnl )
+    function uclass.cvar_th_int( pnl )
         pnl:ConVarNumberThink( )
     end
 
@@ -1938,7 +1938,7 @@ local uclass = { }
     *   uclass > Panel > ConVarStringThink
     */
 
-    function uclass.convar_think_str( pnl )
+    function uclass.cvar_th_str( pnl )
         pnl:ConVarStringThink( )
     end
 
@@ -1947,27 +1947,28 @@ local uclass = { }
     *
     *   @alias  : cvar
     *
-    *   @param  : str id
+    *   @param  : str name
     */
 
-    function uclass.cvar( pnl, id )
-        id = isstring( id ) and id or ''
-        pnl.convarname = id
+    function uclass.cvar( pnl, name )
+        name = isstring( name ) and name or ''
+        pnl.convarname = name
     end
+    uclass.cvarname = uclass.cvar
 
     /*
-    *   uclass > route
+    *   uclass > assign
     *
-    *   @alias  : route
+    *   @alias  : assign
     *
     *   @param  : str id
     *   @param  : mix data
     */
 
-    function uclass.route( pnl, id, data )
+    function uclass.assign( pnl, id, data )
         if not id then return end
-        data = data or ''
-        pnl[ id ] = data
+        data        = data or ''
+        pnl[ id ]   = data
     end
 
     /*
@@ -1976,11 +1977,32 @@ local uclass = { }
     *   @alias  : attach
     *
     *   @param  : pnl child
+    *   @param  : bool bNoDestroy
     */
 
-    function uclass.attach( pnl, child )
+    function uclass.attach( pnl, child, bNoDestroy )
         if not ui:ok( child ) then return end
         pnl:Attach( child )
+        if bNoDestroy and pnl.NoDestroy then
+            pnl:NoDestroy( )
+        end
+    end
+
+    /*
+    *   uclass > attach > parent
+    *
+    *   @alias  : attach
+    *
+    *   @param  : pnl parent
+    *   @param  : bool bNoDestroy
+    */
+
+    function uclass.attachpar( pnl, parent, bNoDestroy )
+        if not ui:ok( parent ) then return end
+        parent:Attach( pnl )
+        if bNoDestroy and parent.NoDestroy then
+            parent:NoDestroy( )
+        end
     end
 
     /*
