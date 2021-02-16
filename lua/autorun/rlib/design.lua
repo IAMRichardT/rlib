@@ -19,7 +19,6 @@
 *   standard tables and localization
 */
 
-rlib                        = rlib or { }
 local base                  = rlib
 local mf                    = base.manifest
 local prefix                = mf.prefix
@@ -28,6 +27,7 @@ local helper                = base.h
 local design                = base.d
 local ui                    = base.i
 local materials             = base.m
+local font                  = base.f
 
 /*
 *   Localized lua funcs
@@ -622,32 +622,32 @@ end
 *   @param  : int y
 *   @param  : clr clr
 *   @param  : str fnt
-*   @param  : enum align_x
-*   @param  : enum align_y
+*   @param  : enum aln_x
+*   @param  : enum aln_y
 *   @return : w, h
 */
 
-function design.text( text, x, y, clr, fnt, align_x, align_y )
-    text            = tostring( text ) or 'missing text'
+function design.text( text, x, y, clr, fnt, aln_x, aln_y )
+    text            = text or 'missing text'
     x               = isnumber( x ) and x or 0
     y               = isnumber( y ) and y or 0
     clr             = IsColor( clr ) and clr or Color( 255, 255, 255, 255 )
     fnt             = isstring( fnt ) and fnt or ( pref( 'design_text_default' ) )
-    align_x         = align_x or TEXT_ALIGN_LEFT
-    align_y         = align_y or TEXT_ALIGN_TOP
+    aln_x           = aln_x or TEXT_ALIGN_LEFT
+    aln_y           = aln_y or TEXT_ALIGN_TOP
 
     surface.SetFont( fnt )
     local w, h = surface.GetTextSize( text )
 
-    if ( align_x == TEXT_ALIGN_CENTER or align_x == RLIB_TALIGN_C ) then
+    if ( aln_x == TEXT_ALIGN_CENTER or aln_x == RLIB_TALIGN_C ) then
         x = x - w / 2
-    elseif ( align_x == TEXT_ALIGN_RIGHT or align_x == RLIB_TALIGN_R ) then
+    elseif ( aln_x == TEXT_ALIGN_RIGHT or aln_x == RLIB_TALIGN_R ) then
         x = x - w
     end
 
-    if ( align_y == TEXT_ALIGN_CENTER or align_y == RLIB_TALIGN_C ) then
+    if ( aln_y == TEXT_ALIGN_CENTER or aln_y == RLIB_TALIGN_C ) then
         y = y - h / 2
-    elseif ( align_y == TEXT_ALIGN_BOTTOM or align_y == RLIB_TALIGN_B ) then
+    elseif ( aln_y == TEXT_ALIGN_BOTTOM or aln_y == RLIB_TALIGN_B ) then
         y = y - h
     end
 
@@ -657,6 +657,68 @@ function design.text( text, x, y, clr, fnt, align_x, align_y )
         local alpha = 255
         if ( clr.a ) then alpha = clr.a end
         surface.SetTextColor( clr.r, clr.g, clr.b, alpha )
+    else
+        surface.SetTextColor( 255, 255, 255, 255 )
+    end
+
+    surface.DrawText( text )
+
+    return w, h
+end
+
+/*
+*   design > txt
+*
+*   revision of draw.SimpleTet
+*   supports font prefixes
+*
+*   ::  align enums
+*       0   ::  TEXT_ALIGN_LEFT
+*       1   ::  TEXT_ALIGN_CENTER
+*       2   ::  TEXT_ALIGN_RIGHT
+*       3   ::  TEXT_ALIGN_TOP
+*       4   ::  TEXT_ALIGN_BOTTOM
+*
+*   @param  : str text
+*   @param  : str fnt
+*   @param  : int x
+*   @param  : int y
+*   @param  : clr clr
+*   @param  : enum aln_x
+*   @param  : enum aln_y
+*   @return : w, h
+*/
+
+function design.txt( text, pf, fnt, x, y, clr, aln_x, aln_y )
+    text            = text or 'missing text'
+    fnt             = fnt or ( pref( 'design_text_default' ) )
+    x               = isnumber( x ) and x or 0
+    y               = isnumber( y ) and y or 0
+    clr             = IsColor( clr ) and clr or Color( 255, 255, 255, 255 )
+    aln_x           = aln_x or TEXT_ALIGN_LEFT
+    aln_y           = aln_y or TEXT_ALIGN_TOP
+
+    local _f        = font.get( pf, fnt )
+    local w, h      = helper.str:len( text, _f )
+
+    if ( aln_x == TEXT_ALIGN_CENTER or aln_x == RLIB_TALIGN_C ) then
+        x = x - w / 2
+    elseif ( aln_x == TEXT_ALIGN_RIGHT or aln_x == RLIB_TALIGN_R ) then
+        x = x - w
+    end
+
+    if ( aln_y == TEXT_ALIGN_CENTER or aln_y == RLIB_TALIGN_C ) then
+        y = y - h / 2
+    elseif ( aln_y == TEXT_ALIGN_BOTTOM or aln_y == RLIB_TALIGN_B ) then
+        y = y - h
+    end
+
+    surface.SetTextPos( math.ceil( x ), math.ceil( y ) )
+
+    if IsColor( clr ) then
+        local a = 255
+        if ( clr.a ) then a = clr.a end
+        surface.SetTextColor( clr.r, clr.g, clr.b, a )
     else
         surface.SetTextColor( 255, 255, 255, 255 )
     end
@@ -683,24 +745,21 @@ end
 *   @param  : int x
 *   @param  : int y
 *   @param  : clr clr
-*   @param  : enum align_x
+*   @param  : enum aln_x
 *   @return : pos_x, pos_y
 */
 
-function design.text_adv( text, x, y, clr, fnt, align_x )
-
-    text        = tostring( text ) or 'missing text'
+function design.text_adv( text, x, y, clr, fnt, aln_x )
+    text        = text or 'missing text'
     x           = isnumber( x ) and x or 0
     y           = isnumber( y ) and y or 0
     clr         = IsColor( clr ) and clr or Color( 255, 255, 255, 255 )
     fnt         = isstring( fnt ) and fnt or ( pref( 'design_text_default' ) )
-    align_x     = align_x or TEXT_ALIGN_LEFT
+    aln_x       = aln_x or TEXT_ALIGN_LEFT
 
-    local pos_x, pos_y = x, y
-
-    surface.SetFont( fnt )
-    local size_w, size_h = surface.GetTextSize( '\n' )
-    local tab_w = 50
+    local pos_x, pos_y      = x, y
+    local size_w, size_h    = helper.str:len( '\n', fnt )
+    local tab_w             = 50
 
     for str in string.gmatch( text, '[^\n]*' ) do
         if #str > 0 then
@@ -709,14 +768,14 @@ function design.text_adv( text, x, y, clr, fnt, align_x )
                     pos_x = math.ceil( ( pos_x + tab_w * math.max( #tabs - 1, 0 ) ) / tab_w ) * tab_w
 
                     if #str_alt > 0 then
-                        design.text( str_alt, pos_x, pos_y, clr, fnt, align_x )
+                        design.text( str_alt, pos_x, pos_y, clr, fnt, aln_x )
 
                         local w, _ = surface.GetTextSize( str_alt )
                         pos_x = pos_x + w
                     end
                 end
             else
-                design.text( str, pos_x, pos_y, clr, fnt, align_x )
+                design.text( str, pos_x, pos_y, clr, fnt, aln_x )
             end
         else
             pos_x = x
