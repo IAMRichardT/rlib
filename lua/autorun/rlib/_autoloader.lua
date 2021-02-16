@@ -51,7 +51,7 @@ function rlib.autoload:Run( parent )
     mf.repo                         = 'https://github.com/im-richard/rlib/'
     mf.docs                         = 'https://docs.rlib.io/'
     mf.about                        = [[rlib is a glua library written for garrys mod which contains a variety of commonly used functions that are required for certain scripts to run properly. Package includes both rlib + rcore which act as the overall foundation which other scripts will rest within as a series of modules. ]]
-    mf.released                     = 1613244046
+    mf.released                     = 1613445129
     mf.version                      = { 3, 2, 0, 0 }
     mf.showcopyright                = true
 
@@ -231,7 +231,7 @@ function rlib.autoload:Run( parent )
         *   base > struct
         */
 
-        local ind_base = { 'a', 'c', 'd', 'i', 'k', 'l', 'm', 'o', 'p', 'r', 's', 't', 'v', 'w', 'calls', 'checksum', 'con', 'cvar', '_def', 'fonts', 'modules', 'msg', 'sys', 'register', 'resources', 'package', 'alias', 'get', 'oort' }
+        local ind_base = { 'a', 'c', 'd', 'f', 'i', 'k', 'l', 'm', 'o', 'p', 'r', 's', 't', 'v', 'w', 'calls', 'checksum', 'con', 'cvar', '_def', 'fonts', 'modules', 'msg', 'sys', 'register', 'resources', 'package', 'alias', 'get', 'oort' }
         for k, v in ipairs( ind_base ) do
             base[ v ] = { }
         end

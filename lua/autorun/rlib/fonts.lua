@@ -19,15 +19,15 @@
 *   standard tables and localization
 */
 
-rlib                    = rlib or { }
-local base              = rlib
-local mf                = base.manifest
+local base                  = rlib
+local font                  = base.f
+local mf                    = base.manifest
 
 /*
 *   Localized glua routes
 */
 
-local _f                = surface.CreateFont
+local _f                    = surface.CreateFont
 
 /*
 *	prefix ids
@@ -35,8 +35,62 @@ local _f                = surface.CreateFont
 
 local function pref( str, suffix )
     local state = ( isstring( suffix ) and suffix ) or ( base and mf.prefix ) or false
-    return rlib.get:pref( str, state )
+    return base.get:pref( str, state )
 end
+
+/*
+*	font > gmod
+*
+*   @param  : str id
+*   @param  : str name
+*   @param  : int sz
+*   @param  : int weight
+*   @param  : bool bShadow
+*   @param  : bool bExt
+*/
+
+function font.gmod( id, name, sz, wt, bShadow, bExt, bSym )
+    _f( id, { font = name, size = sz, weight = wt, bShadow or false, antialias = true, extended = bExt or false, symbol = bSyn or false } )
+end
+
+/*
+*	fonts > new
+*
+*   @param  : str id
+*   @param  : str name
+*   @param  : int sz
+*   @param  : int weight
+*   @param  : bool bShadow
+*   @param  : bool bExt
+*   @param  : bool bSym
+*/
+
+function font.new( id, name, sz, wt, bShadow, bExt, bSym )
+    id = pref( id )
+    _f( id, { font = name, size = sz, weight = wt, bShadow or false, antialias = true, extended = bExt or false, symbol = bSyn or false } )
+end
+
+/*
+*	fonts > get
+*
+*   returns font id
+*   all ids have rlib_suffix appended to the front
+*
+*   @example:   general_name
+*               rlib.general.name
+*
+*   @param  : str id
+*   @return : str
+*/
+
+function font.get( id )
+    id = pref( id )
+    return id
+end
+
+/*
+*    fonts > rlib
+*/
 
 /*
 *    fonts > uclass
