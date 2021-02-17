@@ -672,13 +672,14 @@ end
 *   revision of draw.SimpleTet
 *   supports font prefixes
 *
-*   ::  align enums
+*   >   align enums
 *       0   ::  TEXT_ALIGN_LEFT
 *       1   ::  TEXT_ALIGN_CENTER
 *       2   ::  TEXT_ALIGN_RIGHT
 *       3   ::  TEXT_ALIGN_TOP
 *       4   ::  TEXT_ALIGN_BOTTOM
 *
+*   @param  : str, tbl pf
 *   @param  : str text
 *   @param  : str fnt
 *   @param  : int x
@@ -689,11 +690,11 @@ end
 *   @return : w, h
 */
 
-function design.txt( text, pf, fnt, x, y, clr, aln_x, aln_y )
-    text            = text or 'missing text'
+function design.txt( pf, text, fnt, x, y, clr, aln_x, aln_y )
+    text            = tostring( text )
     fnt             = fnt or ( pref( 'design_text_default' ) )
-    x               = isnumber( x ) and x or 0
-    y               = isnumber( y ) and y or 0
+    x               = x and x or 0
+    y               = y and y or 0
     clr             = IsColor( clr ) and clr or Color( 255, 255, 255, 255 )
     aln_x           = aln_x or TEXT_ALIGN_LEFT
     aln_y           = aln_y or TEXT_ALIGN_TOP
