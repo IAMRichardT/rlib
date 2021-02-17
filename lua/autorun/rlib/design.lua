@@ -610,6 +610,8 @@ end
 /*
 *   design > text
 *
+*   to be deprecated
+*
 *   ::  align enums
 *       0   ::  TEXT_ALIGN_LEFT
 *       1   ::  TEXT_ALIGN_CENTER
@@ -628,7 +630,7 @@ end
 */
 
 function design.text( text, x, y, clr, fnt, aln_x, aln_y )
-    text            = text or 'missing text'
+    text            = tostring( text )
     x               = isnumber( x ) and x or 0
     y               = isnumber( y ) and y or 0
     clr             = IsColor( clr ) and clr or Color( 255, 255, 255, 255 )
@@ -669,6 +671,65 @@ end
 /*
 *   design > txt
 *
+*   ::  align enums
+*       0   ::  TEXT_ALIGN_LEFT
+*       1   ::  TEXT_ALIGN_CENTER
+*       2   ::  TEXT_ALIGN_RIGHT
+*       3   ::  TEXT_ALIGN_TOP
+*       4   ::  TEXT_ALIGN_BOTTOM
+*
+*   @param  : str text
+*   @param  : int x
+*   @param  : int y
+*   @param  : clr clr
+*   @param  : str fnt
+*   @param  : enum aln_x
+*   @param  : enum aln_y
+*   @return : w, h
+*/
+
+function design.txt( text, x, y, clr, fnt, aln_x, aln_y )
+    text            = tostring( text )
+    x               = isnumber( x ) and x or 0
+    y               = isnumber( y ) and y or 0
+    clr             = IsColor( clr ) and clr or Color( 255, 255, 255, 255 )
+    fnt             = isstring( fnt ) and fnt or ( pref( 'design_text_default' ) )
+    aln_x           = aln_x or TEXT_ALIGN_LEFT
+    aln_y           = aln_y or TEXT_ALIGN_TOP
+
+    surface.SetFont( fnt )
+    local w, h = surface.GetTextSize( text )
+
+    if ( aln_x == TEXT_ALIGN_CENTER or aln_x == RLIB_TALIGN_C ) then
+        x = x - w / 2
+    elseif ( aln_x == TEXT_ALIGN_RIGHT or aln_x == RLIB_TALIGN_R ) then
+        x = x - w
+    end
+
+    if ( aln_y == TEXT_ALIGN_CENTER or aln_y == RLIB_TALIGN_C ) then
+        y = y - h / 2
+    elseif ( aln_y == TEXT_ALIGN_BOTTOM or aln_y == RLIB_TALIGN_B ) then
+        y = y - h
+    end
+
+    surface.SetTextPos( math.ceil( x ), math.ceil( y ) )
+
+    if IsColor( clr ) then
+        local alpha = 255
+        if ( clr.a ) then alpha = clr.a end
+        surface.SetTextColor( clr.r, clr.g, clr.b, alpha )
+    else
+        surface.SetTextColor( 255, 255, 255, 255 )
+    end
+
+    surface.DrawText( text )
+
+    return w, h
+end
+
+/*
+*   design > language
+*
 *   revision of draw.SimpleTet
 *   supports font prefixes
 *
@@ -690,7 +751,7 @@ end
 *   @return : w, h
 */
 
-function design.txt( pf, text, fnt, x, y, clr, aln_x, aln_y )
+function design.lng( pf, text, fnt, x, y, clr, aln_x, aln_y )
     text            = tostring( text )
     fnt             = fnt or ( pref( 'design_text_default' ) )
     x               = x and x or 0
@@ -732,7 +793,7 @@ end
 /*
 *   design > text_adv
 *
-*   works like design.text but with newlines & tabs
+*   works like design.txt but with newlines & tabs
 *   originally part of gmod lib
 *
 *   ::  align enums
@@ -769,14 +830,14 @@ function design.text_adv( text, x, y, clr, fnt, aln_x )
                     pos_x = math.ceil( ( pos_x + tab_w * math.max( #tabs - 1, 0 ) ) / tab_w ) * tab_w
 
                     if #str_alt > 0 then
-                        design.text( str_alt, pos_x, pos_y, clr, fnt, aln_x )
+                        design.txt( str_alt, pos_x, pos_y, clr, fnt, aln_x )
 
                         local w, _ = surface.GetTextSize( str_alt )
                         pos_x = pos_x + w
                     end
                 end
             else
-                design.text( str, pos_x, pos_y, clr, fnt, aln_x )
+                design.txt( str, pos_x, pos_y, clr, fnt, aln_x )
             end
         else
             pos_x = x
@@ -1856,9 +1917,9 @@ function design.notify_adv( icon, title, message, delay )
 
                                         -- text
                                         local clr_txt = cfg.dialogs.clrs.primary_text
-                                        design.text( title, w / 2, h / 2 - 13, Color( clr_txt.r, clr_txt.g, clr_txt.b, c_alpha ), pref( 'design_dialog_title' ), 1, 1 )
-                                        design.text( message, w / 2, h / 2 + 17, Color( clr_txt.r, clr_txt.g, clr_txt.b, c_alpha ), pref( 'design_dialog_msg' ), 1, 1 )
-                                        design.text( lang( 'dialog_key_close', key_convert ), w / 2, h - h * .10 / 2 + 15, Color( clr_txt.r, clr_txt.g, clr_txt.b, c_alpha ), pref( 'design_dialog_qclose' ), 1, 1 )
+                                        design.txt( title, w / 2, h / 2 - 13, Color( clr_txt.r, clr_txt.g, clr_txt.b, c_alpha ), pref( 'design_dialog_title' ), 1, 1 )
+                                        design.txt( message, w / 2, h / 2 + 17, Color( clr_txt.r, clr_txt.g, clr_txt.b, c_alpha ), pref( 'design_dialog_msg' ), 1, 1 )
+                                        design.txt( lang( 'dialog_key_close', key_convert ), w / 2, h - h * .10 / 2 + 15, Color( clr_txt.r, clr_txt.g, clr_txt.b, c_alpha ), pref( 'design_dialog_qclose' ), 1, 1 )
 
                                         local time          = math.Remap( CurTime( ) - m_ctime, 0, delay, w, 0 )
                                         local blk_w         = time * 0.20
@@ -2441,7 +2502,7 @@ function design.anim_scrolltext( text, uid, src, font, clr, dist, atime )
 
             if not item then return end
 
-            design.text( text, item.x, item.y, Color( clr.r, clr.g, clr.b, clr_alpha ), font, 1, 1 )
+            design.txt( text, item.x, item.y, Color( clr.r, clr.g, clr.b, clr_alpha ), font, 1, 1 )
 
             item.x = item.pos
             item.y = item.y - dist
@@ -2501,10 +2562,10 @@ function design.rsay( msg, clr, dur, fade )
         clr.a  = alpha
 
         if not msg_table then
-            design.text( msg, ScrW( ) * 0.5, ScrH( ) * 0.25, clr, pref( 'design_rsay_text' ), 1 )
+            design.txt( msg, ScrW( ) * 0.5, ScrH( ) * 0.25, clr, pref( 'design_rsay_text' ), 1 )
         else
-            design.text( msg[ 1 ], ScrW( ) * 0.5, ScrH( ) * 0.25 - 15, clr, pref( 'design_rsay_text' ), 1 )
-            design.text( msg[ 2 ], ScrW( ) * 0.5, ScrH( ) * 0.25 + 15, clr, pref( 'design_rsay_text_sub' ), 1 )
+            design.txt( msg[ 1 ], ScrW( ) * 0.5, ScrH( ) * 0.25 - 15, clr, pref( 'design_rsay_text' ), 1 )
+            design.txt( msg[ 2 ], ScrW( ) * 0.5, ScrH( ) * 0.25 + 15, clr, pref( 'design_rsay_text_sub' ), 1 )
         end
     end
 
