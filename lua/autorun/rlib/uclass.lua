@@ -38,6 +38,7 @@ local helper                        = base.h
 local design                        = base.d
 local ui                            = base.i
 local cvar                          = base.v
+local font                          = base.f
 local res                           = base.resources
 
 /*
@@ -1244,15 +1245,15 @@ end
 *
 *   @param  : pnl pnl
 *   @param  : str text
-*   @param  : str font
+*   @param  : str face
 */
 
-function ui:settext( pnl, text, font )
+function ui:settext( pnl, text, face )
     if not self:ok( pnl ) then return end
     text = isstring( text ) and text or ''
 
-    if font then
-        pnl:SetFont( font )
+    if face then
+        pnl:SetFont( face )
     end
     pnl:SetText( text )
 end
@@ -1591,14 +1592,14 @@ end
 *   creates a generic set of fonts to be used with the library
 *
 *   @param  : str suffix
-*   @param  : str font
+*   @param  : str face
 *   @param  : bool bShadow
 *   @param  : int scale [ optional ]
 */
 
-function ui:fonts_register( suffix, font, bShadow, scale )
+function ui:fonts_register( suffix, face, bShadow, scale )
     suffix          = isstring( suffix ) and suffix or prefix
-    font            = isstring( font ) and font or pid( 'ucl_font_def' )
+    face            = isstring( face ) and face or pid( 'ucl_font_def' )
     bShadow         = bShadow or false
     scale           = isnumber( scale ) and scale or self:scale( )
 
@@ -1633,10 +1634,10 @@ function ui:fonts_register( suffix, font, bShadow, scale )
     for sz, sz_name in pairs( font_sz ) do
         local calc_sz   = sz * scale
         local name      = sf( '%s%s', suffix, sz_name )
-        surface.CreateFont( name, { font = font, size = calc_sz, shadow = bShadow, antialias = true } )
+        surface.CreateFont( name, { font = face, size = calc_sz, shadow = bShadow, antialias = true } )
         for wg, wg_name in pairs( weights ) do
             name        = sf( '%s%s_%s', suffix, sz_name, wg_name )
-            surface.CreateFont( name, { font = font, size = calc_sz, weight = wg_name, shadow = bShadow, antialias = true } )
+            surface.CreateFont( name, { font = face, size = calc_sz, weight = wg_name, shadow = bShadow, antialias = true } )
         end
     end
 end
@@ -3524,6 +3525,21 @@ local uclass = { }
     uclass.font = uclass.setfont
 
     /*
+    *   uclass > DLabel, DTextEntry > typeface
+    *
+    *   sets a font, but with a registered font prefix
+    *
+    *   @param  : str str
+    */
+
+    function uclass.face( pnl, mod, str )
+        str         = isstring( str ) and str or pid( 'ucl_font_def' )
+        local _f    = font.get( mod, str )
+
+        pnl:SetFont( _f )
+    end
+
+    /*
     *   uclass > Panel > SizeToChildren
     *
     *   resizes the panel to fit the bounds of its children
@@ -3920,7 +3936,7 @@ local uclass = { }
     *   @param  : clr clr
     *           : text color. Uses the Color structure
     *
-    *   @param  : str font
+    *   @param  : str face
     *           : font of the label
     *
     *   @param  : str text
@@ -3933,14 +3949,64 @@ local uclass = { }
     *           : SetContentAlignment( )
     */
 
-    function uclass.txt( pnl, text, clr, font, bautosz, align )
-        text    = isstring( text ) and text or ''
-        clr     = IsColor( clr ) and clr or Color( 255, 255, 255, 255 )
-        font    = isstring( font ) and font or pid( 'ucl_font_def' )
+    function uclass.txt( pnl, text, clr, face, bautosz, align )
+        text        = isstring( text ) and text or ''
+        clr         = IsColor( clr ) and clr or Color( 255, 255, 255, 255 )
+        face        = isstring( face ) and face or pid( 'ucl_font_def' )
 
-        pnl:SetTextColor( clr )
-        pnl:SetFont( font )
-        pnl:SetText( text )
+        pnl:SetTextColor    ( clr   )
+        pnl:SetFont         ( face  )
+        pnl:SetText         ( text  )
+
+        if bautosz then
+            pnl:SizeToContents( )
+        end
+
+        if align then
+            pnl:SetContentAlignment ( align )
+        end
+
+        pnl[ 'Think' ] = function( s, ... )
+            s:SetTextColor( clr )
+        end
+    end
+
+    /*
+    *   uclass > DLabel > Language
+    *
+    *   set text clr, font, and string
+    *   supports registered fonts
+    *
+    *   @param  : str face
+    *           : font of the label
+    *
+    *   @param  : clr clr
+    *           : text color. Uses the Color structure
+    *
+    *   @param  : str text
+    *           : text to display
+    *
+    *   @param  : bool bautosz
+    *           : enables SizeToContents( )
+    *
+    *   @param  : int align
+    *           : SetContentAlignment( )
+    */
+
+    function uclass.lng( pnl, mod, text, face, clr, bautosz, align )
+        text        = isstring( text ) and text or ''
+        face        = isstring( face ) and face
+        clr         = IsColor( clr ) and clr or Color( 255, 255, 255, 255 )
+
+        local _f    = font.get( mod, face )
+
+        pnl:SetTextColor    ( clr   )
+
+        if face then
+            pnl:SetFont     ( _f    )
+        end
+
+        pnl:SetText         ( text  )
 
         if bautosz then
             pnl:SizeToContents( )
@@ -3963,7 +4029,7 @@ local uclass = { }
     *   @param  : clr clr
     *           : text color. Uses the Color structure
     *
-    *   @param  : str font
+    *   @param  : str face
     *           : font of the label
     *
     *   @param  : str text
@@ -3973,14 +4039,53 @@ local uclass = { }
     *           : enables SizeToContents( )
     */
 
-    function uclass.textadv( pnl, clr, font, text, bautosz )
-        clr     = IsColor( clr ) and clr or Color( 255, 255, 255, 255 )
-        font    = isstring( font ) and font or pid( 'ucl_font_def' )
-        text    = isstring( text ) and text or ''
+    function uclass.textadv( pnl, clr, face, text, bautosz )
+        clr         = IsColor( clr ) and clr or Color( 255, 255, 255, 255 )
+        face        = isstring( face ) and face or pid( 'ucl_font_def' )
+        text        = isstring( text ) and text or ''
 
-        pnl:SetTextColor( clr )
-        pnl:SetFont( font )
-        pnl:SetText( text )
+        pnl:SetTextColor    ( clr   )
+        pnl:SetFont         ( face  )
+        pnl:SetText         ( text  )
+
+        if bautosz then
+            pnl:SizeToContents( )
+        end
+
+        pnl[ 'Think' ] = function( s, ... )
+            s:SetTextColor( clr )
+        end
+    end
+
+    /*
+    *   uclass > DLabel > SetText, SetTextColor
+    *
+    *   set text clr, font, and string
+    *
+    *   @param  : str face
+    *           : font of the label
+    *
+    *   @param  : str text
+    *           : text to display
+    *
+    *   @param  : clr clr
+    *           : text color. Uses the Color structure
+    *
+    *   @param  : bool bautosz
+    *           : enables SizeToContents( )
+    */
+
+    function uclass.lngadv( pnl, mod, face, text, clr, bautosz )
+        face        = isstring( face ) and face or pid( 'ucl_font_def' )
+        text        = isstring( text ) and text or ''
+        clr         = IsColor( clr ) and clr or Color( 255, 255, 255, 255 )
+
+        local _f    = font.get( mod, face )
+
+        pnl:SetTextColor    ( clr   )
+        pnl:SetFont         ( _f    )
+        pnl:SetText         ( text  )
+
         if bautosz then
             pnl:SizeToContents( )
         end
@@ -4001,7 +4106,7 @@ local uclass = { }
     *   @param  : clr clr
     *           : text color. Uses the Color structure
     *
-    *   @param  : str font
+    *   @param  : str face
     *           : font of the label
     *
     *   @param  : bool bautosz
@@ -4011,16 +4116,16 @@ local uclass = { }
     *           : set content alignment
     */
 
-    function uclass.label( pnl, text, clr, font, bautosz, align )
+    function uclass.label( pnl, text, clr, face, bautosz, align )
         text        = isstring( text ) and text or ''
         clr         = IsColor( clr ) and clr or Color( 255, 255, 255, 255 )
-        font        = isstring( font ) and font or pid( 'ucl_font_def' )
+        face        = isstring( face ) and face or pid( 'ucl_font_def' )
         bautosz     = bautosz or false
         align       = isnumber( align ) and align or 4
 
         pnl:SetText             ( text  )
         pnl:SetColor            ( clr   )
-        pnl:SetFont             ( font  )
+        pnl:SetFont             ( face  )
 
         if bautosz then
             pnl:SizeToContents( )
@@ -5854,11 +5959,11 @@ local uclass = { }
     *   @param  : clr clr
     */
 
-    function uclass.appendfont( pnl, font, clr )
-        font    = isstring( font ) and font or ''
+    function uclass.appendfont( pnl, face, clr )
+        face    = isstring( face ) and face or ''
         clr     = IsColor( clr ) and clr or Color( 255, 255, 255, 255 )
         pnl[ 'PerformLayout' ] = function( s, ... )
-            s:SetFontInternal( font )
+            s:SetFontInternal( face )
             s:SetFGColor( clr )
         end
     end
