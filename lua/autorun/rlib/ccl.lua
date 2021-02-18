@@ -346,9 +346,9 @@ function access:initialize( perms )
             *   permissions :: serverguard
             */
 
-            id = isstring( v.name ) and v.name or v.id or k
+            id          = ( isstring( v.svg_id ) and v.svg_id ) or v.id or k
             serverguard.permission:Add( id )
-            sw = lang( 'perms_type_sg' )
+            sw          = lang( 'perms_type_sg' )
 
         elseif SAM_LOADED and sam then
 
@@ -356,7 +356,7 @@ function access:initialize( perms )
             *   permissions > sam
             */
 
-            id          = ( isstring( v.sam ) and v.sam ) or ( isstring( v.name ) and v.name ) or k
+            id          = ( isstring( v.sam_id ) and v.sam_id ) or v.id or k
             cat         = perms[ k ].category or cat
             local grp   = perms[ k ].access or perms[ k ].usrlvl or 'superadmin'
 

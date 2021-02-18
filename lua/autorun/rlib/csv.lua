@@ -1211,9 +1211,9 @@ function access:initialize( perms )
             *   permissions > serverguard
             */
 
-            local id = isstring( v.name ) and v.name or k
+            local id        = ( isstring( v.svg_id ) and v.svg_id ) or v.id or k
             serverguard.permission:Add( id )
-            sw = ln( 'perms_type_sg' )
+            sw              = ln( 'perms_type_sg' )
 
         elseif SAM_LOADED and sam then
 
@@ -1221,7 +1221,7 @@ function access:initialize( perms )
             *   permissions > sam
             */
 
-            local id        = ( isstring( v.sam ) and v.sam ) or ( isstring( v.name ) and v.name ) or k
+            local id        = ( isstring( v.sam_id ) and v.sam_id ) or v.id or k
             local usrgroup  = perms[ k ].access or perms[ k ].usrlvl
 
             sam.permissions.add( id, cat, usrgroup )

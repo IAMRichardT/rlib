@@ -1492,10 +1492,10 @@ function access:validate( pl, perm )
         perm = ( istable( perm ) and perm.id ) or perm
         if pl:EV_HasPrivilege( perm ) then return true end
     elseif serverguard then
-        perm = ( istable( perm ) and ( perm.name or perm.id ) ) or isstring( perm ) and perm
+        perm = ( istable( perm ) and ( ( isstring( perm.svg_id ) and perm.svg_id ) or perm.id ) ) or perm
         if serverguard.player:HasPermission( pl, perm ) then return true end
     elseif SAM_LOADED and sam then
-        perm = ( istable( perm ) and ( perm.sam or perm.name or perm.id ) ) or isstring( perm ) and perm
+        perm = ( istable( perm ) and ( ( isstring( perm.sam_id ) and perm.sam_id ) or perm.id ) ) or perm
         if pl:HasPermission( perm ) then return true end
     end
 
@@ -1528,8 +1528,8 @@ function access:allow( pl, perm, mod )
     if not helper.ok.ply( pl ) then return false end
     if pl:IsSuperAdmin( ) then return true end
     if self:bIsRoot( pl ) then return true end
-
     if not isstring( perm ) then return false end
+
     if mod then
         perm = self:getperm( perm, mod )
     end
@@ -1549,10 +1549,10 @@ function access:allow( pl, perm, mod )
         perm = ( istable( perm ) and perm.id ) or perm
         if pl:EV_HasPrivilege( perm ) then return true end
     elseif serverguard then
-        perm = ( istable( perm ) and ( perm.name or perm.id ) ) or isstring( perm ) and perm
+        perm = ( istable( perm ) and ( ( isstring( perm.svg_id ) and perm.svg_id ) or perm.id ) ) or perm
         if serverguard.player:HasPermission( pl, perm ) then return true end
     elseif SAM_LOADED and sam then
-        perm = ( istable( perm ) and ( perm.sam or perm.name or perm.id ) ) or isstring( perm ) and perm
+        perm = ( istable( perm ) and ( ( isstring( perm.sam_id ) and perm.sam_id ) or perm.id ) ) or perm
         if pl:HasPermission( perm ) then return true end
     end
 
@@ -1587,7 +1587,6 @@ function access:strict( pl, perm, mod )
 
     if not helper.ok.ply( pl ) then return false end
     if pl:IsSuperAdmin( ) then return true end
-
     if not isstring( perm ) then return false end
 
     if mod then
@@ -1609,10 +1608,10 @@ function access:strict( pl, perm, mod )
         perm = ( istable( perm ) and perm.id ) or perm
         if pl:EV_HasPrivilege( perm ) then return true end
     elseif serverguard then
-        perm = ( istable( perm ) and ( perm.name or perm.id ) ) or isstring( perm ) and perm
+        perm = ( istable( perm ) and ( ( isstring( perm.svg_id ) and perm.svg_id ) or perm.id ) ) or perm
         if serverguard.player:HasPermission( pl, perm ) then return true end
     elseif SAM_LOADED and sam then
-        perm = ( istable( perm ) and ( perm.sam or perm.name or perm.id ) ) or isstring( perm ) and perm
+        perm = ( istable( perm ) and ( ( isstring( perm.sam_id ) and perm.sam_id ) or perm.id ) ) or perm
         if pl:HasPermission( perm ) then return true end
     end
 
