@@ -98,16 +98,16 @@ function ulx.rcore_rp_getjob( calling_ply, target_ply, job )
     if not checkDependency( calling_pl, 'rcore_rp_getjob' ) then return end
 
     if not RPExtraTeams then
-        base.msg:route( calling_ply, false, id_setjob.id, 'RP jobs table missing -- are you running darkrp?' )
+        base.msg:route( calling_ply, false, id_getjob.id, 'RP jobs table missing -- are you running darkrp?' )
         return
     end
 
-    base.msg:route( calling_ply, false, id_setjob.id, 'player:', base.settings.smsg.clrs.t3, target_ply:Name( ), base.settings.smsg.clrs.msg, 'job id:', base.settings.smsg.clrs.t3, tostring( target_ply:Team( ) ), base.settings.smsg.clrs.msg, 'job name:', base.settings.smsg.clrs.t3, tostring( team.GetName( target_ply:Team( ) ) ) )
+    base.msg:route( calling_ply, false, id_getjob.id, 'player:', base.settings.smsg.clrs.t3, target_ply:Name( ), base.settings.smsg.clrs.msg, 'job id:', base.settings.smsg.clrs.t3, tostring( target_ply:Team( ) ), base.settings.smsg.clrs.msg, 'job name:', base.settings.smsg.clrs.t3, tostring( team.GetName( target_ply:Team( ) ) ) )
 end
 local rcore_rp_getjob                       = ulx.command( id_getjob.category, id_getjob.ulx_id, ulx.rcore_rp_getjob, id_getjob.pubcmds )
 rcore_rp_getjob:addParam                    { type = ULib.cmds.PlayerArg }
 rcore_rp_getjob:defaultAccess               ( access:ulx( 'rcore_rp_getjob', mod ) )
-rcore_rp_getjob:help                        ( id_setjob.desc )
+rcore_rp_getjob:help                        ( id_getjob.desc )
 
 /*
 *   ulx :: rp :: set job

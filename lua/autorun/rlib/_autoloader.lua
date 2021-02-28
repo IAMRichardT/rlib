@@ -83,6 +83,7 @@ function rlib.autoload:Run( parent )
             { file = 'ccl',                     scope = 3 },
             { file = 'tools',                   scope = 3 },
             { file = 'commands',                scope = 1 },
+            { file = 'rcc/sv_rcc_raw',          scope = 1 },
             { file = 'rcc/sv_rcc',              scope = 1 },
             { file = 'rcc/sh_rcc',              scope = 2 },
             { file = 'rcc/cl_rcc',              scope = 3 },
