@@ -4139,7 +4139,6 @@ local uclass = { }
             s:SetColor( clr )
         end
     end
-    uclass.lbl = uclass.label
 
     /*
     *   uclass > Panel > AlphaTo
@@ -4869,6 +4868,21 @@ local uclass = { }
     function uclass.title( pnl, str )
         str = isstring( str ) and str or ''
         pnl:SetTitle( str )
+    end
+
+    /*
+    *   uclass > DFrane > SetLabel
+    *
+    *   sets the title of the frame.
+    *   replaces uclass.title
+    *
+    *   @param  : str str
+    *           : text to set as title for frame
+    */
+
+    function uclass.lbl( pnl, str )
+        str = isstring( str ) and str or ''
+        pnl:SetLabel( str )
     end
 
     /*

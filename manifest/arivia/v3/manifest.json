@@ -6,8 +6,8 @@
 	"description":      "F4 menu",
 	"homepage":         "https://gmodstore.com/scripts/view/1679",
 	"docs":             "https://arivia.rlib.io",
-	"version":          "v3.0.0.5",
-	"updated":          "Feb 23, 2021",
+	"version":          "v3.0.0.6",
+	"updated":          "Mar 08, 2021",
 	"workshop":         "2290446815",
 	"rlib-required":    "v3.2.0.0"
 }
