@@ -2,7 +2,8 @@
     "unreleased": [],
     "releases": {
       "3.2.1.0": [
-            "[ ^ ] revised uclass.lbl"
+            "[ ^ ] revised uclass.lbl",
+            "[ ^ ] updated manifest files for builder-x and arivia v3"
       ],
       "3.2.0.0": [
             "[ + ] added data manifest.json files for all compatible addons",
