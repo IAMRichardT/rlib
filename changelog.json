@@ -1,6 +1,9 @@
 {
     "unreleased": [],
     "releases": {
+      "3.2.1.0": [
+            "[ ^ ] revised uclass.lbl"
+      ],
       "3.2.0.0": [
             "[ + ] added data manifest.json files for all compatible addons",
             "[ + ] added font registration module",
