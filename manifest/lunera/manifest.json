@@ -7,7 +7,7 @@
 	"homepage":         "https://gmodstore.com/scripts/view/1621",
 	"docs":             "https://lunera.rlib.io",
 	"version":          "v3.6.2.0",
-	"updated":          "Mar 09, 2021",
+	"updated":          "Mar 10, 2021",
 	"workshop":         "2313881160",
-	"rlib-required":    "v3.2.0.0"
+	"rlib-required":    "v3.2.1.0"
 }
