@@ -6,8 +6,8 @@
 	"description":      "motd",
 	"homepage":         "https://gmodstore.com/scripts/view/1621",
 	"docs":             "https://lunera.rlib.io",
-	"version":          "v3.6.1.0",
-	"updated":          "Feb 17, 2021",
+	"version":          "v3.6.2.0",
+	"updated":          "Mar 09, 2021",
 	"workshop":         "2313881160",
 	"rlib-required":    "v3.2.0.0"
 }
