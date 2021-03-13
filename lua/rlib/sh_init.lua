@@ -701,7 +701,10 @@ function base:Precache( source )
 
     for v in helper.get.data( source ) do
         if not v.ents and not istable( v.ents ) then continue end
+
         for m in helper.get.data( v.ents ) do
+
+            if isfunction( m ) then continue end
 
             /*
             *   models > string
