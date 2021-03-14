@@ -365,6 +365,7 @@ loaded and are now ready to install additional modules.
         'sha1',
         'json',
         'rcir',
+        'rmem',
     }
 
     for k, v in ipairs( modules_lua ) do
