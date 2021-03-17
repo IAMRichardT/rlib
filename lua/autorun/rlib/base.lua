@@ -556,12 +556,12 @@ function base:translate( mod, str, ... )
         local selorig   = cvar:GetStrStrict( 'rlib_language', selg )
         selg            = ( selorig ~= 'en' and selorig  ) or selg
 
-        if not mod.language[ selg ] then
+        if not mod.language[ selg ] and not mod._plugins.language[ selg ] then
             selg = 'en'
         end
     end
 
-    local resp = mod.language and mod.language[ selg ] and mod.language[ selg ][ str ]
+    local resp = ( mod.language and mod.language[ selg ] and mod.language[ selg ][ str ] ) or ( mod._plugins and mod._plugins.language[ selg ] and mod._plugins.language[ selg ][ str ] )
 
     if not resp then
         resp = base.language[ base.settings.lang ][ str ]

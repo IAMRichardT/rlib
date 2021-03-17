@@ -2220,6 +2220,36 @@ function helper.str:comma( val )
 end
 
 /*
+*   helper > table > has id
+*
+*   determines if a table has a specific id registered.
+*   used for features such as nav menus, settings, etc.
+*/
+
+function helper.tbl:HasID( tbl, id )
+    for k, v in helper.get.table( tbl ) do
+        if id ~= v.id then continue end
+        return true
+    end
+    return false
+end
+
+/*
+*   helper > table > remove by id
+*
+*   removes a table row based on the id specified.
+*   used for features such as nav menus, settings, etc.
+*/
+
+function helper.tbl:RemoveByID( tbl, id )
+    for k, v in helper.get.table( tbl ) do
+        if id ~= v.id then continue end
+        table.remove( tbl, k )
+    end
+    return false
+end
+
+/*
 *   helper > sortedkeys
 *
 *   assigns a clientconvar based on the parameters specified.
@@ -3503,4 +3533,78 @@ function base.rsay( pl, msg, clr, dur, fade )
 
     rsay_netlib_sv( pl, msg, clr, dur, fade )
     base.con:Guided( pl, msg )
+end
+
+/*
+*   base > garbadge collection
+*
+*   executes the specified action on the garbage collector.
+*
+*   @param  : str act       :   collect
+*                               stop
+*                               restart
+*                               count
+*                               step
+*                               setpause
+*                               setstepmul
+*
+*   @param  : int arg       :   only used for step, setpause and setstepmul
+*/
+
+function base.gc( act, arg )
+    act             = isstring( act ) and act or 'collect'
+    arg             = isnumber( arg ) and arg or nil
+    local res       = collectgarbage( act, arg )
+    local resp      = res
+
+                    if act == 'count' then
+                        local sz    = tonumber( res )
+                        sz          = sz * 1024
+                        local ca    = ( calc.fs.size( sz ) )
+                        resp        = string.format( 'Size: %s', ca )
+                    end
+
+    return resp
+end
+
+/*
+*   base > weak tables
+*
+*   sets the mode for a table
+*
+*   @param  : tbl src
+*   @param  : str t
+*
+*           :   'k'
+*               weak keys
+*
+*           :   'v'
+*               weak values
+*
+*           :   'kv'
+*               weak keys + values
+*/
+
+function base.weak( src, t )
+    src     = istable( src ) and src or { }
+    t       = isstring( t ) and t or 'kv'
+    return setmetatable( src, { __mode = t } )
+end
+
+/*
+*   base > type
+*
+*   returns type
+*
+*   @param  : mix val
+*   @param  : bool bPrint
+*/
+
+function base.type( val, bPrint )
+    if not val then return nil end
+    local t = type( val )
+    if bPrint then
+        print( t )
+    end
+    return t
 end

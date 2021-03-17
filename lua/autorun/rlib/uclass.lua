@@ -2307,29 +2307,6 @@ local uclass = { }
     uclass.conn = uclass.connect
 
     /*
-    *   uclass > onclick > dispatch
-    *
-    *   @ex     : :dispatch( self, 'pnl.ticker', mod )
-    *             :dispatch( self, 'pnl.ticker', mod, 1 )
-    *
-    *   @alias  : dispatch
-    *
-    *   @param  : pnl panel
-    *   @param  : str id
-    *   @param  : str, tbl mod
-    *   @param  : int delay
-    */
-
-    function uclass.dispatch( pnl, panel, id, mod, delay )
-        pnl[ 'DoClick' ] = function( s, ... )
-            delay = isnumber( delay ) and delay or 0
-            panel:AlphaTo( 0, delay, 0, function( )
-                ui:dispatch( id, mod )
-            end )
-        end
-    end
-
-    /*
     *   uclass > onclick > rem
     *
     *   @alias  : onclick_r, ocr, click_r
@@ -4699,6 +4676,53 @@ local uclass = { }
     end
 
     /*
+    *   uclass > onclick > dispatch
+    *
+    *   @ex     : :dispatch( self, 'pnl.ticker', mod )
+    *             :dispatch( self, 'pnl.ticker', mod, 1 )
+    *
+    *   @alias  : dispatch
+    *
+    *   @param  : pnl panel
+    *   @param  : str id
+    *   @param  : str, tbl mod
+    *   @param  : int delay
+    */
+
+    function uclass.dispatch( pnl, panel, id, mod, delay )
+        pnl[ 'DoClick' ] = function( s, ... )
+            delay = isnumber( delay ) and delay or 0
+            panel:AlphaTo( 0, delay, 0, function( )
+                ui:dispatch( id, mod )
+            end )
+        end
+    end
+
+    /*
+    *   uclass > stage
+    *
+    *   @param  : pnl panel
+    *   @param  : str, tbl mod
+    *   @param  : bool bMouse
+    */
+
+    function uclass.stage( pnl, mod, bMouse )
+        ui:stage( pnl, mod, bMouse )
+    end
+
+    /*
+    *   uclass > unstage
+    *
+    *   @param  : pnl panel
+    *   @param  : str, tbl mod
+    *   @param  : bool bMouse
+    */
+
+    function uclass.unstage( pnl, mod, bMouse )
+        ui:unstage( pnl, mod, bMouse )
+    end
+
+    /*
     *   uclass > Panel > MakePopup
     *
     *   focuses the panel and enables it to receive input.
@@ -5750,8 +5774,8 @@ local uclass = { }
     *
     *   forces a pnl to center screen based on animation settings
     *
-*   @param  : int time
-*   @param  : str, int from > [optional] > default left
+    *   @param  : int time
+    *   @param  : str, int from > [optional] > default left
     */
 
     function uclass.anim_center( pnl, time, from )

@@ -1263,37 +1263,57 @@ function base:Register( path, mod, b_isext )
         return
     end
 
-    local _ENV      = { }
-    local manifest  = path .. '/' .. mod
-    local tmp_id    = mod:gsub( '.lua', '' )
+    /*
+    *   define > module
+    *
+    *   var( _ENV )         : blank table
+    *   var( manifest )     : modules/base/sh_env.lua
+    *   var( plugins )      : modules/base/plugins/sh_env.lua
+    *   var( tmp_id )       : sh_env
+    */
 
-    if not tmp_id then
-        rlib:log( 2, lang( 'logs_rcore_id_err' ) )
-        sys.modules.err = sys.modules.err + 1
-        return
-    end
+    local _ENV              = { }
+    local manifest          = path .. '/' .. mod
+    local plugins           = path .. '/' .. 'plugins' .. '/' .. mod
+    local tmp_id            = mod:gsub( '.lua', '' )
 
-    _ENV.MODULE     = self.modules[ tmp_id ]
-    smt             = setmetatable( _ENV, { __index = _G } )
+                            if not tmp_id then
+                                rlib:log( 2, lang( 'logs_rcore_id_err' ) )
+                                sys.modules.err = sys.modules.err + 1
+                                return
+                            end
 
-    if not smt or ( type( smt ) ~= 'table' ) then
-        rlib:log( RLIB_LOG_DEBUG, lang( 'logs_rcore_mt_err' ) )
-        sys.modules.err = sys.modules.err + 1
-        return
-    else
-        if sys.modules.registered <= 0 then
-            rlib:log( RLIB_LOG_DEBUG, lang( 'logs_rcore_mt_ok' ) )
-        end
-    end
+    _ENV.MODULE             = self.modules[ tmp_id ]
+    smt                     = setmetatable( _ENV, { __index = _G } )
 
-    local module_exec = CompileFile( manifest )
-    sys.modules.total = sys.modules.total + 1
+                            if not smt or ( type( smt ) ~= 'table' ) then
+                                rlib:log( RLIB_LOG_DEBUG, lang( 'logs_rcore_mt_err' ) )
+                                sys.modules.err = sys.modules.err + 1
+                                return
+                            else
+                                if sys.modules.registered <= 0 then
+                                    rlib:log( RLIB_LOG_DEBUG, lang( 'logs_rcore_mt_ok' ) )
+                                end
+                            end
 
-    if not module_exec or not rlib:isfunc( module_exec ) then
-        sys.modules.err = sys.modules.err + 1
-        rlib:log( 2, lang( 'logs_rcore_func_err', mod ) )
-        return
-    end
+    /*
+    *   compile env / manifest
+    *
+    *   var( manifest )     : modules/base/sh_env.lua
+    */
+
+    local module_exec       = CompileFile( manifest )
+    sys.modules.total       = sys.modules.total + 1
+
+                            if not module_exec or not rlib:isfunc( module_exec ) then
+                                sys.modules.err = sys.modules.err + 1
+                                rlib:log( 2, lang( 'logs_rcore_func_err', mod ) )
+                                return
+                            end
+
+    /*
+    *   module not enabled
+    */
 
     if not smt.MODULE.enabled then
         rlib:log( RLIB_LOG_DEBUG, lang( 'logs_rcore_mod_disabled', smt.MODULE.id ) )
@@ -1301,20 +1321,47 @@ function base:Register( path, mod, b_isext )
         return
     end
 
+    /*
+    *   set environment > MODULE
+    *
+    *   must be executed before plugins can be registered
+    */
+
     debug.setfenv( module_exec, _ENV )
     module_exec( )
 
-    local mod_id                        = smt.MODULE.id
-    self.modules[ mod_id ]              = _ENV.MODULE
-    self.modules[ mod_id ].id           = mod_id
-    self.modules[ mod_id ].loadtime     = CurTime( )
-    self.modules[ mod_id ].path         = path
-    self.modules[ mod_id ].settings     = { }
+    /*
+    *   plugins
+    */
 
-    self.modules[ mod_id ]._cache       = { }
-    self.modules[ mod_id ]._cache.mats  = { }
+    if file.Exists( plugins, 'LUA' ) then
+        local plugins_exec  = CompileFile( plugins )
+                              debug.setfenv( plugins_exec, _ENV )
+                              plugins_exec( )
 
-    rlib.l[ mod_id ]                    = smt.MODULE.language
+        table.Merge( smt.MODULE, smt.PLUGIN )
+    end
+
+    /*
+    *   set module values
+    *
+    *   mod.modules[ 'module_id' ]
+    *   mod.modules[ 'lunera' ]
+    */
+
+    local mod_id                                = smt.MODULE.id
+    self.modules[ mod_id ]                      = _ENV.MODULE
+    self.modules[ mod_id ].id                   = mod_id
+    self.modules[ mod_id ].loadtime             = CurTime( )
+    self.modules[ mod_id ].path                 = path
+    self.modules[ mod_id ].settings             = { }
+
+    self.modules[ mod_id ]._plugins             = { }
+    self.modules[ mod_id ]._plugins.language    = { }
+    self.modules[ mod_id ]._cache               = { }
+    self.modules[ mod_id ]._cache.mats          = { }
+
+    --rlib.l[ mod_id ]                    = smt.MODULE.language
 
     sys.modules.registered = sys.modules.registered + 1
     rlib:log( RLIB_LOG_DEBUG, lang( 'logs_rcore_mnfst_ok', mod ) )
