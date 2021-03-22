@@ -3319,7 +3319,7 @@ end
 
 function helper:clr_ishex( hex )
     hex = hex:gsub( '#', '' )
-    return hex:match( '^%x%x%x%x%x%x' ) and true or false
+    return ( hex:match( '^%x%x%x' ) or hex:match( '^%x%x%x%x%x%x' ) ) and true or false
 end
 
 /*
@@ -3331,18 +3331,23 @@ end
 *   @ex     : #FFFFFF, 50   : 255 255 255 50
 *
 *   @param  : str hex
-*   @param  : int alpha
+*   @param  : int a
 *   @return : tbl
 */
 
-function helper:clr_hex2rgb( hex, alpha )
-    if not isstring( hex ) then return end
-    hex = hex:gsub( '#', '' )
+function helper:clr_hex2rgb( hex, a )
+    hex         = hex:gsub( '#', '' )
+                if not helper:clr_ishex( hex ) then return end
 
-    if hex:len( ) ~= 6 or not self:clr_ishex( hex ) then return end
+    a           = isnumber( a ) and a or 255
 
-    alpha = isnumber( alpha ) and math.Clamp( alpha, 0, 255 ) or 255
-    return tonumber( '0x' .. hex:sub( 1, 2 ) ), tonumber( '0x' .. hex:sub( 3, 4 ) ), tonumber( '0x' .. hex:sub( 5, 6 ) ), alpha
+    if hex:len( ) == 3 then
+        return tonumber( '0x' .. hex:sub( 1, 1 ) ) * 17, tonumber( '0x' .. hex:sub( 2, 2 ) ) * 17, tonumber( '0x' .. hex:sub( 3, 3 ) ) * 17, a
+    elseif hex:len( ) == 6 then
+        return tonumber( '0x' .. hex:sub( 1, 2 ) ), tonumber( '0x' .. hex:sub( 3, 4 ) ), tonumber( '0x' .. hex:sub( 5, 6 ) ), a
+    else
+        return 255, 255, 255, a
+    end
 end
 
 /*
