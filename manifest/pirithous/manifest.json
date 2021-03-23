@@ -6,8 +6,8 @@
 	"description":      "on-screen keybinds help",
 	"homepage":         "https://gmodstore.com/scripts/view/4209",
 	"docs":             "https://pirithous.rlib.io",
-	"version":          "v3.5.0.0",
-	"updated":          "Feb 17, 2021",
+	"version":          "v3.6.0.0",
+	"updated":          "Marc 22, 2021",
 	"workshop":         "2319113217",
-	"rlib-required":    "v3.2.0.0"
+	"rlib-required":    "v3.2.1.0"
 }
