@@ -7,7 +7,7 @@
 	"homepage":         "https://gmodstore.com/scripts/view/4697",
 	"docs":             "https://epistle.rlib.io",
 	"version":          "v2.2.1.0",
-	"updated":          "Feb 22, 2021",
+	"updated":          "Mar 24, 2021",
 	"workshop":         "2313881160",
-	"rlib-required":    "v3.2.0.0"
+	"rlib-required":    "v3.2.1.0"
 }
