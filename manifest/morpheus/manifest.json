@@ -1,0 +1,13 @@
+{
+	"name":             "Morpheus",
+	"author":           "richard",
+	"script":           "3948",
+	"type":             "addon",
+	"description":      "motd & escape screen",
+	"homepage":         "https://gmodstore.com/scripts/view/3948",
+	"docs":             "https://morpheus.rlib.io",
+	"version":          "v2.1.0.0",
+	"updated":          "Apr 23, 2017",
+	"workshop":         "903291505",
+	"rlib-required":    "v3.2.1.0"
+}

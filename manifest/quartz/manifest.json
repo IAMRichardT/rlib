@@ -1,0 +1,13 @@
+{
+	"name":             "Quartz",
+	"author":           "richard",
+	"script":           "2638",
+	"type":             "addon",
+	"description":      "F1 menu",
+	"homepage":         "https://gmodstore.com/scripts/view/2638",
+	"docs":             "https://quartz.rlib.io",
+	"version":          "v1.2.0.0",
+	"updated":          "June 12, 2020",
+	"workshop":         "713346233",
+	"rlib-required":    "v3.2.1.0"
+}
