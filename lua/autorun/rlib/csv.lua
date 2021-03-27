@@ -619,7 +619,12 @@ function base.get:wsinfo( collection_id, src, format )
         end
 
         if not json_body or not json_body.response then
-            log( 2, resp )
+            collection_id = collection_id or '0'
+            if code == resp then
+                log( 2, ln( 'ws_no_json_response', collection_id ) )
+            else
+                log( 2, resp )
+            end
             return
         else
             resp = json_body.response

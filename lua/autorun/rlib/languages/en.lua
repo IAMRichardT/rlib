@@ -346,6 +346,7 @@ base.language =
         welcome_title                       = 'Welcome',
         ws_no_steam_data                    = 'no steam data',
         ws_no_response                      = 'no response from steam workshop » [ %s ]',
+        ws_no_json_response                 = 'bad workshop » [ %s ]',
         ws_response_empty                   = 'response from steam workshop empty -- down?',
         ws_registered                       = '+ %s » [ %s ]',
         sys_user_type                       = 'BOT',
