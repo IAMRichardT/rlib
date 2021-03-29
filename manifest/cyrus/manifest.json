@@ -9,5 +9,6 @@
 	"version":          "v1.4.0.0",
 	"updated":          "Aug 04, 2016",
 	"workshop":         "0000000000",
-	"rlib-required":    "v3.2.0.0"
+	"rlib-required":    "v3.2.0.0",
+	"rlib-rewrite":     "15%",
 }
