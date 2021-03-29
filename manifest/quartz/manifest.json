@@ -10,5 +10,5 @@
 	"updated":          "Jun 12, 2020",
 	"workshop":         "713346233",
 	"rlib-required":    "v3.2.1.0",
-	"rlib-rewrite":     "0%",
+        "rw":               "0%"
 }
