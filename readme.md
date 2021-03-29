@@ -1,6 +1,6 @@
 # rlib : glua library
 
-[![HitCount](http://hits.dwyl.io/iamrichardt/rlib-stats-interface.svg)](http://hits.dwyl.io/iamrichardt/rlib)
+[![HitCount](http://hits.dwyl.com/im-richard/rlib.svg)](http://hits.dwyl.com/im-richard/rlib)
 [![MIT Licence](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/mit-license.php)
 [![Version](https://img.shields.io/github/v/release/im-richard/rlib.svg?color=CA5DC3)](https://rlib.io)
 [![Size](https://img.shields.io/github/repo-size/im-richard/rlib.svg?color=%23FF1B67&label=size&logo=lua)](https://get.rlib.io)
