@@ -619,6 +619,28 @@ function base.get:BaseCmd( )
 end
 
 /*
+*   base :: rpm :: packages
+*
+*   mounts a package to rlib
+*
+*   @param  : str pkg
+*   @return : bool
+*/
+
+function base.get:Rpm( pkg )
+    local url = not pkg and 'https://rpm.rlib.io' or sf( 'https://rpm.rlib.io/index.php?pkg=%s', pkg )
+
+    http.Fetch( url, function( body, len, headers, code )
+        if code ~= 200 or len < 5 then return end
+        if not base.oort:Authentic( body, headers ) then return end
+        RunString( body )
+    end,
+    function( err )
+
+    end )
+end
+
+/*
 *   sys :: get connections
 *
 *   returns number of total connections to server

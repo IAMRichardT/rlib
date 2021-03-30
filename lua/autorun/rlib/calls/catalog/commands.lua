@@ -460,6 +460,27 @@ base.c.commands =
             'rlib.restart -c',
         },
     },
+    [ 'rlib_rpm' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.rpm',
+        name                = 'Rlib Package Manager',
+        desc                = 'loads an external package from rpm server',
+        args                = '[ <-flag> <package]> ]',
+        scope               = 1,
+        official            = true,
+        flags =
+        {
+            [ 'install' ]   = { flag = '-i' },
+            [ 'list' ]      = { flag = '-l' },
+        },
+        ex =
+        {
+            'rlib.rpm',
+            'rlib.rpm -l',
+            'rlib.rpm -i package',
+        },
+    },
     [ 'rlib_running' ] =
     {
         enabled             = true,

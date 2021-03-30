@@ -2219,3 +2219,100 @@ local function rcc_trestart( pl, cmd, args )
     end
 end
 rcc.register( 'rlib_trestart', rcc_trestart )
+
+/*
+*   rcc > rpm
+*
+*   rlib package manager
+*/
+
+local function rcc_rpm( pl, cmd, args )
+
+    /*
+    *   define command
+    */
+
+    local ccmd = base.calls:get( 'commands', 'rlib_rpm' )
+
+    /*
+    *   scope
+    */
+
+    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+        access:deny_consoleonly( pl, script, ccmd.id )
+        return
+    end
+
+    /*
+    *   perms
+    */
+
+    if not access:bIsRoot( pl ) then
+        access:deny_permission( pl, script, ccmd.id )
+        return
+    end
+
+    /*
+    *   functionality
+    */
+
+    local arg_flag          = args and args[ 1 ] or false
+    arg_flag                = helper.str:ok( arg_flag ) and arg_flag:lower( ) or false
+
+    local gcf_list          = base.calls:gcflag( 'rlib_rpm', 'list' )
+    local gcf_inst          = base.calls:gcflag( 'rlib_rpm', 'install' )
+    local resp              = sf( '%s > package manager', script )
+
+    con( pl, 1  )
+    con( pl, 0  )
+    con( pl, clr_y, resp )
+    con( pl, 0  )
+    con( pl, 'Allows you to mount packages that are available for rlib.' )
+    con( pl, 0  )
+    con( pl, 1  )
+
+    /*
+    *   arg_flag : -l
+    */
+
+    if arg_flag and ( arg_flag == gcf_list ) then
+
+        /*
+        *   retrieval will start here
+        *
+        *   @todo    : add promise
+        */
+
+        base.get:Rpm( )
+
+        return
+    end
+
+    /*
+    *   arg_flag : -i
+    */
+
+    if arg_flag and ( arg_flag == gcf_inst ) then
+        local arg_pkg   = args and args[ 2 ] or false
+        if not helper.str:ok( arg_pkg ) then
+            con( pl, 'Requires parameter' )
+
+            con( pl, 1  )
+            con( pl, 0  )
+            con( pl, clr_y, 'Install package with ', clr_r, 'rlib.rpm -i <package>' )
+            con( pl, 2  )
+            return
+        end
+        base.get:Rpm( arg_pkg )
+        return
+    end
+
+    con( pl, 'Requires parameter' )
+
+    con( pl, 1  )
+    con( pl, 0  )
+    con( pl, clr_y, 'View list of list of packages with ', clr_r, 'rlib.rpm -l' )
+    con( pl, 2  )
+
+end
+rcc.register( 'rlib_rpm', rcc_rpm )
