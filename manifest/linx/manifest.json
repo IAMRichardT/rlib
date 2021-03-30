@@ -6,9 +6,9 @@
 	"description":      "motd & escape screen",
 	"homepage":         "https://gmodstore.com/scripts/view/1612",
 	"docs":             "https://linx.rlib.io",
-	"version":          "v2.4.0.0",
+	"version":          "2.4.0.0",
 	"updated":          "Mar 21, 2021",
 	"workshop":         "2315070701",
-	"rlib-required":    "v3.2.1.0",
+	"rlib-required":    "3.2.1.0",
         "rw":               "100%"
 }

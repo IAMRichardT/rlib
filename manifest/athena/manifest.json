@@ -6,9 +6,9 @@
 	"description":      "f1 menu",
 	"homepage":         "https://gmodstore.com/scripts/view/1781",
 	"docs":             "https://athena.rlib.io",
-	"version":          "v1.3.0.0",
+	"version":          "1.3.0.0",
 	"updated":          "Aug 25, 2016",
 	"workshop":         "561782713",
-	"rlib-required":    "v3.2.0.0",
+	"rlib-required":    "3.2.0.0",
         "rw":               "0%"
 }

@@ -6,9 +6,9 @@
 	"description":      "death screen",
 	"homepage":         "https://gmodstore.com/scripts/view/1600",
 	"docs":             "https://dozi.rlib.io",
-	"version":          "v1.4.0.0",
+	"version":          "1.4.0.0",
 	"updated":          "Jul 28, 2016",
 	"workshop":         "513975082",
-	"rlib-required":    "v3.2.0.0",
+	"rlib-required":    "3.2.0.0",
         "rw":               "0%"
 }
