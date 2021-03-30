@@ -6,9 +6,9 @@
 	"description":      "motd",
 	"homepage":         "https://gmodstore.com/scripts/view/2936",
 	"docs":             "https://jasper.rlib.io",
-	"version":          "1.1.2.0",
+	"version":          "v1.1.2.0",
+	"libreq":           "v3.2.1.0",
 	"updated":          "Sep 17, 2016",
 	"workshop":         "756133663",
-	"rlib-required":    "3.2.0.0",
         "rw":               "60%"
 }

@@ -6,9 +6,9 @@
 	"description":      "darkrp hud",
 	"homepage":         "https://gmodstore.com/scripts/view/1770",
 	"docs":             "https://hudhive.rlib.io",
-	"version":          "1.3.6.0",
+	"version":          "v1.3.6.0",
+	"libreq":           "v3.2.1.0",
 	"updated":          "Jul 25, 2016",
 	"workshop":         "559048049",
-	"rlib-required":    "3.2.1.0",
         "rw":               "0%"
 }

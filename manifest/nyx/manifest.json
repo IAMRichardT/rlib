@@ -6,9 +6,9 @@
 	"description":      "hud",
 	"homepage":         "https://gmodstore.com/scripts/view/6234",
 	"docs":             "https://nyx.rlib.io",
-	"version":          "2.1.0.0",
+	"version":          "v2.1.0.0",
+	"libreq":           "v3.2.1.0",
 	"updated":          "Feb 17, 2021",
 	"workshop":         "2318632210",
-	"rlib-required":    "3.2.0.0",
         "rw":               "100%"
 }

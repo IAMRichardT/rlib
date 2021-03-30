@@ -6,9 +6,9 @@
 	"description":      "f1 menu",
 	"homepage":         "https://gmodstore.com/scripts/view/2638",
 	"docs":             "https://quartz.rlib.io",
-	"version":          "1.2.0.0",
+	"version":          "v1.2.0.0",
+	"libreq":           "v3.2.1.0",
 	"updated":          "Jun 12, 2020",
 	"workshop":         "713346233",
-	"rlib-required":    "3.2.1.0",
         "rw":               "0%"
 }

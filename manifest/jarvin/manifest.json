@@ -6,9 +6,9 @@
 	"description":      "escape menu",
 	"homepage":         "https://gmodstore.com/scripts/view/1872",
 	"docs":             "https://jarvin.rlib.io",
-	"version":          "1.1.0.0",
+	"version":          "v1.1.0.0",
+	"libreq":           "v3.2.1.0",
 	"updated":          "July 27, 2016",
 	"workshop":         "585120165",
-	"rlib-required":    "3.2.0.0",
         "rw":               "0%"
 }

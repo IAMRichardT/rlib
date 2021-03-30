@@ -6,9 +6,9 @@
 	"description":      "pvp leaderboard",
 	"homepage":         "https://gmodstore.com/scripts/view/1582",
 	"docs":             "https://cyrus.rlib.io",
-	"version":          "1.4.0.0",
+	"version":          "v1.4.0.0",
+	"libreq":           "v3.2.1.0",
 	"updated":          "Aug 04, 2016",
 	"workshop":         "0000000000",
-	"rlib-required":    "3.2.0.0",
         "rw":               "15%"
 }

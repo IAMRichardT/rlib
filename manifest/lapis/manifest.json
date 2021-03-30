@@ -6,9 +6,9 @@
 	"description":      "darkrp hud",
 	"homepage":         "https://gmodstore.com/scripts/view/2974",
 	"docs":             "https://lapis.rlib.io",
-	"version":          "1.2.0.0",
+	"version":          "v1.2.0.0",
+	"libreq":           "v3.2.1.0",
 	"updated":          "Aug 09, 2020",
 	"workshop":         "760304807",
-	"rlib-required":    "3.2.1.0",
         "rw":               "0%"
 }
