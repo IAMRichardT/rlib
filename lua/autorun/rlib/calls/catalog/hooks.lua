@@ -36,6 +36,7 @@ base.c.hooks =
     [ 'rlib_rnet_register' ]                    = { 'rlib.rnet.register' },
     [ 'rlib_fonts_register' ]                   = { 'rlib.fonts.register' },
     [ 'rlib_server_fjoin' ]                     = { 'rlib.server.fjoin' },
+    [ 'rlib_server_welcome' ]                   = { 'rlib.server.welcome' },
     [ 'rlib_server_ready' ]                     = { 'rlib.server.ready' },
     [ 'rcore_rnet_register' ]                   = { 'rcore.rnet.register' },
     [ 'rcore_loader_post' ]                     = { 'rcore.loader.post' },

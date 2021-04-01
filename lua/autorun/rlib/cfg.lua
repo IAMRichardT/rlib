@@ -19,7 +19,6 @@
 *   standard tables and localization
 */
 
-rlib                    = rlib or { }
 local base              = rlib
 local cfg               = base.settings
 local mf                = base.manifest
@@ -52,6 +51,35 @@ end
 */
 
     cfg.lang                = 'en'
+
+/*
+*   oort
+*
+*   service that allows the developer to provide assistance more easily by gaining access
+*   to certain logs.
+*/
+
+    cfg.oort =
+    {
+        enabled             = true,
+        stats_runtime       = 300,
+    }
+
+/*
+*   udm [ update manager ]
+*
+*   :   enabled
+*       checks the repo for the most up-to-date version
+*
+*   :   checktime
+*       determines how often the system checks for updates to lib in seconds
+*/
+
+    cfg.udm =
+    {
+        enabled             = true,
+        checktime           = 1800,
+    }
 
 /*
 *   hooks

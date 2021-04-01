@@ -51,8 +51,8 @@ function rlib.autoload:Run( parent )
     mf.repo                         = 'https://github.com/im-richard/rlib/'
     mf.docs                         = 'https://docs.rlib.io/'
     mf.about                        = [[rlib is a glua library written for garrys mod which contains a variety of commonly used functions that are required for certain scripts to run properly. Package includes both rlib + rcore which act as the overall foundation which other scripts will rest within as a series of modules. ]]
-    mf.released                     = 1617103858
-    mf.version                      = { 3, 2, 1, 0 }
+    mf.released                     = 1617268165
+    mf.version                      = { 3, 3, 0, 0 }
     mf.showcopyright                = true
 
     /*
@@ -136,11 +136,24 @@ function rlib.autoload:Run( parent )
             auth_id             = 0,
             sess_id             = 0,
             has_latest          = false,
+            last_hb             = 0,
+            debug               = false,
             url                 = 'https://oort.rlib.io',
         },
+        udm =
+        {
+            branch              = 'https://udm.rlib.io/rlib/%s',
+            hash                = 'cc919a88ff2712a2c7645cac4e8e7a3dfb92a592',
+            response            = { },
+        },
+        rpm =
+        {
+            uri                 = 'https://rpm.rlib.io/',
+        },
+        auth                    = 'https://auth.rlib.io/',
         svg                     =
         {
-            stats               = 'http://hits.dwyl.io/iamrichardt/rlib-stats-interface.svg',
+            stats               = 'https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fim-richard%2Frlib&count_bg=%235A3DC8&title_bg=%23555555&icon=reasonstudios.svg',
             updated             = 'https://img.shields.io/github/last-commit/iamrichardt/rlib.svg?label=updated',
             size                = 'https://img.shields.io/github/repo-size/iamrichardt/rlib.svg?color=%23FF1B67&label=size&logo=lua',
         },
@@ -233,7 +246,7 @@ function rlib.autoload:Run( parent )
         *   base > struct
         */
 
-        local ind_base = { 'a', 'c', 'd', 'f', 'i', 'k', 'l', 'm', 'o', 'p', 'r', 's', 't', 'v', 'w', 'calls', 'checksum', 'con', 'cvar', '_def', 'fonts', 'modules', 'msg', 'sys', 'register', 'resources', 'package', 'alias', 'get', 'oort' }
+        local ind_base = { 'a', 'c', 'd', 'f', 'i', 'k', 'l', 'm', 'o', 'p', 'r', 's', 't', 'v', 'w', 'calls', 'checksum', 'con', 'cvar', '_def', 'fonts', 'modules', 'msg', 'sys', 'register', 'resources', 'package', 'alias', 'get', 'oort', 'udm' }
         for k, v in ipairs( ind_base ) do
             base[ v ] = { }
         end

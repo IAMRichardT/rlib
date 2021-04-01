@@ -378,6 +378,26 @@ base.c.commands =
             'rlib.modules.errlog',
         },
     },
+    [ 'rlib_oort' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.oort',
+        name                = 'Oort Engine',
+        desc                = 'manage rlib oort services',
+        scope               = 1,
+        showsetup           = false,
+        official            = true,
+    },
+    [ 'rlib_oort_update' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.oort.update',
+        name                = 'Oort » Update',
+        desc                = 'updates oort engine',
+        scope               = 1,
+        showsetup           = false,
+        official            = true,
+    },
     [ 'rlib_packages' ] =
     {
         enabled             = true,
@@ -600,6 +620,16 @@ base.c.commands =
         name                = 'Status',
         desc                = 'stats and data for the lib',
         scope               = 1,
+        showsetup           = true,
+        official            = true,
+    },
+    [ 'rlib_udm' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.udm',
+        name                = 'Update Manager',
+        desc                = 'Check for updates',
+        scope               = 2,
         showsetup           = true,
         official            = true,
     },

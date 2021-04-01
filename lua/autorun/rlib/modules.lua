@@ -497,7 +497,7 @@ function base.modules:ManifestList( )
         local name      = v.name:gsub( '[%s]', '' )
         name            = name:lower( )
 
-        local ver       = ( istable( v.version ) and rlib.modules:ver2str( v ) ) or v.version
+        local ver       = ( istable( v.version ) and rlib.get:ver2str_mfs( v, '_' ) ) or v.version
         ver             = ver:gsub( '[%p]', '' )
 
         local enabled   = v.enabled and "enabled" or "disabled"

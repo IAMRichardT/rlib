@@ -1018,6 +1018,14 @@ local function rcc_services( pl, cmd, args )
     local tbl_services =
     {
         {
+            id      = lang( 'services_id_udm' ),
+            desc    = 'update check service',
+            cb      = function( )
+                if not timex.exists( 'rlib_udm_notice' ) then return 'stopped' end
+                return 'running'
+            end,
+        },
+        {
             id      = lang( 'services_id_pco' ),
             desc    = 'player-client-optimization',
             cb      = function( )
@@ -1030,6 +1038,15 @@ local function rcc_services( pl, cmd, args )
             desc    = 'render-distance-optimization',
             cb      = function( )
                 if not cfg.rdo.enabled then return 'stopped' end
+                return 'running'
+            end,
+        },
+        {
+            id      = lang( 'services_id_oort' ),
+            desc    = 'oort engine',
+            cb      = function( )
+                if not cfg.oort.enabled then return 'stopped' end
+                if not istable( oort ) or not oort.bInitialized then return 'failed' end
                 return 'running'
             end,
         },

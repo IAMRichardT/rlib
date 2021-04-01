@@ -63,6 +63,16 @@ local sf                = string.format
 */
 
 local path_logs         = mf.paths[ 'dir_logs' ]
+local path_uconn        = mf.paths[ 'dir_uconn' ]
+local path_server       = mf.paths[ 'dir_server' ]
+
+/*
+*   localized http.fetch
+*/
+
+local function oort( ... )
+    return http.Fetch( ... )
+end
 
 /*
 *   Localized translation func
@@ -77,7 +87,6 @@ end
 */
 
 local clr_r             = Color( 255, 0, 0 )
-local clr_g             = Color( 50, 200, 50 )
 local clr_y             = Color( 255, 255, 0 )
 local clr_w             = Color( 255, 255, 255 )
 local clr_p             = Color( 255, 0, 255 )
@@ -132,25 +141,8 @@ local function rcc_user( pl, cmd, args )
     local subarg = args and args[ 1 ] or nil
     local target = args and args[ 2 ] or false
 
-    if not subarg then
-        con( pl, 1 )
-        con( pl, cfg.smsg.clrs.t1, 'Help » ', cfg.smsg.clrs.c1, ccmd.id )
-        con( pl, cfg.smsg.clrs.msg, '       Missing ', cfg.smsg.clrs.t1, 'action argument' )
-        con( pl, 1 )
-        con( pl, cfg.smsg.clrs.msg, '       ' .. ccmd.id, cfg.smsg.clrs.c2, ' add ', cfg.smsg.clrs.msg, 'playername' )
-        con( pl, cfg.smsg.clrs.msg, '       ' .. ccmd.id, cfg.smsg.clrs.c2, ' remove ', cfg.smsg.clrs.msg, 'playername' )
-        con( pl, cfg.smsg.clrs.msg, '       ' .. ccmd.id, cfg.smsg.clrs.c2, ' status ', cfg.smsg.clrs.msg, 'playername' )
-        return
-    end
-
     if not target then
-        con( pl, 1 )
-        con( pl, cfg.smsg.clrs.t1, 'Help » ', cfg.smsg.clrs.c1, ccmd.id )
-        con( pl, cfg.smsg.clrs.msg, '       Missing', cfg.smsg.clrs.t1, ' player name' )
-        con( pl, 1 )
-        con( pl, cfg.smsg.clrs.msg, '       ' .. ccmd.id, cfg.smsg.clrs.msg, ' add ', cfg.smsg.clrs.c2, 'playername' )
-        con( pl, cfg.smsg.clrs.msg, '       ' .. ccmd.id, cfg.smsg.clrs.msg, ' remove ', cfg.smsg.clrs.c2, 'playername' )
-        con( pl, cfg.smsg.clrs.msg, '       ' .. ccmd.id, cfg.smsg.clrs.msg, ' status ', cfg.smsg.clrs.c2, 'playername' )
+        route( pl, script, 'You must supply at least a valid partial', cfg.cmsg.clrs.target, 'player name' )
         return
     end
 
@@ -690,6 +682,103 @@ end
 rcc.register( 'rlib_cs_obf', rcc_checksum_obf )
 
 /*
+*   rcc > udm
+*
+*   toggles the update notification for the remainder of the session and will revert to default when
+*   the server is rebooted.
+*/
+
+local function rcc_udm( pl, cmd, args )
+
+    /*
+    *   define command
+    */
+
+    local ccmd = base.calls:get( 'commands', 'rlib_udm' )
+
+    /*
+    *   scope
+    */
+
+    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+        access:deny_consoleonly( pl, script, ccmd.id )
+        return
+    end
+
+    /*
+    *   perms
+    */
+
+    if not access:bIsRoot( pl ) then
+        access:deny_permission( pl, script, ccmd.id )
+        return
+    end
+
+    /*
+    *   functionality
+    */
+
+    local timer_id  = 'rlib_udm_notice'
+    local status    = args and args[ 1 ] or false
+    local dur       = args and args[ 2 ] or cfg.udm.checktime or 1800
+
+    if not base:bInitialized( ) then
+        log( 1, lang( 'lib_udm_err_noinit' ) )
+        con( pl, 1 )
+        return
+    end
+
+    /*
+    *   param > run updater
+    */
+
+    if status and status == 'run' then
+        local task_udm = coroutine.create( function( )
+            local branch = sf( mf.astra.udm.branch, cvar:GetStr( 'rlib_branch', 'stable' ) )
+            base.udm:Check( branch )
+        end )
+        coroutine.resume( task_udm )
+        return
+    end
+
+    if status then
+        local param_status = helper.util:toggle( status )
+        if param_status then
+            if timex.exists( timer_id ) then
+                local next_chk = timex.remains( timer_id )
+                next_chk = timex.secs.sh_simple( next_chk, false, true )
+                log( 4, lang( 'lib_udm_nextchk', next_chk ) )
+                return
+            end
+
+            if dur and not helper:bIsNum( dur ) then
+                log( 2, lang( 'lib_udm_bad_dur' ) )
+                return
+            end
+
+            log( 4, lang( 'lib_udm_started', dur ) )
+
+            base.udm:Run( dur )
+        else
+            timex.expire( timer_id )
+            log( 4, lang( 'lib_udm_stopped', dur ) )
+        end
+    else
+        if timex.exists( timer_id ) then
+            local next_chk = timex.remains( timer_id )
+            next_chk = timex.secs.sh_simple( next_chk, false, true )
+            log( 4, lang( 'lib_udm_active', next_chk ) )
+
+            return
+        else
+            log( 1, lang( 'lib_udm_inactive' ) )
+        end
+    end
+
+end
+rcc.register( 'rlib_udm', rcc_udm )
+
+/*
 *   rcc > calls
 *
 *   returns a list of all registered calls associated to rlib / rcore
@@ -880,108 +969,42 @@ local function rcc_modules_errlog( pl, cmd, args )
     end
 
     /*
-    *   grab data
+    *   functionality
     */
 
-    local i_err, i_otd, t_err, t_otd = 0, 0, { }, { }
-    for v in helper.get.data( rcore.modules, true ) do
-        if not v.errorlog then continue end
-        if not v.errorlog.note then
-            v.errorlog.note = 'none'
-        end
-
-        if v.errorlog.bLibOutdated then
-            table.insert( t_otd, v )
-            v.errorlog.note = 'rlib outdated'
-            i_otd = i_otd + 1
-        end
-
-        table.insert( t_err, v )
-
-        i_err = i_err + 1
-    end
-
-    /*
-    *   to console > header
-    */
-
-    con             ( pl, 2 )
+    con             ( pl, 1 )
     con             ( pl, clr_y, rlib.manifest.name, clr_p, ' » ', clr_w, 'Errorlogs' )
     con             ( pl, 0 )
 
     /*
-    *   data > outdated
+    *   outdated libraries
     */
 
-    if i_otd > 0 then
-
-        /*
-        *   outdated > header
-        */
-
-        con             ( pl, clr_w, 'The following modules require a more recent version of rlib to function properly' )
-        con             ( pl, 0 )
-
-        local l1_l      = sf( '%-20s', 'Module'     )
-        local l2_l      = sf( '%-20s', 'Version'    )
-        local l3_l      = sf( '%-20s', 'Running'    )
-        local l4_l      = sf( '%-20s', 'Requires'   )
-
-        con             ( pl, clr_y, l1_l, clr_y, l2_l, clr_r, l3_l, clr_g, l4_l )
-
-        /*
-        *   outdated > loop
-        */
-
-        for v in helper.get.data( t_otd, true ) do
-            if not v.errorlog then continue end
-
-            if v.errorlog.bLibOutdated then
-                local l1_d  = sf( '%-20s', v.name )
-                local l2_d  = sf( '%-20s', rlib.get:ver2str_mfs( v ) )
-                local l3_d  = sf( '%-20s', rlib.get:ver2str_mfs( ) )
-                local l4_d  = sf( '%-20s', rlib.get:ver2str( v.libreq ) )
-
-                con( pl, clr_w, l1_d, clr_w, l2_d, clr_r, l3_d, clr_g, l4_d )
-
-                i_otd = i_otd + 1
-            end
-
-            i_err = i_err + 1
-        end
-
-    else
-        con( pl, clr_y, 'All scrupts up to date' )
-    end
-
-    /*
-    *   errors > header
-    */
-
-    con             ( pl, 2 )
+    con             ( pl, clr_y, '» ', clr_w, 'Outdated\n' )
+    con             ( pl, clr_w, 'The following modules require a more recent version of rlib to function properly' )
     con             ( pl, 0 )
-    con             ( pl, clr_w, 'The following modules have detected errors' )
+    con             ( pl, 1 )
+
+    local l1_l      = sf( '%-20s', 'Module'         )
+    local l2_l      = sf( '%-20s', 'Module Version' )
+    local l3_l      = sf( '%-20s', 'Lib Version'    )
+    local l4_l      = sf( '%-20s', 'Lib Required'   )
+
+    con             ( pl, clr_y, l1_l, clr_w, l2_l, clr_r, l3_l, clr_w, l4_l )
     con             ( pl, 0 )
 
-    local l1_l      = sf( '%-20s', 'Module'     )
-    local l2_l      = sf( '%-20s', 'Note'       )
+    for v in helper.get.data( rcore.modules, true ) do
+        if not v.errorlog then continue end
 
-    con             ( pl, clr_y, l1_l, clr_y, l2_l )
-
-        /*
-        *   errors > loop
-        */
-
-        for v in helper.get.data( t_err, true ) do
-            if not v.errorlog then continue end
-
+        if v.errorlog.bLibOutdated then
             local l1_d  = sf( '%-20s', v.name )
-            local l2_d  = sf( '%-20s', v.errorlog.note )
+            local l2_d  = sf( '%-20s', rlib.get:ver2str_mf( v ) )
+            local l3_d  = sf( '%-20s', rlib.get:ver2str_mf( ) )
+            local l4_d  = sf( '%-20s', rlib.get:ver2str( v.libreq ) )
 
-            con( pl, clr_w, l1_d, clr_w, l2_d )
+            con( pl, clr_y, l1_d, clr_w, l2_d, clr_r, l3_d, clr_w, l4_d )
         end
-
-    con( pl, 2 )
+    end
 
 end
 rcc.register( 'rlib_modules_errlog', rcc_modules_errlog )
@@ -1029,39 +1052,28 @@ local function rcc_modules( pl, cmd, args )
     *   functionality
     */
 
-    con             ( pl, 2 )
-    con             ( pl, clr_y, rlib.manifest.name, clr_p, ' » ', clr_w, 'Active Modules' )
+    con             ( pl, '\n\n [' .. base.manifest.name .. '] Active Modules' )
     con             ( pl, 0 )
 
     local c1_l      = sf( '%-20s', 'Module'      )
-    local c2_l      = sf( '%-12s', 'Version'     )
-    local c3_l      = sf( '%-12s', 'Author'      )
-    local c4_l      = sf( '%-30s', ( arg_flag == gcf_path and 'Path' ) or 'Description' )
-    local c5_l      = sf( '%-12s', 'Status'      )
-    local resp      = sf( ' %s %s %s %s%s', c1_l, c2_l, c3_l, c4_l, c5_l )
+    local c2_l      = sf( '%-17s', 'Version'     )
+    local c3_l      = sf( '%-15s', 'Author'      )
+    local c4_l      = sf( '%-20s', ( arg_flag == gcf_path and 'Path' ) or 'Description' )
 
-    con             ( pl, clr_w, resp )
+    con             ( pl, sf( ' %s %s %s %s', c1_l, c2_l, c3_l, c4_l ) )
     con             ( pl, 0 )
 
     for v in helper.get.data( rcore.modules, true ) do
-        local ver       = rlib.get:ver2str_mfs( v ) or 'err'
-        local name      = v.name and helper.str:truncate( v.name, 19 ) or 'err'
-        local author    = v.author and helper.str:truncate( v.author, 11 ) or 'err'
-        local desc      = helper.str:truncate( ( arg_flag == gcf_path and v.path ) or v.desc, 25 ) or 'err'
-        local state     = v.errorlog and 'ERR' or 'OK'
-        local state_clr = v.errorlog and clr_r or clr_g
+        local l1_d  = sf( '%-20s', tostring( helper.str:truncate( v.name, 20, '...' ) or 'err' ) )
+        local l2_d  = sf( '%-17s', tostring( rlib.modules:ver2str( v ) or 'err' ) )
+        local l3_d  = sf( '%-15s', tostring( v.author or 'err' ) )
+        local l4_d  = sf( '%-20s', tostring( helper.str:truncate( ( arg_flag == gcf_path and v.path ) or v.desc, 40, '...' ) or 'err' ) )
+        local resp  = sf( ' %s %s %s %s', l1_d, l2_d, l3_d, l4_d )
 
-        local l1_d      = sf( '%-20s', name     )
-        local l2_d      = sf( '%-12s', ver      )
-        local l3_d      = sf( '%-12s', author   )
-        local l4_d      = sf( '%-30s', desc     )
-        local l5_d      = sf( '%-25s', state   )
-        local resp      = sf( ' %s %s %s %s', l1_d, l2_d, l3_d, l4_d )
-
-        con( pl, clr_w, resp, state_clr, l5_d )
+        con( pl, clr_y, resp )
     end
 
-    con( pl, 4 )
+    con( pl, 0 )
 
 end
 rcc.register( 'rlib_modules', rcc_modules )
@@ -1144,13 +1156,13 @@ local function rcc_tools_asay( pl, cmd, args )
     *   functionality
     */
 
-    local msg               = table.concat( args, ' ' )
+    local asay_message = table.concat( args, ' ' )
 
     /*
     *   check if asay str empty; return error
     */
 
-    if not helper.str:ok( msg ) then
+    if not helper.str:ok( asay_message ) then
         route( pl, false, 'asay', 'cannot send empty message' )
         return
     end
@@ -1159,7 +1171,7 @@ local function rcc_tools_asay( pl, cmd, args )
     *   run asay hook
     */
 
-    hook.Run( 'asay.broadcast', pl, msg )
+    hook.Run( 'asay.broadcast', pl, asay_message )
 
 end
 rcc.register( 'rlib_asay', rcc_tools_asay )
@@ -1368,6 +1380,15 @@ local function rcc_setup( pl, cmd, args )
     local bHasRoot, rootuser = access:root( )
     if bHasRoot then
         route( pl, false, script, lang( 'setup_root_exists' ), clr_y, ( rootuser and rootuser.name ) or 'none' )
+        return
+    end
+
+    /*
+    *   check > server initialized
+    */
+
+    if not base:bInitialized( ) then
+        route( pl, false, script, lang( 'lib_initialized' ) )
         return
     end
 
@@ -1606,12 +1627,21 @@ local function rcc_status( pl, cmd, args )
     con( pl, clr_r, o1_l, clr_p, o2_l )
     con( pl )
 
-    local bHasRoot, rootuser = access:root( )
-    local owner_id = bHasRoot and istable( rootuser ) and rootuser.name or 'none'
+    local bHasRoot,
+    rootuser            = access:root( )
+    local owner_id      = bHasRoot and istable( rootuser ) and rootuser.name or 'none'
+    local hb            = ( math.Round( CurTime( ) - mf.astra.oort.last_hb ) ) or 0
+    hb                  = sf( '%i seconds ago', hb )
 
     local tbl_oort =
     {
+        -- { id = lang( 'status_col_validated' ),      val = sys.validate and lang( 'opt_yes' ) or lang( 'opt_no' ) },
         { id = lang( 'status_col_owner' ),          val = bHasRoot and owner_id or 'unregistered' },
+        { id = lang( 'status_col_validated' ),      val = mf.astra.oort.validated and lang( 'opt_yes' ) or lang( 'opt_no' ) },
+        { id = lang( 'status_col_latest_ver' ),     val = mf.astra.oort.has_latest and lang( 'opt_yes' ) or lang( 'opt_no' ) },
+        { id = lang( 'status_col_heartbeat' ),      val = hb or 0 },
+        { id = lang( 'status_col_sess_id' ),        val = mf.astra.oort.sess_id or 'null' },
+        { id = lang( 'status_col_auth_id' ),        val = mf.astra.oort.auth_id or 'null' },
         { id = lang( 'status_col_branch' ),         val = cvar:GetStr( 'rlib_branch', 'stable' ) },
     }
 
@@ -1763,7 +1793,7 @@ local function rcc_status( pl, cmd, args )
         clr_status      = not v.enabled and clr_r or clr_status
 
         local name      = tostring( helper.str:truncate( v.name, 20, '...' ) or lang( 'err' ) )
-        local ver       = tostring( rlib.modules:ver2str_s( v ) )
+        local ver       = tostring( rlib.modules:ver2str( v ) )
         local author    = tostring( v.author )
         local desc      = tostring( helper.str:truncate( v.desc, 40, '...' ) or lang( 'err' ) )
 
@@ -1980,7 +2010,7 @@ local function rcc_map_ents( pl, cmd, args )
     storage.file.del    ( path .. '/' .. file_id )
     storage.dir.create  ( path )
 
-    con( pl, 2 )
+    con( pl, 1 )
     con( pl, 0 )
     con( 'c',       Color( 255, 255, 0 ), 'Please wait while a map ent list is generated ...' )
 
@@ -1998,10 +2028,202 @@ local function rcc_map_ents( pl, cmd, args )
     con( pl, 1 )
     con( 'c',       Color( 255, 255, 0 ), 'Added ' .. i .. ' entities to ' .. path .. '/' .. file_id )
     con( pl, 0 )
-    con( pl, 3 )
 
 end
 rcc.register( 'rlib_map_ents', rcc_map_ents )
+
+/*
+*   rcc > check oort
+*
+*   checks the status of oort
+*/
+
+local function rcc_oort( pl, cmd, args )
+
+    /*
+    *   define command
+    */
+
+    local ccmd = base.calls:get( 'commands', 'rlib_oort' )
+
+    /*
+    *   scope
+    */
+
+    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+        access:deny_consoleonly( pl, script, ccmd.id )
+        return
+    end
+
+    /*
+    *   perms
+    */
+
+    if not access:bIsDev( pl ) then
+        access:deny_permission( pl, script, ccmd.id )
+        return
+    end
+
+    /*
+    *   set
+    *
+    *   enabling this allows various oort debug prints to show
+    */
+
+    local bStatus           = args and args[ 1 ] or false
+    if bStatus then
+        mf.astra.oort.debug = helper:val2bool( bStatus )
+        route( pl, false, script, 'Oort Engine Debug', helper.util:humanbool( bStatus, true ) )
+        return
+    end
+
+    /*
+    *   functionality
+    */
+
+    local has_oort = oort and lang( 'opt_enabled' ) or lang( 'opt_disabled' )
+    route( pl, false, script, 'Oort Engine', cfg.cmsg.clrs.target, '[' .. has_oort .. ']' )
+end
+rcc.register( 'rlib_oort', rcc_oort )
+
+/*
+*   rcc > oort > update
+*
+*   forces oort to update server stats to database
+*/
+
+local function rcc_oort_update( pl, cmd, args )
+
+    /*
+    *   define command
+    */
+
+    local ccmd = base.calls:get( 'commands', 'rlib_oort_update' )
+
+    /*
+    *   scope
+    */
+
+    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+        access:deny_consoleonly( pl, script, ccmd.id )
+        return
+    end
+
+    /*
+    *   perms
+    */
+
+    if not access:bIsDev( pl ) then
+        access:deny_permission( pl, script, ccmd.id )
+        return
+    end
+
+    /*
+    *   functionality
+    */
+
+    rlib.oort:Authorize( true )
+    /*
+    timex.simple( 3, function( )
+        rlib.oort:Stats( true )
+        route( pl, false, script, 'Oort Engine successfully', cfg.cmsg.clrs.target, 'updated' )
+    end )
+    */
+end
+rcc.register( 'rlib_oort_update', rcc_oort_update )
+
+/*
+*   rcc > oort > next update
+*
+*   returns the update timer duration for oort stats
+*/
+
+local function rcc_oort_next( pl, cmd, args )
+
+    /*
+    *   define command
+    */
+
+    local ccmd = base.calls:get( 'commands', 'rlib_oort_next' )
+
+    /*
+    *   scope
+    */
+
+    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+        access:deny_consoleonly( pl, script, ccmd.id )
+        return
+    end
+
+    /*
+    *   perms
+    */
+
+    if not access:bIsDev( pl ) then
+        access:deny_permission( pl, script, ccmd.id )
+        return
+    end
+
+    /*
+    *   functionality
+    */
+
+    local remains   = timex.remains( 'rlib.oort.stats' )
+    local resp      = sf( '%s > oort > next update', script )
+
+    con( pl, 1  )
+    con( pl, 0  )
+    con( pl, clr_y, resp )
+    con( pl, 0  )
+    con( pl, 1  )
+    con( pl, 'Next stats update in ', clr_y, remains, clr_w, ' seconds' )
+    con( pl, 1  )
+    con( pl, 0  )
+    con( pl, 1  )
+
+end
+rcc.register( 'rlib_oort_next', rcc_oort_next )
+
+/*
+*   rcc > oort > sendlog
+*
+*   returns the update timer duration for oort stats
+*/
+
+local function rcc_oort_sendlog( pl, cmd, args )
+
+    /*
+    *   define command
+    */
+
+    local ccmd = base.calls:get( 'commands', 'rlib_oort_sendlog' )
+
+    /*
+    *   scope
+    */
+
+    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+        access:deny_consoleonly( pl, script, ccmd.id )
+        return
+    end
+
+    /*
+    *   perms
+    */
+
+    if not access:bIsDev( pl ) then
+        access:deny_permission( pl, script, ccmd.id )
+        return
+    end
+
+    /*
+    *   prepare log
+    */
+
+    base.oort:PrepareLog( false )
+
+end
+rcc.register( 'rlib_oort_sendlog', rcc_oort_sendlog )
 
 /*
 *   concommand > cancel restart

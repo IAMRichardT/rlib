@@ -1,6 +1,10 @@
 {
     "unreleased": [],
     "releases": {
+      "3.2.0.0": [
+            "[ ^ ] massive rewrite of numerous functions",
+            "[ ^ ] cleanup"
+      ],
       "3.2.1.0": [
             "[ + ] added rmem caching",
             "[ ^ ] revised uclass.lbl",

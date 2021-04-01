@@ -321,6 +321,16 @@ function base:log( cat, msg, ... )
         if cat == RLIB_LOG_FASTDL then return end
     end
 
+    /*
+    *   oort debug
+    */
+
+    if cat == RLIB_LOG_OORT and not mf.astra.oort.debug then return end
+
+    /*
+    *   response
+    */
+
     if not resp then
         error( msg, 2 )
         return
