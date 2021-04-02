@@ -1,0 +1,9 @@
+{
+	"name":             "Rlib",
+	"author":           "richard",
+	"type":             "library",
+	"description":      "glua lib for garrys mod",
+	"homepage":         "https://rlib.io/",
+	"docs":             "https://docs.rlib.io",
+	"checksum":         "cacd20703e139de923bb4fab1e4972efcc4919c7"
+}
