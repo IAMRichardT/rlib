@@ -387,6 +387,16 @@ base.c.commands =
         scope               = 1,
         showsetup           = false,
         official            = true,
+        ex =
+        {
+            'rlib.oort',
+            'rlib.oort -s debug 1',
+            'rlib.oort -s debug off',
+        },
+        flags =
+        {
+            [ 'set' ]     = { flag = '-s', desc = 'sets the status of oort debugging' },
+        },
     },
     [ 'rlib_oort_update' ] =
     {

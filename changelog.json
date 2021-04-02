@@ -1,9 +1,12 @@
 {
     "unreleased": [],
     "releases": {
-      "3.2.0.0": [
+      "3.3.0.0": [
+            "[ + ] added new function to convert string version to table",
             "[ ^ ] massive rewrite of numerous functions",
-            "[ ^ ] cleanup"
+            "[ ^ ] cleanup",
+            "[ % ] fixed update manager and only announce upon request",
+            "[ % ] fixed issue with helper.util:humanbool nil value"
       ],
       "3.2.1.0": [
             "[ + ] added rmem caching",

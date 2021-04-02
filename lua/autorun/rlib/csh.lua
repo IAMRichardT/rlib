@@ -2548,8 +2548,6 @@ end
 */
 
 function helper.util:toggle( val )
-    if not val then return false end
-
     if ( isstring( val ) ) then
         if ( table.HasValue( options_yes, val ) ) then
             return true
@@ -2557,6 +2555,8 @@ function helper.util:toggle( val )
             return false
         elseif ( table.HasValue( options_huh, val ) ) then
             log( 1, lang( 'convert_toggle_idiot' ) )
+            return false
+        else
             return false
         end
     elseif ( isnumber( val ) ) then
@@ -2587,8 +2587,6 @@ end
 */
 
 function helper.util:humanbool( val, bOnOff )
-    if not val then return end
-
     local b2s_true      = 'true'
     local b2s_false     = 'false'
     local b2h_true      = 'enabled'
@@ -2601,6 +2599,8 @@ function helper.util:humanbool( val, bOnOff )
             return not bOnOff and b2s_false or b2h_false
         elseif ( table.HasValue( options_huh, val ) ) then
             log( 1, lang( 'convert_toggle_idiot' ) )
+            return not bOnOff and b2s_false or b2h_false
+        else
             return not bOnOff and b2s_false or b2h_false
         end
     elseif ( isnumber( val ) ) then

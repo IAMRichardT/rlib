@@ -189,7 +189,7 @@ local function log( ... ) base:log( ... ) end
 *
 *   @note   : will replace get:version and get:ver2str soon
 *
-*   @ex     : { 3, 0, 2, 1 }
+*   @ex     : base.get:ver2str( { 3, 0, 2, 1 } )
 *             3.0.2.1
 *
 *   @return : str
@@ -212,6 +212,12 @@ local function log( ... ) base:log( ... ) end
 *   returns version tbl as table with major, minor, patch keys
 *
 *   @ex     : rlib.get:ver_struct( { 1, 4, 5, 1 } )
+*             return {
+*                       'major' = 1,
+*                       'minor' = 4,
+*                       'patch' = 5,
+*                       'build' = 1
+*                   }
 *
 *   @since  : v3.0.0
 *   @param  : tbl ver
@@ -225,6 +231,33 @@ local function log( ... ) base:log( ... ) end
             [ 'patch' ] = ( ver and ver[ 'patch' ] or ver[ 3 ] ) or 0,
             [ 'build' ] = ( ver and ver[ 'build' ] or ver[ 4 ] ) or 0
         }
+    end
+
+/*
+*   base > get > version structure > string to version table
+*
+*   takes a string with 4 segments and returns them as a structured version
+*   table.
+*
+*   @ex     : rlib.get:ver_struct_str( '1.0.0.0' )
+*             returns { 1.0.0.0 }
+*
+*   @since  : v3.3.0
+*   @param  : str ver
+*   @return : tbl
+*/
+
+    function base.get:ver_struct_str( str )
+        if not str then
+            str = '1.0.0.0'
+        end
+
+        local ver = { }
+        for seg in str:gmatch( '%d*' ) do
+           table.insert( ver, tonumber( seg ) )
+        end
+
+        return ver
     end
 
 /*

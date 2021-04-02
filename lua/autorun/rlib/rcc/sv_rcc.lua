@@ -718,9 +718,9 @@ local function rcc_udm( pl, cmd, args )
     *   functionality
     */
 
-    local timer_id  = 'rlib_udm_notice'
-    local status    = args and args[ 1 ] or false
-    local dur       = args and args[ 2 ] or cfg.udm.checktime or 1800
+    local timer_id          = 'rlib_udm_notice'
+    local status            = args and args[ 1 ] or false
+    local dur               = args and args[ 2 ] or cfg.udm.checktime or 1800
 
     if not base:bInitialized( ) then
         log( 1, lang( 'lib_udm_err_noinit' ) )
@@ -734,8 +734,7 @@ local function rcc_udm( pl, cmd, args )
 
     if status and status == 'run' then
         local task_udm = coroutine.create( function( )
-            local branch = sf( mf.astra.udm.branch, cvar:GetStr( 'rlib_branch', 'stable' ) )
-            base.udm:Check( branch )
+            base.udm:Check( )
         end )
         coroutine.resume( task_udm )
         return
@@ -2065,23 +2064,47 @@ local function rcc_oort( pl, cmd, args )
     end
 
     /*
-    *   set
-    *
-    *   enabling this allows various oort debug prints to show
+    *   args / flags
     */
 
-    local bStatus           = args and args[ 1 ] or false
-    if bStatus then
-        mf.astra.oort.debug = helper:val2bool( bStatus )
-        route( pl, false, script, 'Oort Engine Debug', helper.util:humanbool( bStatus, true ) )
-        return
+    local arg_flag          = args and args[ 1 ] or false
+    local arg_act           = args and args[ 2 ] or false
+    local arg_arg           = args and args[ 3 ] or false
+    local gcf_set           = base.calls:gcflag( 'rlib_oort', 'set' )
+
+    /*
+    *   flag > set
+    */
+
+    if arg_flag and arg_flag == gcf_set then
+
+        /*
+        *   rlib.oort -s debug
+        */
+
+        if arg_act == 'debug' then
+            mf.astra.oort.debug = helper:val2bool( arg_arg )
+            route( pl, false, script, 'Oort Engine debug is now', helper.util:humanbool( arg_arg, true ) )
+            return
+        else
+            con( pl, 1 )
+            con( pl, clr_y, 'Oort Engine » ', clr_r, 'Flag action not set!' )
+            con( pl, clr_w, '       Example: ', clr_y, 'rlib.oort ' .. gcf_set .. ' debug off' )
+            con( pl, 1 )
+            return
+        end
+    else
+        con( pl, 1 )
+        con( pl, clr_y, 'Oort Engine » ', clr_r, 'Unknown flag' )
+        con( pl, clr_w, '       Type: ', clr_y, 'rlib oort', clr_w, ' for information.' )
+        con( pl, 1 )
     end
 
     /*
     *   functionality
     */
 
-    local has_oort = oort and lang( 'opt_enabled' ) or lang( 'opt_disabled' )
+    local has_oort = cfg.oort.enabled and lang( 'opt_enabled' ) or lang( 'opt_disabled' )
     route( pl, false, script, 'Oort Engine', cfg.cmsg.clrs.target, '[' .. has_oort .. ']' )
 end
 rcc.register( 'rlib_oort', rcc_oort )
@@ -2123,12 +2146,6 @@ local function rcc_oort_update( pl, cmd, args )
     */
 
     rlib.oort:Authorize( true )
-    /*
-    timex.simple( 3, function( )
-        rlib.oort:Stats( true )
-        route( pl, false, script, 'Oort Engine successfully', cfg.cmsg.clrs.target, 'updated' )
-    end )
-    */
 end
 rcc.register( 'rlib_oort_update', rcc_oort_update )
 

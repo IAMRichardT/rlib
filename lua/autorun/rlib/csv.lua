@@ -579,8 +579,8 @@ end )
 */
 
 function base.udm:Run( dur )
-    local tmr_check = isnumber( dur ) and dur or cfg.udm.checktime or 1800
-    timex.create( 'rlib_udm_notice', tmr_check, 0, function( )
+    local i_delay = isnumber( dur ) and dur or cfg.udm.checktime or 1800
+    timex.create( 'rlib_udm_notice', i_delay, 0, function( )
         coroutine.resume( run_check_update )
     end )
 end
@@ -592,13 +592,15 @@ end
 *
 *   @call   : rlib.udm:Check( 'https://udm.rlib.io/rlib/stable' )
 *
-*   @param  : str ref
+*   @param  : bool bReq
+*             if true; update check will print in coonsole when
+*             lib up to date; false sets log type to RLIB_LOGS_OORT
 */
 
-function base.udm:Check( ref )
+function base.udm:Check( bReq )
     local get_branch            = cvar:GetStr( 'rlib_branch', 'stable' )
     local sess_id               = base.oort:SessionID( )
-    local _e                    = ref or sf( mf.astra.udm.branch, get_branch )
+    local _e                    = sf( mf.astra.udm.branch, get_branch )
     _e                          = sf( '%s/%s/%s', _e, base.get:ver2str_mf( mf, '-' ), sess_id )
 
     oort( _e, function( b, l, h, c )
@@ -606,23 +608,59 @@ function base.udm:Check( ref )
             log( 2, ln( 'lib_udm_chk_errcode', get_branch, c ) )
             return
         end
-        if b:len( ) > 0 then
+
+        if b:len( ) > 5 then
             b               = ts( b )
             local resp      = util.JSONToTable( b )
             local branch    = istable( resp ) and resp.branch and resp.branch[ 1 ]
             if not branch or ( branch.code and tonumber( branch.code ) ~= 200 ) or branch.msg then
                 local respinfo = branch and ( branch.code or branch.message ) or ln( 'response_none' )
-                log( 6, ln( 'lib_udm_chk_errmsg', get_branch, respinfo ) )
+                log( RLIB_LOG_OORT, ln( 'lib_udm_chk_errmsg', get_branch, respinfo ) )
                 return
             end
-            local c_ver = base.get:ver2str_mf( mf )
-            if mf.astra.udm.hash ~= branch.hash then
-                log( 6, ln( 'lib_udm_mismatch', branch.version, c_ver ) )
-            else
-                mf.astra.oort.has_latest = true
-                log( 6, ln( 'lib_udm_ok', c_ver ) )
+
+            local bHasUpdate        = false
+            local rlib_latest_str   = branch.version
+            local rlib_latest       = base.get:ver_struct_str( rlib_latest_str )
+            rlib_latest             = base.get:ver_struct( rlib_latest )
+
+            local rlib_now          = base.get:version( )
+            local rlib_now_str      = base.get:ver2str( rlib_now )
+
+            /*
+            *   major mismatch
+            */
+
+            if ( rlib_latest.major > rlib_now.major ) then
+                bHasUpdate = true
+                log( RLIB_LOG_WARN, ln( 'lib_udm_err_major', rlib_now_str, rlib_latest_str ) )
+            elseif not bHasUpdate and ( rlib_latest.major == rlib_now.major ) then
+
+                /*
+                *   minor mismatch
+                */
+
+                if not bHasUpdate and ( rlib_latest.minor > rlib_now.minor ) then
+                    bHasUpdate = true
+                    log( RLIB_LOG_WARN, ln( 'lib_udm_err_minor', rlib_now_str, rlib_latest_str ) )
+                elseif not bHasUpdate and ( rlib_latest.minor == rlib_now.minor ) then
+
+                    /*
+                    *   patch mismatch
+                    */
+
+                    if rlib_latest.patch > rlib_now.patch then
+                        bHasUpdate = true
+                        log( RLIB_LOG_WARN, ln( 'lib_udm_err_patch', rlib_now_str, rlib_latest_str ) )
+                    end
+                end
             end
 
+            if not bHasUpdate then
+                log( bReq and 1 or RLIB_LOG_OORT, ln( 'lib_udm_ok', rlib_latest_str ) )
+            end
+
+            mf.astra.oort.has_latest = true
             mf.astra.udm.response = branch
 
             net.Start       ( 'rlib.udm.check'          )
@@ -2436,8 +2474,7 @@ net.Receive( 'rlib.tools.report', netlib_report )
 
 local function netlib_udm_check( len, pl )
     local task_udm = coroutine.create( function( )
-        local branch = sf( mf.astra.udm.branch, cvar:GetStr( 'rlib_branch', 'stable' ) )
-        base.udm:Check( branch )
+        base.udm:Check( )
     end )
     coroutine.resume( task_udm )
 end
