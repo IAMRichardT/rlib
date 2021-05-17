@@ -51,8 +51,8 @@ function rlib.autoload:Run( parent )
     mf.repo                         = 'https://github.com/im-richard/rlib/'
     mf.docs                         = 'https://docs.rlib.io/'
     mf.about                        = [[rlib is a glua library written for garrys mod which contains a variety of commonly used functions that are required for certain scripts to run properly. Package includes both rlib + rcore which act as the overall foundation which other scripts will rest within as a series of modules. ]]
-    mf.released                     = 1617268165
-    mf.version                      = { 3, 3, 0, 0 }
+    mf.released                     = 1621219553
+    mf.version                      = { 3, 4, 0, 0 }
     mf.showcopyright                = true
 
     /*
@@ -153,8 +153,8 @@ function rlib.autoload:Run( parent )
         svg                     =
         {
             stats               = 'https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fim-richard%2Frlib&count_bg=%235A3DC8&title_bg=%23555555&icon=reasonstudios.svg',
-            updated             = 'https://img.shields.io/github/last-commit/iamrichardt/rlib.svg?label=updated',
-            size                = 'https://img.shields.io/github/repo-size/iamrichardt/rlib.svg?color=%23FF1B67&label=size&logo=lua',
+            updated             = 'https://img.shields.io/github/last-commit/im-richard/rlib.svg?label=updated',
+            size                = 'https://img.shields.io/github/repo-size/im-richard/rlib.svg?color=%23FF1B67&label=size&logo=lua',
         },
     }
 
@@ -225,14 +225,18 @@ function rlib.autoload:Run( parent )
     *       base.a          : access
     *       base.c          : calls
     *       base.d          : design
+    *       base f          : fonts
     *       base.h          : helpers
     *       base.i          : interface
+    *       base.k          : konsole
     *       base.l          : languages
     *       base.m          : materials
     *       base.o          : owners
     *       base.p          : panels
+    *       base.r          : resources             ( mdl, pnl, ptc, snd )
     *       base.s          : storage
     *       base.t          : tools
+    *       base.v          : cvars
     *       base.w          : workshops
     *
     *       base.calls      : registered calls
@@ -242,7 +246,7 @@ function rlib.autoload:Run( parent )
     */
 
         /*
-        *   base > struct
+        *   base > create
         */
 
         local ind_base = { 'a', 'c', 'd', 'f', 'i', 'k', 'l', 'm', 'o', 'p', 'r', 's', 't', 'v', 'w', 'calls', 'checksum', 'con', 'cvar', '_def', 'fonts', 'modules', 'msg', 'sys', 'register', 'resources', 'package', 'alias', 'get', 'oort', 'udm' }
@@ -251,7 +255,7 @@ function rlib.autoload:Run( parent )
         end
 
         /*
-        *   calls > struct
+        *   calls > create
         */
 
         local ind_calls = { 'commands', 'hooks', 'net', 'timers' }
@@ -260,7 +264,7 @@ function rlib.autoload:Run( parent )
         end
 
         /*
-        *   helper > struct
+        *   helper > create
         */
 
         if istable( base.h ) then
@@ -274,7 +278,7 @@ function rlib.autoload:Run( parent )
         end
 
         /*
-        *   storage > struct
+        *   storage > create
         */
 
         base.s = base.s or { }
@@ -284,7 +288,7 @@ function rlib.autoload:Run( parent )
         end
 
         /*
-        *   tools > struct
+        *   tools > create
         */
 
         base.t = base.t or { }

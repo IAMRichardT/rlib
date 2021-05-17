@@ -1513,12 +1513,6 @@ function base:Register( path, mod, b_isext )
         rhook.run.rlib( name )
     end
 
-    /*
-    *   cleanup temp global
-    */
-
-    _G[ mod_id ] = nil
-
 end
 rhook.new.rlib( 'rcore_modules_register', base.Register )
 

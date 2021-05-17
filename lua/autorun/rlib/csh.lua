@@ -330,6 +330,29 @@ function helper.ok.sid64( sid )
 end
 
 /*
+*   checks for a valid string but also checks for blank or space chars
+*   similar to  helper.str:ok( ) but this one converts anything into a string to ensure
+*   the value is not missing
+*
+*   @note   : replaces str:isempty( ) in future release
+*
+*   @param  : str str
+*   @return : bool
+*/
+
+function helper.ok.str( str )
+    if not isstring( str ) then
+        str = tostring( str )
+    end
+
+    if str == 'false' then return false end
+
+    local text = str:gsub( '%s', '' )
+    if isstring( text ) and text ~= '' and text ~= 'NULL' and text ~= NULL then return true end
+    return false
+end
+
+/*
 *   helper > get > bots
 *
 *   return list of all bots
@@ -1064,12 +1087,25 @@ end
 
 function helper.ent.find( ent, bKey )
     return coroutine.wrap( function( )
-        for _, v in pairs( ents.FindByClass( ent ) ) do
-            if not helper.ok.ent( v ) then continue end
-            if bKey then
-                coroutine.yield( _, v )
-            else
-                coroutine.yield( v )
+        if isstring( ent ) then
+            for _, v in pairs( ents.FindByClass( ent ) ) do
+                if not helper.ok.ent( v ) then continue end
+                if bKey then
+                    coroutine.yield( _, v )
+                else
+                    coroutine.yield( v )
+                end
+            end
+        elseif istable( ent ) then
+            for a, b in pairs( ent ) do
+                for _, v in pairs( ents.FindByClass( b ) ) do
+                    if not helper.ok.ent( v ) then continue end
+                    if bKey then
+                        coroutine.yield( _, v )
+                    else
+                        coroutine.yield( v )
+                    end
+                end
             end
         end
     end )
@@ -1253,7 +1289,7 @@ access.pid = access.getperm_id
 *   @assoc  : access:ulx_getgroup
 *           : access:getperm
 *
-*   @ex     : access:ulx( 'rcore_tools_pco', mod )
+*   @ex     : access:ulx( 'rlib_tools_mdlv', mod )
 *
 *   @param  : str perm
 *   @param  : tbl, str mod
@@ -2222,6 +2258,8 @@ end
 /*
 *   helper > table > has id
 *
+*   @note   : move to tbl.HasID
+*
 *   determines if a table has a specific id registered.
 *   used for features such as nav menus, settings, etc.
 */
@@ -2236,6 +2274,8 @@ end
 
 /*
 *   helper > table > remove by id
+*
+*   @note   : move to tbl.RemoveByID
 *
 *   removes a table row based on the id specified.
 *   used for features such as nav menus, settings, etc.
@@ -2375,6 +2415,8 @@ end
 *   helper > locate table entry
 *
 *   matches a string with a table value
+*
+*   @note   : move to tbl.HasVal
 *
 *   @param  : tbl tbl
 *   @param  : str str
@@ -2621,43 +2663,6 @@ function helper.util:humanbool( val, bOnOff )
 end
 
 /*
-*   msg > target
-*
-*   routes a message as either a private or broadcast based on the target
-*
-*   @param  : ply pl
-*   @param  : str subcat [optional]
-*   @param  : varg { ... }
-*/
-
-function base.msg:target( pl, subcat, ... )
-    if not cfg or not cfg.cmsg then
-        log( 2, lang( 'cmsg_missing' ) )
-        return
-    end
-
-    local cmsg = cfg.cmsg
-
-    local args = { ... }
-    for k, v in pairs( args ) do
-        if not isstring( v ) then continue end
-        args[ k ] = v .. ' '
-    end
-
-    local sub_c = ( helper.str:ok( subcat ) and '[' .. subcat .. '] ' ) or '[' .. mf.name .. '] '
-
-    if CLIENT then
-        chat.AddText( cmsg.clrs.cat, '[' .. cmsg.tag_private .. '] ', cmsg.clrs.subcat, sub_c, cmsg.clrs.msg, unpack( args ) )
-    else
-        if helper.ok.ply( pl ) then
-            pl:umsg( cmsg.clrs.cat, '[' .. cmsg.tag_private .. '] ', cmsg.clrs.subcat, sub_c, cmsg.clrs.msg, unpack( args ) )
-        else
-            base:broadcast( cmsg.clrs.cat, '[' .. cmsg.tag_server .. '] ', cmsg.clrs.subcat, sub_c, cmsg.clrs.msg, unpack( args ) )
-        end
-    end
-end
-
-/*
 *   msg > simple
 *
 *   sends a msg with no affixed formatting
@@ -2747,6 +2752,8 @@ end
 *
 *   routes a message to each player as a server broadcast
 *
+*   @deprecate  : use msg:target( )
+*
 *   @param  : ply pl
 *   @param  : str subcat [optional]
 *   @param  : varg { ... }
@@ -2778,6 +2785,50 @@ function base.msg:server( pl, subcat, ... )
 end
 
 /*
+*   msg > target
+*
+*   routes a message as either a private or broadcast based on the target
+*   does NOT send server-side console messages for things such as server commands.
+*   use msg:route( ) for console + player
+*
+*   @destinations   :       CLIENT  - Client chat
+*
+*                           SERVER  - umsg ( one indivudual player )
+*                                   - broadcast ( all players )
+*
+*   @param  : ply pl
+*   @param  : str subcat [optional]
+*   @param  : varg { ... }
+*/
+
+function base.msg:target( pl, subcat, ... )
+    if not cfg or not cfg.cmsg then
+        log( 2, lang( 'cmsg_missing' ) )
+        return
+    end
+
+    local cmsg = cfg.cmsg
+
+    local args = { ... }
+    for k, v in pairs( args ) do
+        if not isstring( v ) then continue end
+        args[ k ] = v .. ' '
+    end
+
+    local sub_c = ( helper.str:ok( subcat ) and '[' .. subcat .. '] ' ) or '[' .. mf.name .. '] '
+
+    if CLIENT then
+        chat.AddText( cmsg.clrs.cat, '[' .. cmsg.tag_private .. '] ', cmsg.clrs.subcat, sub_c, cmsg.clrs.msg, unpack( args ) )
+    else
+        if helper.ok.ply( pl ) then
+            pl:umsg( cmsg.clrs.cat, '[' .. cmsg.tag_private .. '] ', cmsg.clrs.subcat, sub_c, cmsg.clrs.msg, unpack( args ) )
+        else
+            base:broadcast( cmsg.clrs.cat, '[' .. cmsg.tag_server .. '] ', cmsg.clrs.subcat, sub_c, cmsg.clrs.msg, unpack( args ) )
+        end
+    end
+end
+
+/*
 *   msg > route
 *
 *   can send a message via multiple routes
@@ -2789,6 +2840,13 @@ end
 *
 *   since sending to player chat has a tendency to also add to the player console, bConsole
 *   has been added.
+*
+*   @destinations   :       CLIENT  - Client chat
+*                                   - Client console
+*
+*                           SERVER  - umsg ( one indivudual player )
+*                                   - broadcast ( all players )
+*                                   - Console only prints
 *
 *   @param  : ply pl
 *   @param  : bool bConsole

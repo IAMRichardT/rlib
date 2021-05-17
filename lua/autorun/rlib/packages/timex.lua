@@ -173,8 +173,10 @@ valid = exists
 */
 
 function expire( id )
-    id = gid( id )
-    if isstring( id ) and exists( id ) then
+    local bExists   = exists( id )
+    id              = gid( id )
+
+    if isstring( id ) and bExists then
         timer.Remove( id )
     end
 end
@@ -189,8 +191,10 @@ kill = expire
 */
 
 function pause( id )
-    id = gid( id )
-    if isstring( id ) and exists( id ) then
+    local bExists   = exists( id )
+    id              = gid( id )
+
+    if isstring( id ) and bExists then
         timer.Pause( id )
     end
 end
@@ -208,8 +212,10 @@ stop = pause
 */
 
 function adjust( id, delay, reps, fn )
-    id = gid( id )
-    if not exists( id ) then return end
+    local bExists   = exists( id )
+    id              = gid( id )
+
+    if not bExists then return end
     if not isnumber( delay ) then return end
     timer.Adjust( id, delay, reps, fn )
 end
@@ -223,8 +229,10 @@ end
 */
 
 function resume( id )
-    id = gid( id )
-    if not isstring( id ) or not exists( id ) then return end
+    local bExists   = exists( id )
+    id              = gid( id )
+
+    if not isstring( id ) or not bExists then return end
     timer.UnPause( id )
 end
 start = resume
@@ -240,8 +248,10 @@ start = resume
 */
 
 function remains( id, b )
-    id = gid( id )
-    return exists( id ) and math.Round( timer.TimeLeft( id ) ) or ( b and 0 ) or false
+    local bExists   = exists( id )
+    id              = gid( id )
+
+    return bExists and math.Round( timer.TimeLeft( id ) ) or ( b and 0 ) or false
 end
 left = remains
 
@@ -255,8 +265,10 @@ left = remains
 */
 
 function reps( id )
-    id = gid( id )
-    return exists( id ) and math.Round( timer.RepsLeft( id ) ) or 0
+    local bExists   = exists( id )
+    id              = gid( id )
+
+    return bExists and math.Round( timer.RepsLeft( id ) ) or 0
 end
 life = reps
 
@@ -299,11 +311,12 @@ new = create
 */
 
 function unique( id, delay, repscnt, fn )
-    id          = gid( id )
-    delay       = delay or 0.1
-    repscnt     = repscnt or 1
+    local bExists   = exists( id )
+    id              = gid( id )
+    delay           = delay or 0.1
+    repscnt         = repscnt or 1
 
-    if exists( id ) then return end
+    if bExists then return end
 
     if not fn or not base:isfunc( fn ) then
         log( 1, '[ %s ] :: unique timer created with no func', pkg_name )

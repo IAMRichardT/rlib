@@ -138,6 +138,7 @@ local net_register =
     'rlib.sms.notify',
     'rlib.sms.inform',
     'rlib.sms.bubble',
+    'rlib.sms.push',
     'rlib.tools.pco',
     'rlib.tools.lang',
     'rlib.tools.dc',
@@ -170,10 +171,10 @@ local function direct   ( ... ) base.msg:direct( ... ) end
 *   metatable > ply
 */
 
-local pmeta = FindMetaTable( 'Player' )
+local pmeta                 = FindMetaTable( 'Player' )
 
 /*
-*   msg sys > broadcast
+*   base > broadcast
 */
 
 function base:broadcast( ... )
@@ -183,6 +184,10 @@ function base:broadcast( ... )
     net.Broadcast   (                       )
 end
 
+/*
+*   base > inform notification
+*/
+
 function base:inform( ... )
     local args      = { ... }
     net.Start       ( 'rlib.sms.inform'     )
@@ -190,11 +195,33 @@ function base:inform( ... )
     net.Broadcast   (                       )
 end
 
+/*
+*   base > bubble notification
+*/
+
 function base:bubble( ... )
     local args      = { ... }
     net.Start       ( 'rlib.sms.bubble'     )
     net.WriteTable  ( args                  )
     net.Broadcast   (                       )
+end
+
+/*
+*   base > push notification
+*/
+
+function base:push( ico, title, dur, ... )
+    ico             = isstring( ico ) and ico or nil
+    title           = helper.ok.str( title ) and title or 'Notification'
+    dur             = isnumber( dur ) and dur or 5
+
+    local args      = { ... }
+    net.Start       ( 'rlib.sms.push'       )
+    net.WriteString ( ico                   )
+    net.WriteString ( title                 )
+    net.WriteInt    ( dur, 8                )
+    net.WriteTable  ( args                  )
+    net.Broadcast   ( self                  )
 end
 
 /*
@@ -233,6 +260,20 @@ function pmeta:rbubble( dur, ... )
     dur             = isnumber( dur ) and dur or 5
     local args      = { ... }
     net.Start       ( 'rlib.sms.rbubble'    )
+    net.WriteInt    ( dur, 8                )
+    net.WriteTable  ( args                  )
+    net.Send        ( self                  )
+end
+
+function pmeta:push( ico, title, dur, ... )
+    ico             = isstring( ico ) and ico or nil
+    title           = helper.str:ok( title ) and title or 'Notification'
+    dur             = isnumber( dur ) and dur or 5
+
+    local args      = { ... }
+    net.Start       ( 'rlib.sms.push'       )
+    net.WriteString ( ico                   )
+    net.WriteString ( title                 )
     net.WriteInt    ( dur, 8                )
     net.WriteTable  ( args                  )
     net.Send        ( self                  )

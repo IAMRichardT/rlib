@@ -353,7 +353,7 @@ function storage.json.valid( data, id )
     if not istable( data ) then return false end
     id = isstring( id ) and id or 'pos'
 
-    return ( data and data[ id ] and true ) or false
+    return ( data and data[ 1 ] and data[ 1 ][ id ] ) or ( data and data[ id ] and true ) or false
 end
 
 /*
@@ -389,7 +389,11 @@ function storage.file.del( src )
     if not src or ( not mf.paths[ src ] and not storage.exists( src ) ) then return end
     src = isstring( mf.paths[ src ] ) and mf.paths[ src ] or src
 
-    file.Delete( src )
+    if storage.exists( src ) then
+        file.Delete( src )
+        return true
+    end
+    return false
 end
 
 /*
@@ -755,7 +759,7 @@ end
 
 function storage.ent:datafolder( mod, ent, sub2 )
     local parent, sub, txt
-    local data          = mod and mod.ents and mod.ents[ ent ] and mod.ents[ ent ].data_id or nil
+    local data          = mod and mod.ents and mod.ents[ ent ] and ( mod.ents[ ent ].data or mod.ents[ ent ].data_id ) or nil
     local ent_data      = mod and mod.ents and mod.ents[ ent ] or nil
 
     if data and ( mod and mod.datafolder and mod.datafolder[ data ] ) then

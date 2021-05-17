@@ -125,6 +125,24 @@ end
 net.Receive( 'rlib.sms.rbubble', netlib_sms_rbubble )
 
 /*
+*   netlib :: push :: bc
+*
+*   sends a bubble msg that displays to the bottom right of the
+*   players screen
+*/
+
+local function netlib_sms_push( len, pl )
+    local ico       = net.ReadString( )
+    local title     = net.ReadString( )
+    local dur       = net.ReadInt( 8 )
+    local args      = net.ReadTable( )
+    local msg       = args and args[ 1 ] or ''
+
+    design:push( title, msg, ico, dur )
+end
+net.Receive( 'rlib.sms.push', netlib_sms_push )
+
+/*
 *   get material data
 *
 *   returns material data based on the values provided

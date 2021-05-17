@@ -398,7 +398,7 @@ end
             subcat      = Color( 255, 255, 25 ),        -- yellow
             msg         = Color( 255, 255, 255 ),       -- white
             target      = Color( 25, 200, 25 ),         -- green
-            target_sec  = Color( 180, 20, 20 ),         -- dark red
+            target_sec  = Color( 223, 73, 73 ),         -- dark red
             target_tri  = Color( 13, 134, 255 ),        -- blue
             sec         = Color( 255, 255, 25 ),        -- yellow
             tri         = Color( 255, 107, 250 ),       -- pink
@@ -437,7 +437,7 @@ end
             c2          = Color( 255, 255, 25 ),        -- yellow
             c3          = Color( 13, 134, 255 ),        -- blue
             t1          = Color( 25, 200, 25 ),         -- green
-            t2          = Color( 180, 20, 20 ),         -- dark red
+            t2          = Color( 223, 73, 73 ),         -- dark red
             t3          = Color( 13, 134, 255 ),        -- blue
             t4          = Color( 255, 255, 25 ),        -- yellow
             t5          = Color( 255, 107, 250 ),       -- pink

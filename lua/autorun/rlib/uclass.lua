@@ -3213,6 +3213,57 @@ local uclass = { }
     end
 
     /*
+    *   uclass > SetPos
+    *
+    *   positions based on table index / key
+    *
+    *   @param  : int x
+    *   @param  : int y
+    */
+
+    function uclass.pos_table_x( pnl, x, y )
+        x = isnumber( x ) and x or 0
+        y = isnumber( y ) and y or isnumber( x ) and x or 0
+        x = x * ( pnl.pos_ind or 0 )
+        pnl:SetPos( x, y )
+    end
+
+    /*
+    *   uclass > SetPos
+    *
+    *   positions based on table index / key
+    *
+    *   @param  : int x
+    *   @param  : int y
+    */
+
+    function uclass.pos_table_y( pnl, x, y )
+        x = isnumber( x ) and x or 0
+        y = isnumber( y ) and y or isnumber( x ) and x or 0
+        y = y * ( pnl.pos_ind or 0 )
+        pnl:SetPos( x, y )
+    end
+
+    /*
+    *   uclass > insert to table
+    *
+    *   @param  : func fn
+    *   @param  : tbl tbl
+    *   @param  : int pos
+    */
+
+    function uclass.insert( pnl, tbl, pos )
+        if not istable( tbl ) then return end
+        local where = 0
+        if isnumber( pos ) then
+            where = table.insert( tbl, pos, pnl )
+        else
+            where = table.insert( tbl, pnl )
+        end
+        pnl.pos_ind = where
+    end
+
+    /*
     *   uclass > SetSpaceX
     *
     *   @alias  : space_x
@@ -3254,6 +3305,21 @@ local uclass = { }
         pnl:SetSpaceY( y )
     end
     uclass.space_xy = uclass.spacing
+
+    /*
+    *   uclass > DPanelList > SetSpacing
+    *
+    *   sets distance between list items
+    *
+    *   @alias  : dspace
+    *
+    *   @param  : int amt
+    */
+
+    function uclass.dspace( pnl, amt )
+        amt = isnumber( amt ) and amt or 0
+        pnl:SetSpacing( amt )
+    end
 
     /*
     *   uclass > DIconLayout > SetLayoutDir

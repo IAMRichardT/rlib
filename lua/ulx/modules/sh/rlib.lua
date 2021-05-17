@@ -31,18 +31,13 @@ local access                = base.a
 
 local mod, pf       	    = base.modules:req( 'base' )
 local cfg               	= base.modules:cfg( mod )
-
-/*
-*   req module
-*/
-
-if not mod then return end
+local smsg                  = base.settings.smsg
 
 /*
 *   Localized translation func
 */
 
-local function lang( ... )
+local function ln( ... )
     return base:translate( mod, ... )
 end
 
@@ -70,20 +65,21 @@ end
 *   declare perm ids
 */
 
-local id_mute           = perm( 'rcore_user_mute_timed' )
-local id_gag            = perm( 'rcore_user_gag_timed' )
+local id_mute               = perm( 'rlib_user_mute_timed' )
+local id_gag                = perm( 'rlib_user_gag_timed' )
 
 /*
 *   check dependency
 *
 *   @param  : ply pl
-*   @param  : str pid
+*   @param  : str p
 */
 
-local function checkDependency( pl, pid )
+local function checkDependency( pl, p )
     if not base or not base.modules:bInstalled( mod ) then
-        local cat = perm( pid ).category or base.get:name( )
-        base.msg:target( pl, cat, 'An error has occured with a required dependency. Contact the developer and we will summon the elves.' )
+        p                   = isstring( p ) and helper.ok.str( p ) or istable( p ) and ( p.ulx or p.id ) or 'unknown command'
+        local msg           = { smsg.clrs.t2, p, smsg.clrs.msg, '\nAn error has occured with the library. Contact the developer or sys admin.' }
+        pl:push             ( '', 'Critical Error', 7, msg )
         return false
     end
     return true
@@ -96,25 +92,25 @@ end
 *	submit a new first/last name, they must wait for an admin to accept the new name change before
 *	the dialog box will close and they can continue playing.
 *
-*   @param	: ply calling_ply
-*   @param	: ply, tbl target_plys
+*   @param	: ply call_pl
+*   @param	: ply, tbl targ_pls
 *   @param	: int dur
 *   @param	: str reason
-*	@param	: bool should_unmute
+*	@param	: bool bUnmute
 */
 
 local ID_MUTE = 2
 
-function ulx.rcore_user_mute_timed( calling_ply, target_plys, dur, reason, should_unmute )
-    if not checkDependency( calling_pl, 'rcore_user_mute_timed' ) then return end
+function ulx.rlib_user_mute_timed( call_pl, targ_pls, dur, reason, bUnmute )
+    if not checkDependency( call_pl, id_mute ) then return end
 
     dur = isnumber( dur ) and dur or 300
     dur = dur == 0 and 86400 or dur
 
-    for i = 1, #target_plys do
-        local v     = target_plys[ i ]
+    for i = 1, #targ_pls do
+        local v     = targ_pls[ i ]
         local t_id  = string.format( 'ulx.player.mute.%s', v:SteamID64( ) )
-        if should_unmute then
+        if bUnmute then
             v.gimp = nil
             timex.expire( t_id )
         else
@@ -126,35 +122,35 @@ function ulx.rcore_user_mute_timed( calling_ply, target_plys, dur, reason, shoul
                 end )
             end
         end
-        v:SetNWBool( 'ulx_muted', not should_unmute )
+        v:SetNWBool( 'ulx_muted', not bUnmute )
     end
 
-    if not should_unmute then
+    if not bUnmute then
         if helper.str:valid( reason ) and reason ~= 'reason' then
             if dur == 0 or dur == 86400 then
-                ulx.fancyLogAdmin( calling_ply, '#A muted #T permanently for reason [ #s ]', target_plys, reason )
+                ulx.fancyLogAdmin( call_pl, '#A muted #T permanently for reason [ #s ]', targ_pls, reason )
             else
-                ulx.fancyLogAdmin( calling_ply, '#A muted #T for #s seconds for reason [ #s ]', target_plys, dur, reason )
+                ulx.fancyLogAdmin( call_pl, '#A muted #T for #s seconds for reason [ #s ]', targ_pls, dur, reason )
             end
         else
             if dur == 0 or dur == 86400 then
-                ulx.fancyLogAdmin( calling_ply, '#A muted #T permanently', target_plys )
+                ulx.fancyLogAdmin( call_pl, '#A muted #T permanently', targ_pls )
             else
-                ulx.fancyLogAdmin( calling_ply, '#A muted #T for #s seconds', target_plys, dur )
+                ulx.fancyLogAdmin( call_pl, '#A muted #T for #s seconds', targ_pls, dur )
             end
         end
     else
-        ulx.fancyLogAdmin( calling_ply, '#A unmuted #T', target_plys )
+        ulx.fancyLogAdmin( call_pl, '#A unmuted #T', targ_pls )
     end
 
 end
-local rcore_user_mute_timed                 = ulx.command( id_mute.category, id_mute.ulx_id, ulx.rcore_user_mute_timed, id_mute.pubcmds )
-rcore_user_mute_timed:addParam              { type = ULib.cmds.PlayersArg }
-rcore_user_mute_timed:addParam              { type = ULib.cmds.NumArg, min = 0, max = 1800, default = 300, hint = 'Seconds to mute for / 0 = perm', ULib.cmds.optional, ULib.cmds.round }
-rcore_user_mute_timed:addParam              { type = ULib.cmds.StringArg, hint = 'reason', ULib.cmds.optional, ULib.cmds.takeRestOfLine }
-rcore_user_mute_timed:addParam              { type = ULib.cmds.BoolArg, invisible = true }
-rcore_user_mute_timed:defaultAccess         ( access:ulx( 'rcore_user_mute_timed', mod ) )
-rcore_user_mute_timed:help                  ( id_mute.desc )
+local rlib_user_mute_timed                  = ulx.command( id_mute.category, id_mute.ulx_id, ulx.rlib_user_mute_timed, id_mute.pubcmds )
+rlib_user_mute_timed:addParam               { type = ULib.cmds.PlayersArg }
+rlib_user_mute_timed:addParam               { type = ULib.cmds.NumArg, min = 0, max = 1800, default = 300, hint = 'Seconds to mute for / 0 = perm', ULib.cmds.optional, ULib.cmds.round }
+rlib_user_mute_timed:addParam               { type = ULib.cmds.StringArg, hint = 'reason', ULib.cmds.optional, ULib.cmds.takeRestOfLine }
+rlib_user_mute_timed:addParam               { type = ULib.cmds.BoolArg, invisible = true }
+rlib_user_mute_timed:defaultAccess          ( access:ulx( id_mute, mod ) )
+rlib_user_mute_timed:help                   ( id_mute.desc )
 
 /*
 *   ulx :: user :: timed gag
@@ -163,21 +159,21 @@ rcore_user_mute_timed:help                  ( id_mute.desc )
 *	submit a new first/last name, they must wait for an admin to accept the new name change before
 *	the dialog box will close and they can continue playing.
 *
-*   @param	: ply calling_ply
-*   @param	: ply, tbl target_plys
+*   @param	: ply call_pl
+*   @param	: ply, tbl targ_pls
 *   @param	: int dur
 *   @param	: str reason
 *	@param	: bool should_ungag
 */
 
-function ulx.rcore_user_gag_timed( calling_ply, target_plys, dur, reason, should_ungag )
-    if not checkDependency( calling_pl, 'rcore_user_gag_timed' ) then return end
+function ulx.rlib_user_gag_timed( call_pl, targ_pls, dur, reason, should_ungag )
+    if not checkDependency( call_pl, id_gag ) then return end
 
     dur = isnumber( dur ) and dur or 300
     dur = dur == 0 and 86400 or dur
 
-    for i = 1, #target_plys do
-        local v         = target_plys[ i ]
+    for i = 1, #targ_pls do
+        local v         = targ_pls[ i ]
         v.ulx_gagged    = not should_ungag
 
         v:SetNWBool( 'ulx_gagged', v.ulx_gagged )
@@ -200,26 +196,26 @@ function ulx.rcore_user_gag_timed( calling_ply, target_plys, dur, reason, should
     if not should_ungag then
         if helper.str:valid( reason ) and reason ~= 'reason' then
             if dur == 0 or dur == 86400 then
-                ulx.fancyLogAdmin( calling_ply, '#A gagged #T permanently for reason [ #s ]', target_plys, reason )
+                ulx.fancyLogAdmin( call_pl, '#A gagged #T permanently for reason [ #s ]', targ_pls, reason )
             else
-                ulx.fancyLogAdmin( calling_ply, '#A gagged #T for #s seconds for reason [ #s ]', target_plys, dur, reason )
+                ulx.fancyLogAdmin( call_pl, '#A gagged #T for #s seconds for reason [ #s ]', targ_pls, dur, reason )
             end
         else
             if dur == 0 or dur == 86400 then
-                ulx.fancyLogAdmin( calling_ply, '#A gagged #T permanently', target_plys )
+                ulx.fancyLogAdmin( call_pl, '#A gagged #T permanently', targ_pls )
             else
-                ulx.fancyLogAdmin( calling_ply, '#A gagged #T for #s seconds', target_plys, dur )
+                ulx.fancyLogAdmin( call_pl, '#A gagged #T for #s seconds', targ_pls, dur )
             end
         end
     else
-        ulx.fancyLogAdmin( calling_ply, '#A ungagged #T', target_plys )
+        ulx.fancyLogAdmin( call_pl, '#A ungagged #T', targ_pls )
     end
 
 end
-local rcore_user_gag_timed                  = ulx.command( id_gag.category, id_gag.ulx_id, ulx.rcore_user_gag_timed, id_gag.pubcmds )
-rcore_user_gag_timed:addParam               { type = ULib.cmds.PlayersArg }
-rcore_user_gag_timed:addParam               { type = ULib.cmds.NumArg, min = 0, max = 1800, default = 300, hint = 'Seconds to gag for / 0 = perm', ULib.cmds.optional, ULib.cmds.round }
-rcore_user_gag_timed:addParam               { type = ULib.cmds.StringArg, hint = 'reason', ULib.cmds.optional, ULib.cmds.takeRestOfLine }
-rcore_user_gag_timed:addParam               { type = ULib.cmds.BoolArg, invisible = true }
-rcore_user_gag_timed:defaultAccess          ( access:ulx( 'rcore_user_gag_timed', mod ) )
-rcore_user_gag_timed:help                   ( id_gag.desc )
+local rlib_user_gag_timed                   = ulx.command( id_gag.category, id_gag.ulx_id, ulx.rlib_user_gag_timed, id_gag.pubcmds )
+rlib_user_gag_timed:addParam                { type = ULib.cmds.PlayersArg }
+rlib_user_gag_timed:addParam                { type = ULib.cmds.NumArg, min = 0, max = 1800, default = 300, hint = 'Seconds to gag for / 0 = perm', ULib.cmds.optional, ULib.cmds.round }
+rlib_user_gag_timed:addParam                { type = ULib.cmds.StringArg, hint = 'reason', ULib.cmds.optional, ULib.cmds.takeRestOfLine }
+rlib_user_gag_timed:addParam                { type = ULib.cmds.BoolArg, invisible = true }
+rlib_user_gag_timed:defaultAccess           ( access:ulx( id_gag, mod ) )
+rlib_user_gag_timed:help                    ( id_gag.desc )

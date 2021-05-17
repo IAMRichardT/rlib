@@ -40,3 +40,34 @@ function Hex( hex, a )
     local r, g, b = helper:clr_hex2rgb( hex, a )
     return Color( r, g, b, a )
 end
+
+/*
+*   globals > table > getmax
+*
+*   gets the max value of a table
+*
+*   @ex     : tbl = { 1, 4, 5, 6 }
+*             table.GetMax( tbl )
+*
+*   @ret    : 6 (val), 4 (pos)
+*
+*   @param  : tbl tbl
+*   @return : int, int
+*             val, pos
+*/
+
+function table.GetMax( tbl )
+    local val, pos = 0
+    for k, v in pairs( tbl ) do
+        if val <= v then
+            val, pos = v, k
+        end
+    end
+    return val, pos
+end
+
+/*
+*   globals > ents.Create ( alias )
+*/
+
+ents.new = ents.Create

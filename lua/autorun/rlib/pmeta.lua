@@ -138,7 +138,7 @@ end
 */
 
 function pmeta:palias( override )
-    return helper.ok.ply( self ) and ( isstring( override ) and override or ( self:IsBot( ) and 'Bot' ) or self:Name( ) or ( self.SteamName and self:SteamName( ) ) )
+    return ( helper.ok.ply( self ) and ( isstring( override ) and override ) or ( helper.str:ok( self:Name( ) ) and self:Name( ) ) or ( self.SteamName and self:SteamName( ) ) )
 end
 
 /*
@@ -382,11 +382,15 @@ end
 *
 *   Gets the current level of the player (relies on the DarkRP Leveling addon)
 *
+*   @support        : default darkrp leveling
+*                   : sublime levels
+*                   : gmodstore.com/market/view/darkrp-prestige-level-system
+*
 *   @return	: int
 */
 
 function pmeta:getlevel( )
-    return ( ( isfunction( self.getDarkRPVar ) and self:getDarkRPVar( 'year' ) ) or self:getDarkRPVar( 'level' ) or self:getDarkRPVar( 'lvl' ) or self:GetNWInt( 'lvl' ) ) or 1
+    return ( self.SL_GetLevel and self:SL_GetLevel( ) ) or ( ( isfunction( self.getDarkRPVar ) and self:getDarkRPVar( 'year' ) ) or self:getDarkRPVar( 'level' ) or self:getDarkRPVar( 'lvl' ) or self:GetNWInt( 'lvl' ) ) or 1
 end
 pmeta.level = pmeta.getlevel
 

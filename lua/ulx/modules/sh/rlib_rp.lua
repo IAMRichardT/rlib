@@ -31,18 +31,13 @@ local access                = base.a
 
 local mod, pf       	    = base.modules:req( 'base' )
 local cfg               	= base.modules:cfg( mod )
-
-/*
-*   req module
-*/
-
-if not mod then return end
+local smsg                  = base.settings.smsg
 
 /*
 *   Localized translation func
 */
 
-local function lang( ... )
+local function ln( ... )
     return base:translate( mod, ... )
 end
 
@@ -61,20 +56,21 @@ end
 *   declare perm ids
 */
 
-local id_setjob             = perm( 'rcore_rp_setjob' )
-local id_getjob             = perm( 'rcore_rp_getjob' )
+local id_setjob             = perm( 'rlib_rp_setjob' )
+local id_getjob             = perm( 'rlib_rp_getjob' )
 
 /*
 *   check dependency
 *
 *   @param  : ply pl
-*   @param  : str pid
+*   @param  : str p
 */
 
-local function checkDependency( pl, pid )
+local function checkDependency( pl, p )
     if not base or not base.modules:bInstalled( mod ) then
-        local cat = perm( pid ).category or base.get:name( )
-        base.msg:target( pl, cat, 'An error has occured with a required dependency. Contact the developer and we will summon the elves.' )
+        p                   = isstring( p ) and helper.ok.str( p ) or istable( p ) and ( p.ulx or p.id ) or 'unknown command'
+        local msg           = { smsg.clrs.t2, p, smsg.clrs.msg, '\nAn error has occured with the library. Contact the developer or sys admin.' }
+        pl:push             ( '', 'Critical Error', 7, msg )
         return false
     end
     return true
@@ -89,25 +85,25 @@ end
 *   cause complications of multiple jobs contain similar names. whereas this method ensures the
 *   correct job is found
 *
-*   @param	: ply calling_ply
-*   @param  : ply target_ply
+*   @param	: ply call_pl
+*   @param  : ply targ_pl
 *   @param  : str job
 */
 
-function ulx.rcore_rp_getjob( calling_ply, target_ply, job )
-    if not checkDependency( calling_pl, 'rcore_rp_getjob' ) then return end
+function ulx.rlib_rp_getjob( call_pl, targ_pl, job )
+    if not checkDependency( call_pl, id_getjob ) then return end
 
     if not RPExtraTeams then
-        base.msg:route( calling_ply, false, id_getjob.id, 'RP jobs table missing -- are you running darkrp?' )
+        base.msg:route( call_pl, false, id_getjob.id, 'RP jobs table missing -- are you running darkrp?' )
         return
     end
 
-    base.msg:route( calling_ply, false, id_getjob.id, 'player:', base.settings.smsg.clrs.t3, target_ply:Name( ), base.settings.smsg.clrs.msg, 'job id:', base.settings.smsg.clrs.t3, tostring( target_ply:Team( ) ), base.settings.smsg.clrs.msg, 'job name:', base.settings.smsg.clrs.t3, tostring( team.GetName( target_ply:Team( ) ) ) )
+    base.msg:route( call_pl, false, id_getjob.id, 'player:', smsg.clrs.t3, targ_pl:palias( ), smsg.clrs.msg, 'job id:', smsg.clrs.t3, tostring( targ_pl:Team( ) ), smsg.clrs.msg, 'job name:', smsg.clrs.t3, tostring( team.GetName( targ_pl:Team( ) ) ) )
 end
-local rcore_rp_getjob                       = ulx.command( id_getjob.category, id_getjob.ulx_id, ulx.rcore_rp_getjob, id_getjob.pubcmds )
-rcore_rp_getjob:addParam                    { type = ULib.cmds.PlayerArg }
-rcore_rp_getjob:defaultAccess               ( access:ulx( 'rcore_rp_getjob', mod ) )
-rcore_rp_getjob:help                        ( id_getjob.desc )
+local rlib_rp_getjob                    = ulx.command( id_getjob.category, id_getjob.ulx_id, ulx.rlib_rp_getjob, id_getjob.pubcmds )
+rlib_rp_getjob:addParam                 { type = ULib.cmds.PlayerArg }
+rlib_rp_getjob:defaultAccess            ( access:ulx( id_getjob, mod ) )
+rlib_rp_getjob:help                     ( id_getjob.desc )
 
 /*
 *   ulx :: rp :: set job
@@ -118,22 +114,22 @@ rcore_rp_getjob:help                        ( id_getjob.desc )
 *   cause complications of multiple jobs contain similar names. whereas this method ensures the
 *   correct job is found
 *
-*   @param	: ply calling_ply
-*   @param  : ply target_ply
+*   @param	: ply call_pl
+*   @param  : ply targ_pl
 *   @param  : str job
 */
 
-function ulx.rcore_rp_setjob( calling_ply, target_ply, job )
-    if not checkDependency( calling_pl, 'rcore_rp_setjob' ) then return end
+function ulx.rlib_rp_setjob( call_pl, targ_pl, job )
+    if not checkDependency( call_pl, id_setjob ) then return end
 
     if not RPExtraTeams then
-        base.msg:route( calling_ply, false, id_setjob.id, 'RP jobs table missing -- are you running darkrp?' )
+        base.msg:route( call_pl, false, id_setjob.id, 'RP jobs table missing -- are you running darkrp?' )
         return
     end
 
     local job_c, job_res = helper.who:rpjob_custom( job )
     if not job_c or job_c == 0 then
-        base.msg:route( calling_ply, false, id_setjob.id, 'Specified job with command does not exist' )
+        base.msg:route( call_pl, false, id_setjob.id, 'Specified job with command does not exist' )
         return
     end
 
@@ -147,19 +143,19 @@ function ulx.rcore_rp_setjob( calling_ply, target_ply, job )
         end
     end
 
-    target_ply:updateJob        ( n_job.name    )
-    target_ply:setSelfDarkRPVar ( 'salary', n_job.salary )
-    target_ply:SetTeam          ( n_num         )
+    targ_pl:updateJob           ( n_job.name    )
+    targ_pl:setSelfDarkRPVar    ( 'salary', n_job.salary )
+    targ_pl:SetTeam             ( n_num         )
 
-    GAMEMODE:PlayerSetModel     ( target_ply    )
-    GAMEMODE:PlayerLoadout      ( target_ply    )
+    GAMEMODE:PlayerSetModel     ( targ_pl       )
+    GAMEMODE:PlayerLoadout      ( targ_pl       )
 
-    base.msg:route( calling_ply, false, id_setjob.id, 'Forced player', base.settings.smsg.clrs.t3, target_ply:Name( ), base.settings.smsg.clrs.msg, 'to job', base.settings.smsg.clrs.t3, n_job.name )
-    base.msg:route( target_ply, false, id_setjob.id, 'You have been forced to job', base.settings.smsg.clrs.t3, n_job.name )
+    base.msg:route( call_pl, false, id_setjob.id, 'Forced player', smsg.clrs.t3, targ_pl:palias( ), smsg.clrs.msg, 'to job', smsg.clrs.t3, n_job.name )
+    base.msg:route( targ_pl, false, id_setjob.id, 'You have been forced to job', smsg.clrs.t3, n_job.name )
 
 end
-local rcore_rp_setjob                       = ulx.command( id_setjob.category, id_setjob.ulx_id, ulx.rcore_rp_setjob, id_setjob.pubcmds )
-rcore_rp_setjob:addParam                    { type = ULib.cmds.PlayerArg }
-rcore_rp_setjob:addParam                    { type = ULib.cmds.StringArg, hint = 'job cmd', ULib.cmds.takeRestOfLine }
-rcore_rp_setjob:defaultAccess               ( access:ulx( 'rcore_rp_setjob', mod ) )
-rcore_rp_setjob:help                        ( id_setjob.desc )
+local rlib_rp_setjob                    = ulx.command( id_setjob.category, id_setjob.ulx_id, ulx.rlib_rp_setjob, id_setjob.pubcmds )
+rlib_rp_setjob:addParam                 { type = ULib.cmds.PlayerArg }
+rlib_rp_setjob:addParam                 { type = ULib.cmds.StringArg, hint = 'job cmd', ULib.cmds.takeRestOfLine }
+rlib_rp_setjob:defaultAccess            ( access:ulx( id_setjob, mod ) )
+rlib_rp_setjob:help                     ( id_setjob.desc )

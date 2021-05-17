@@ -90,6 +90,46 @@ RLIB_TALIGN_T               = 8
 RLIB_TALIGN_B               = 2
 
 /*
+*   design > push > clean storage
+*
+*   locates any panels that are invalid or no longer visible and removes them
+*   from the push notification storage table.
+*/
+
+local function push_clean_storage( )
+    for k, v in pairs( rlib.push ) do
+        if v and ui:visible( v ) and k < 9 and tostring( v ) ~= '[NULL Panel]' then continue end
+        rlib.push[ k ] = nil
+    end
+end
+
+/*
+*   design > push > locate slot
+*
+*   determines where an available slot is to place the push notification
+*   interface.
+*
+*   limit to 8 slots
+*
+*   @return : int
+*/
+
+local function push_loc_slot( obj )
+    push_clean_storage( )
+    local pos_new = 150
+
+    for i = 1, 8, 1 do
+        if rlib.push[ i ] then
+            local id    = rlib.push[ i ]
+            pos_new     = pos_new + id:GetTall( )
+            pos_new     = pos_new + 5
+            continue
+        end
+        return i, pos_new
+    end
+end
+
+/*
 *   design > blur
 *
 *   @param  : pnl pnl
@@ -2211,6 +2251,7 @@ function design:rbubble( msg_a, dur, clr_box, clr_txt )
     :align                          ( 5                                     )
     :vsbar                          ( false                                 )
     :mline                          ( true                                  )
+    :appendclr                      ( Color( 255, 255, 255, 255 )           )
 
                                     :pl( function( s )
                                         s:SetFontInternal( pref( 'design_bubble_msg_2' ) )
@@ -2258,6 +2299,211 @@ function design:rbubble( msg_a, dur, clr_box, clr_txt )
             end )
         end )
     end
+end
+
+/*
+*   design > push notification
+*
+*   displays a push notification
+*   supports font-awesome icons
+*
+*   @param  : str title
+*   @param  : tbk msgtbl
+*   @param  : str ico
+*   @param  : int dur
+*   @param  : clr clr_title
+*   @param  : clr clr_box
+*/
+
+function design:push( title, msgtbl, ico, dur, clr_title, clr_box )
+
+    /*
+    *   destroy existing
+    */
+
+    rlib.push                       = istable( rlib.push ) and rlib.push or { }
+
+    /*
+    *   check
+    */
+
+    if not istable( msgtbl ) then return end
+
+    /*
+    *   merge string values
+    */
+
+    local msg, i = '', 0
+    for k, v in pairs( msgtbl ) do
+        if isstring( v ) then
+            if i == 0 then
+                msg = v
+            else
+                msg = msg .. v
+            end
+            i = i + 1
+        end
+    end
+
+    /*
+    *   fonts
+    */
+
+    local fn_title                  = pref( 'design_push_name' )
+    local fn_msg                    = pref( 'design_push_msg' )
+    local fn_ico                    = pref( 'design_push_ico' )
+
+    /*
+    *   define > message dimensions
+    */
+
+    local icon                      = helper.str:ok( ico ) and ico or ''
+
+    local _t, _t_li                 = helper.str:crop( title, 300, fn_title )
+    local hdr_w, hdr_h              = helper.str:len( _t, fn_title )
+
+    local fnt_w, fnt_h              = helper.str:len( icon, fn_ico )
+
+    local _m, _m_li                 = helper.str:crop( msg, 290, fn_msg )
+    local msg_w, msg_h              = helper.str:len( _m, fn_msg )
+
+    local sz_w, sz_h                = 400, 20 + msg_h + hdr_h + 5
+    dur                             = isnumber( dur ) and dur or 8
+
+    clr_title                       = IsColor( clr_title ) and clr_title or Color( 46, 163, 67, 255 )
+
+
+    /*
+    *   push > btn
+    */
+
+    local obj                       = ui.new( 'btn'                         )
+    :bsetup                         (                                       )
+    :size                           ( sz_w, sz_h                            )
+    :drawtop                        ( true                                  )
+    :keeptop                        (                                       )
+    :drawtop                        ( true                                  )
+    :focustop                       ( true                                  )
+
+    /*
+    *   push > sub
+    */
+
+    local sub                       = ui.new( 'pnl', obj                    )
+    :fill                           ( 'm', 0                                )
+
+                                    :draw( function( s, w, h )
+                                        design.rbox( 6, 0, 0, w, h, Color( 25, 25, 25, 255 ) )
+                                        design.rbox( 6, 4, 4, w - 8, h - 8, Color( 29, 29, 29, 255 ))
+                                    end )
+
+    /*
+    *   push > icon
+    */
+
+    local ico                       = ui.new( 'btn', sub                    )
+    :left                           ( 'm', 9, 0, 7, 0                       )
+    :wide                           ( 64                                    )
+    :notext                         (                                       )
+
+                                    :draw( function( s, w, h )
+                                        local clr_a     = math.abs( math.sin( CurTime( ) * 3 ) * 255 )
+                                        clr_a		    = math.Clamp( clr_a, 100, 255 )
+
+                                        draw.DrawText( icon, fn_ico, w / 2, ( h / 2 ) - ( fnt_h / 2 ), Color( 100, 100, 100, clr_a ) , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+                                    end )
+
+    /*
+    *   push > title
+    */
+
+    local hdr_sub                   = ui.new( 'pnl', sub                    )
+    :top                            ( 'm', 1, 5, 0, 0                       )
+    :tall                           ( 25                                    )
+
+                                    :draw( function( s, w, h )
+                                        draw.SimpleText( title, fn_title, 0, 30 / 2, clr_title, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
+                                    end )
+
+    /*
+    *   push > body
+    */
+
+    local body                      = ui.new( 'rtxt', sub                   )
+    :fill                           ( 'm', 0, 1, 14, 0                      )
+    :align                          ( 4                                     )
+    :vsbar                          ( false                                 )
+    :mline                          ( true                                  )
+    :appendclr                      ( Color( 255, 255, 255, 255 )           )
+
+                                    :pl( function( s )
+                                        s:SetFontInternal( fn_msg )
+                                    end )
+
+    /*
+    *   push > determine string and color keys
+    */
+
+    for k, v in pairs( msgtbl ) do
+        if IsColor( v ) then
+            body:InsertColorChange( v.r, v.g, v.b, v.a  )
+        elseif isstring( v ) and v ~= '\n' then
+            local txt = v .. ' '
+            body:AppendText( txt )
+        elseif v == '\n' then
+            local txt = v
+            body:AppendText( txt )
+        end
+    end
+
+    /*
+    *   push > btn > overlay
+    */
+
+    local b_ol                      = ui.new( 'btn', obj                    )
+    :bsetup                         (                                       )
+    :fill                           ( 'm', 0                                )
+
+                                    :draw( function( s, w, h )
+                                        if s.hover then
+                                            design.box( 0, 0, w, h, Color( 0, 0, 0, 100 ) )
+                                        end
+                                    end )
+
+                                    :oc( function ( s )
+                                        if obj.action_close then return end
+                                        obj.action_close = true
+                                        obj:Stop( )
+                                        obj:MoveTo( ScrW( ) - obj:GetWide( ) - 5, ScrH( ) + obj:GetTall( ) + 5, 0.5, 0, -1, function( )
+                                            ui:destroy_visible( obj )
+                                        end )
+                                    end )
+
+    /*
+    *  push > display
+    */
+
+    if ui:ok( obj ) then
+        local where, pos            = push_loc_slot( obj )
+
+        if ( where and where > 8 ) or not where then
+            ui:dispatch( obj )
+            return
+        end
+
+        /*
+        *  height padding
+        */
+
+        obj:SetPos                  ( ScrW( ), pos                )
+        obj:MoveTo                  ( ScrW( ) - obj:GetWide( ) - 30, pos, 0.5, 0, -1, function( )
+                                        rlib.push[ where ] = obj
+                                        obj:MoveTo( ScrW( ), pos, 0.5, dur, -1, function( )
+                                            ui:dispatch( obj )
+                                        end )
+                                    end )
+    end
+
 end
 
 /*

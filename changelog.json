@@ -1,6 +1,20 @@
 {
     "unreleased": [],
     "releases": {
+      "3.4.0.0": [
+            "[ + ] added ulx module rlib_ents",
+            "[ + ] added helper.ok.str; will deprecate helper.str",
+            "[ + ] added table.GetMax",
+            "[ + ] added new push notification system",
+            "[ + ] added Sublime addon level support",
+            "[ + ] added uclass > dspace, insert, pos_table_x, pos_table_y",
+            "[ ^ ] updated included ulx modules",
+            "[ ^ ] timex package now structures a timer id prior to getting / creating the timer",
+            "[ ^ ] storage.ent:datafolder( ) now supports param data and data_id in module env file",
+            "[ ^ ] removed RLIB_LOG_PERM from debug only",
+            "[ ^ ] removed temp global cleanup",
+            "[ ^ ] marked numerous pieces of code set for deprecation"
+      ],
       "3.3.0.0": [
             "[ + ] added new function to convert string version to table",
             "[ ^ ] massive rewrite of numerous functions",

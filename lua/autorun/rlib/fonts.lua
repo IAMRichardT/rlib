@@ -131,6 +131,9 @@ end
         _f( pref( 'design_bubble_msg' ),                { size = 18, weight = 200, antialias = true, shadow = true, font = 'Montserrat Medium' } )
         _f( pref( 'design_bubble_msg_2' ),              { size = 18, weight = 200, antialias = true, shadow = true, font = 'Montserrat Medium' } )
         _f( pref( 'design_bubble_ico' ),                { size = 48, weight = 400, antialias = true, shadow = true, font = 'Roboto Condensed' } )
+        _f( pref( 'design_push_name' ),                 { size = 20, weight = 700, antialias = true, shadow = false, font = 'Segoe UI Light' } )
+        _f( pref( 'design_push_msg' ),                  { size = 18, weight = 100, antialias = true, shadow = false, font = 'Segoe UI Light' } )
+        _f( pref( 'design_push_ico' ),                  { size = 40, weight = 800, antialias = true, font = 'GSym Solid', extended = true } )
 
     /*
     *    fonts > elements
