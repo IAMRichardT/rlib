@@ -2944,6 +2944,25 @@ function base.msg:direct( pl, subcat, ... )
 end
 
 /*
+*   msg > push
+*
+*   structures a push notification
+*
+*   @param  : msg str
+*/
+
+function base.msg:push( msg )
+    local words     = string.Explode( '|', msg )
+    for k, v in pairs( words ) do
+        if not helper.ok.str( v ) then words[ k ] = nil end
+        if helper:clr_ishex( v ) then
+            v       = string.gsub( v, '|', '' )
+        end
+    end
+    return words
+end
+
+/*
 *   helper > util > steam 32 to 64
 *
 *   canvert steam 32 to 64
@@ -3376,6 +3395,7 @@ end
 */
 
 function helper:clr_ishex( hex )
+    if not helper.str:startsw( hex, '#' ) then return false end
     hex = hex:gsub( '#', '' )
     return ( hex:match( '^%x%x%x' ) or hex:match( '^%x%x%x%x%x%x' ) ) and true or false
 end
@@ -3394,9 +3414,9 @@ end
 */
 
 function helper:clr_hex2rgb( hex, a )
-    hex         = hex:gsub( '#', '' )
-                if not helper:clr_ishex( hex ) then return end
+    if not helper:clr_ishex( hex ) then return end
 
+    hex         = hex:gsub( '#', '' )
     a           = isnumber( a ) and a or 255
 
     if hex:len( ) == 3 then

@@ -134,11 +134,10 @@ net.Receive( 'rlib.sms.rbubble', netlib_sms_rbubble )
 local function netlib_sms_push( len, pl )
     local ico       = net.ReadString( )
     local title     = net.ReadString( )
-    local dur       = net.ReadInt( 8 )
     local args      = net.ReadTable( )
     local msg       = args and args[ 1 ] or ''
 
-    design:push( title, msg, ico, dur )
+    design:push( title, msg, ico )
 end
 net.Receive( 'rlib.sms.push', netlib_sms_push )
 

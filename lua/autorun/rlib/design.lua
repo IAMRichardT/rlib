@@ -116,7 +116,7 @@ end
 
 local function push_loc_slot( obj )
     push_clean_storage( )
-    local pos_new = 150
+    local pos_new = 180
 
     for i = 1, 8, 1 do
         if rlib.push[ i ] then
@@ -2370,8 +2370,10 @@ function design:push( title, msgtbl, ico, dur, clr_title, clr_box )
     local sz_w, sz_h                = 400, 20 + msg_h + hdr_h + 5
     dur                             = isnumber( dur ) and dur or 8
 
-    clr_title                       = IsColor( clr_title ) and clr_title or Color( 46, 163, 67, 255 )
-
+    clr_title                       = clr_title or Color( 46, 163, 67, 255 )
+    local clr_box_p1                = Color( 25, 25, 25, 255 )
+    local clr_box_p2                = Color( 29, 29, 29, 255 )
+    local clr_ico                   = Color( 100, 100, 100, 255 )
 
     /*
     *   push > btn
@@ -2393,8 +2395,8 @@ function design:push( title, msgtbl, ico, dur, clr_title, clr_box )
     :fill                           ( 'm', 0                                )
 
                                     :draw( function( s, w, h )
-                                        design.rbox( 6, 0, 0, w, h, Color( 25, 25, 25, 255 ) )
-                                        design.rbox( 6, 4, 4, w - 8, h - 8, Color( 29, 29, 29, 255 ))
+                                        design.rbox( 6, 0, 0, w, h, clr_box_p1 )
+                                        design.rbox( 6, 4, 4, w - 8, h - 8, clr_box_p2 )
                                     end )
 
     /*
@@ -2410,7 +2412,7 @@ function design:push( title, msgtbl, ico, dur, clr_title, clr_box )
                                         local clr_a     = math.abs( math.sin( CurTime( ) * 3 ) * 255 )
                                         clr_a		    = math.Clamp( clr_a, 100, 255 )
 
-                                        draw.DrawText( icon, fn_ico, w / 2, ( h / 2 ) - ( fnt_h / 2 ), Color( 100, 100, 100, clr_a ) , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+                                        draw.DrawText( icon, fn_ico, w / 2, ( h / 2 ) - ( fnt_h / 2 ), ColorAlpha( clr_ico , clr_a ) , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
                                     end )
 
     /*
@@ -2447,12 +2449,16 @@ function design:push( title, msgtbl, ico, dur, clr_title, clr_box )
     for k, v in pairs( msgtbl ) do
         if IsColor( v ) then
             body:InsertColorChange( v.r, v.g, v.b, v.a  )
-        elseif isstring( v ) and v ~= '\n' then
-            local txt = v .. ' '
+        elseif helper.ok.str( v ) and v ~= '\n' and not helper:clr_ishex( v ) then
+            local txt   = string.TrimLeft( v, ' ' )
+            txt         = txt .. ' '
             body:AppendText( txt )
         elseif v == '\n' then
-            local txt = v
+            local txt   = v
             body:AppendText( txt )
+        elseif helper:clr_ishex( v ) then
+            local clr   = Hex( v, 255 )
+            body:InsertColorChange( clr.r, clr.g, clr.b, clr.a )
         end
     end
 
@@ -2496,7 +2502,7 @@ function design:push( title, msgtbl, ico, dur, clr_title, clr_box )
         */
 
         obj:SetPos                  ( ScrW( ), pos                )
-        obj:MoveTo                  ( ScrW( ) - obj:GetWide( ) - 30, pos, 0.5, 0, -1, function( )
+        obj:MoveTo                  ( ScrW( ) - obj:GetWide( ) - 15, pos, 0.5, 0, -1, function( )
                                         rlib.push[ where ] = obj
                                         obj:MoveTo( ScrW( ), pos, 0.5, dur, -1, function( )
                                             ui:dispatch( obj )

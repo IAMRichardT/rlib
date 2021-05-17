@@ -210,16 +210,14 @@ end
 *   base > push notification
 */
 
-function base:push( ico, title, dur, ... )
+function base:push( ico, title, ... )
     ico             = isstring( ico ) and ico or nil
     title           = helper.ok.str( title ) and title or 'Notification'
-    dur             = isnumber( dur ) and dur or 5
 
     local args      = { ... }
     net.Start       ( 'rlib.sms.push'       )
     net.WriteString ( ico                   )
     net.WriteString ( title                 )
-    net.WriteInt    ( dur, 8                )
     net.WriteTable  ( args                  )
     net.Broadcast   ( self                  )
 end
@@ -265,16 +263,14 @@ function pmeta:rbubble( dur, ... )
     net.Send        ( self                  )
 end
 
-function pmeta:push( ico, title, dur, ... )
+function pmeta:push( ico, title, ... )
     ico             = isstring( ico ) and ico or nil
     title           = helper.str:ok( title ) and title or 'Notification'
-    dur             = isnumber( dur ) and dur or 5
 
     local args      = { ... }
     net.Start       ( 'rlib.sms.push'       )
     net.WriteString ( ico                   )
     net.WriteString ( title                 )
-    net.WriteInt    ( dur, 8                )
     net.WriteTable  ( args                  )
     net.Send        ( self                  )
 end
