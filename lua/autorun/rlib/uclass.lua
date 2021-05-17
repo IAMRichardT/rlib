@@ -6589,6 +6589,21 @@ local uclass = { }
     uclass.ply    = uclass.player
 
     /*
+    *   uclass > DFrame > setup
+    *
+    *   sets up a frame using various classes
+    *   should be the first thing executed when creating a new frm element
+    */
+
+    function uclass.fsetup( pnl, bPopup, bClose, title )
+        if bPopup then
+            pnl:popup   ( )
+        end
+        pnl:showclose   ( bClose )
+        pnl:title       ( title )
+    end
+
+    /*
     *   uclass > DButton > setup
     *
     *   sets up a button using various classes
