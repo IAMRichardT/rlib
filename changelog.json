@@ -7,7 +7,7 @@
             "[ + ] added table.GetMax",
             "[ + ] added new push notification system",
             "[ + ] added Sublime addon level support",
-            "[ + ] added uclass > fsetup, dspace, insert, pos_table_x, pos_table_y",
+            "[ + ] added uclass > frame, dspace, insert, pos_table_x, pos_table_y",
             "[ ^ ] updated included ulx modules",
             "[ ^ ] timex package now structures a timer id prior to getting / creating the timer",
             "[ ^ ] storage.ent:datafolder( ) now supports param data and data_id in module env file",

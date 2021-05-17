@@ -6589,13 +6589,13 @@ local uclass = { }
     uclass.ply    = uclass.player
 
     /*
-    *   uclass > DFrame > setup
+    *   uclass > DFrame > frame
     *
     *   sets up a frame using various classes
     *   should be the first thing executed when creating a new frm element
     */
 
-    function uclass.fsetup( pnl, bPopup, bClose, title )
+    function uclass.frame( pnl, bPopup, bClose, title )
         if bPopup then
             pnl:popup   ( )
         end
