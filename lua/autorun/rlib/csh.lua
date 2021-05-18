@@ -1269,7 +1269,7 @@ access.gperm = access.getperm
 *   @return : str
 */
 
-function access:getperm_id( perm, mod )
+function access:gid( perm, mod )
     if not isstring( perm ) or not rcore then return end
     if ( mod == mf.name and base.permissions[ perm ] ) or ( not mod and base.permissions[ perm ] ) then
         return base.permissions[ perm ]
@@ -1278,7 +1278,58 @@ function access:getperm_id( perm, mod )
     local permission = not mod and perm or ( isstring( mod ) and rcore.modules[ mod ] and rcore.modules[ mod ].permissions[ perm ] ) or ( istable( mod ) and mod.permissions[ perm ] )
     return ( permission and ( permission.name or permission.id ) or perm )
 end
-access.pid = access.getperm_id
+
+/*
+*   access > seek
+*
+*   seeks a permission with no mod specified
+*
+*   @call   : access:seek( perm_tbl )
+*           : access:seek( 'permission_name' )
+*
+*   @param  : str, tbl perm
+*   @return : tbl, str
+*/
+
+function access:seek( perm )
+    if istable( perm ) and perm.id then
+        perm = perm.id
+    end
+
+    local bFound, perms, mod = false, { }, false
+    for k, v in pairs( base.modules:list( ) ) do
+        if bFound then continue end
+        if not v.permissions then continue end
+
+        if v.permissions[ perm ] then
+            bFound  = true
+            perms   = v.permissions[ perm ]
+            mod     = v.id
+        end
+    end
+
+    return perms, mod
+end
+
+/*
+*   access > get arg
+*
+*   reurns permission arguments
+*
+*   @call   : access:arg( perm_tbl )
+*           : access:arg( 'permission_name' )
+*
+*   @param  : str, tbl perm
+*   @return : tbl
+*/
+
+function access:arg( perm )
+    if istable( perm ) and perm.args then
+        return perm.args
+    end
+
+    return access:seek( perm ) and access:seek( perm ).args or { }
+end
 
 /*
 *   access > ulx
@@ -1290,6 +1341,7 @@ access.pid = access.getperm_id
 *           : access:getperm
 *
 *   @ex     : access:ulx( 'rlib_tools_mdlv', mod )
+*           : access:ulx( 'rlib_tools_mdlv' )
 *
 *   @param  : str perm
 *   @param  : tbl, str mod
@@ -1297,8 +1349,17 @@ access.pid = access.getperm_id
 */
 
 function access:ulx( perm, mod )
+    if not mod then
+        perm, mod = self:seek( perm )
+    end
+
+    if not isstring( perm ) and perm.id then
+        perm = perm.id
+    end
+
     if not isstring( perm ) then
-        perm = perm.id or tostring( perm )
+        base:log( RLIB_LOG_ERR, 'cannot get ulx rank from invalid permission. defaulting to superadmin access for security' )
+        return 'superadmin'
     end
 
     return self:ulx_getgroup( self:getperm( perm, mod ).access or self:getperm( perm, mod ).usrlvl )
