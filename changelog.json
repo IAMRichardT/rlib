@@ -1,6 +1,16 @@
 {
     "unreleased": [],
     "releases": {
+      "3.4.1.0": [
+            "[ + ] added base.sys:ThrowErr()",
+            "[ + ] added helper.ent.pos()",
+            "[ + ] added helper.tbl:HasValue()",
+            "[ + ] added calc.bFloat",
+            "[ + ] added timex.curtime",
+            "[ ^ ] updated helper.util:humanbool()",
+            "[ ^ ] access module updated for seeking permissions",
+            "[ ^ ] updated ulx permissions"
+      ],
       "3.4.0.0": [
             "[ + ] added ulx module rlib_ents",
             "[ + ] added helper.ok.str; will deprecate helper.str",

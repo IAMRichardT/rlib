@@ -788,6 +788,44 @@ function secs.benchmark( i, offset )
 end
 
 /*
+*   seconds > curtime
+*
+*   compares stored curtime to current and returns time remaining
+*
+*   @param  : str str
+*   @return : str
+*/
+
+function secs.curtime( num )
+    return ( num and calc.min( 0, num - CurTime( ) ) ) or CurTime( )
+end
+
+/*
+*   seconds > ctime
+*
+*   similar to timex.curtime but returns a string with the seconds appended
+*
+*   @ex     : timex.secs.ctime( pl.NextSpawn, false )
+*             '5 seconds'
+*
+*   @ex     : timex.secs.ctime( pl.NextSpawn, true )
+*             '5s'
+*
+*   @param  : str str
+*   @param  : bool bShort
+*   @return : str
+*/
+
+function secs.ctime( num, bShort )
+    local time  = ( num and calc.min( 0, num - CurTime( ) ) ) or CurTime( )
+    if bShort then
+        return string.format( '%is', time )
+    else
+        return string.format( '%i seconds', time )
+    end
+end
+
+/*
 *   basewars > structure time
 *
 *   gamemode specific func that displays basewars playtime

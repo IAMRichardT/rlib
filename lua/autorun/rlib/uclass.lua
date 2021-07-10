@@ -3568,6 +3568,47 @@ local uclass = { }
     uclass.font = uclass.setfont
 
     /*
+    *   uclass > DLabel, DTextEntry > SetFont
+    *
+    *   @param  : str face
+    */
+
+    function uclass.setfont( pnl, face )
+        face = isstring( face ) and face or pid( 'ucl_font_def' )
+        pnl:SetFont( face )
+    end
+    uclass.font = uclass.setfont
+
+    /*
+    *   uclass > DLabel, DTextEntry > SetInternalFont
+    *
+    *   @param  : str face
+    */
+
+    function uclass.internalfont( pnl, face )
+        face = isstring( face ) and face or pid( 'ucl_font_def' )
+        pnl:SetFontInternal( face )
+    end
+
+    /*
+    *   uclass > RichText > SetInternalFont
+    *
+    *   @param  : str face
+    */
+
+    function uclass.richfont( pnl, face )
+        face = isstring( face ) and face or pid( 'ucl_font_def' )
+
+        local name  = 'PerformLayout'
+        local orig  = pnl[ name ]
+
+        pnl[ name ] = function( s, ... )
+            if isfunction( orig ) then orig( s, ... ) end
+            pnl:SetFontInternal( face )
+        end
+    end
+
+    /*
     *   uclass > DLabel, DTextEntry > typeface
     *
     *   sets a font, but with a registered font prefix
@@ -5564,7 +5605,10 @@ local uclass = { }
                                     :draw( function( s, w, h )
                                         design.rbox( 4, 0, 0, sz_w, 25, clr_out )
                                         design.rbox( 4, 1, 1, sz_w - 2, 25 - 2, clr_box )
-                                        draw.SimpleText( sf( '%s %s' , helper.get:utf8char( cfg.tips.clrs.utf ), str ), pid( 'ucl_tippy' ), 15, ( 25 / 2 ), clr_text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
+                                        local resp      = not bUF8f and sf( '%s %s' , helper.get:utf8char( cfg.tips.clrs.utf ), str ) or sf( '%s' , str )
+                                        local align     = not bUF8f and TEXT_ALIGN_LEFT or TEXT_ALIGN_CENTER
+                                        local pos       = not bUF8f and 15 or ( w / 2 )
+                                        draw.SimpleText( resp, pid( 'ucl_tippy' ), pos, ( 25 / 2 ), clr_text, align, TEXT_ALIGN_CENTER )
                                     end )
 
         end

@@ -5,13 +5,13 @@
 *   @since          : 3.0.0
 *   @website        : https://rlib.io
 *   @docs           : https://docs.rlib.io
-* 
+*
 *   MIT License
 *
-*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
-*   LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+*   LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 *   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
+*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 *   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
@@ -19,15 +19,14 @@
 *   standard tables and localization
 */
 
-rlib 					= rlib or { }
-local base              = rlib
-local mf                = base.manifest
+local base                  = rlib
+local mf                    = base.manifest
 
 /*
 *   localized rlib routes
 */
 
-local helper            = base.h
+local helper                = base.h
 
 /*
 *   Localized lua funcs
@@ -36,16 +35,16 @@ local helper            = base.h
 *   bit of performance, we need to.
 */
 
-local istable           = istable
-local isfunction        = isfunction
-local isnumber          = isnumber
-local isstring          = isstring
-local debug             = debug
-local util              = util
-local table             = table
-local math              = math
-local string            = string
-local sf                = string.format
+local istable               = istable
+local isfunction            = isfunction
+local isnumber              = isnumber
+local isstring              = isstring
+local debug                 = debug
+local util                  = util
+local table                 = table
+local math                  = math
+local string                = string
+local sf                    = string.format
 
 /*
 *   Localized cmd func
@@ -56,14 +55,14 @@ local sf                = string.format
 */
 
 local function call( t, ... )
-    return rlib:call( t, ... )
+    return base:call( t, ... )
 end
 
 /*
 *   Localized translation func
 */
 
-local function lang( ... )
+local function ln( ... )
     return base:lang( ... )
 end
 
@@ -73,36 +72,17 @@ end
 
 local function pid( str, suffix )
     local state = ( isstring( suffix ) and suffix ) or ( base and mf.prefix ) or false
-    return rlib.get:pref( str, state )
-end
-
-/*
-*	prefix :: getid
-*
-*   @param  : str id
-*/
-
-local function gid( id )
-    id = isstring( id ) and id or nil
-    if not isstring( id ) then
-        local trcback = debug.traceback( )
-        base:log( dcat, '[ %s ] :: invalid id\n%s', pkg_name, tostring( trcback ) )
-        return
-    end
-
-    id = call( 'commands', id )
-
-    return id
+    return base.get:pref( str, state )
 end
 
 /*
 *   emeta
 */
 
-local emeta = FindMetaTable( 'Entity' )
+local emeta                 = FindMetaTable( 'Entity' )
 
 /*
-*	emeta :: what :: get
+*	emeta > what > get
 *
 *   returns ent id or class name
 *
@@ -116,7 +96,7 @@ function emeta:what( bEID )
 end
 
 /*
-*	emeta :: generate id
+*	emeta > generate id
 *
 *   returns an id based on the ent
 *   useful for ent specific timer ids, etc.
@@ -137,7 +117,7 @@ function emeta:gid( suffix, bUseEntID )
 end
 
 /*
-*   emeta :: association id
+*   emeta > association id
 *
 *   makes an id based on the specified ent class
 *       : special chars     => [ . ]
@@ -151,9 +131,9 @@ end
 */
 
 function emeta:aid( ... )
-    if not self:IsValid( ) then return end
+    if not helper.ok.ent( self ) then return end
 
-    local cl            = self:GetClass( )
+    local cl            = self:what( true )
     local args          = { ... }
 
     table.insert        ( args, cl )

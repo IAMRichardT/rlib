@@ -74,6 +74,8 @@ end
 
 local id_pos                = perm( 'rlib_ents_pos' )
 local id_goto               = perm( 'rlib_ents_goto' )
+local id_entid              = perm( 'rlib_ents_id' )
+local id_class              = perm( 'rlib_ents_class' )
 
 /*
 *   check dependency
@@ -230,3 +232,70 @@ rlib_ents_goto:addParam                         { type = ULib.cmds.StringArg, hi
 rlib_ents_goto:addParam                         { type = ULib.cmds.StringArg, hint = '0' }
 rlib_ents_goto:defaultAccess                    ( access:ulx( id_goto, mod ) )
 rlib_ents_goto:help                             ( id_goto.desc )
+
+/*
+*   ulx > ents > door id
+*
+*	returns door id
+*
+*   @param	: ply call_pl
+*/
+
+local lst_doors =
+{
+    [ 'func_door' ]                 = true,
+    [ 'func_door_rotating' ]        = true,
+    [ 'prop_door_rotating' ]        = true,
+}
+
+function ulx.rlib_ents_id( call_pl )
+    if not checkDependency( call_pl, id_entid ) then return end
+
+    local tr = call_pl:GetEyeTrace( )
+    if not IsValid( tr.Entity ) then
+        base.msg:target( call_pl, id_entid.id, 'No items found within eyesight. Look at door before running command' )
+        return
+    end
+
+    if lst_doors[ tr.Entity:GetClass( ) ] then
+        if not IsValid( tr.Entity ) then return end
+        local en        = tr.Entity
+        local en_id     = en:MapCreationID( )
+
+        base.msg:target( call_pl, id_entid.id, 'Door', smsg.clrs.t3, en, smsg.clrs.msg, '[ID] :', smsg.clrs.t4, tostring( en_id ) )
+    end
+
+end
+local rlib_ents_id                              = ulx.command( id_entid.category, id_entid.ulx_id, ulx.rlib_ents_id, id_entid.pubcmds )
+rlib_ents_id:defaultAccess                      ( access:ulx( id_entid ) )
+rlib_ents_id:help                               ( id_entid.desc )
+
+/*
+*   ulx > ents > class
+*
+*	returns ent class
+*
+*   @param	: ply call_pl
+*/
+
+function ulx.rlib_ents_class( call_pl )
+    if not checkDependency( call_pl, id_class ) then return end
+
+    local tr = call_pl:GetEyeTrace( )
+    if not IsValid( tr.Entity ) then
+        base.msg:target( call_pl, id_class.id, 'No items found within eyesight. Look at door before running command' )
+        return
+    end
+
+    if lst_doors[ tr.Entity:GetClass( ) ] then
+        if not IsValid( tr.Entity ) then return end
+        local en        = tr.Entity
+        local en_id     = en:MapCreationID( )
+
+        base.msg:target( call_pl, id_class.id, 'Door', smsg.clrs.t3, en, smsg.clrs.msg, '[ID] :', smsg.clrs.t4, tostring( en_id ) )
+    end
+
+end
+local rlib_ents_class                           = ulx.command( id_class.category, id_class.ulx_id, ulx.rlib_ents_class, id_class.pubcmds )
+rlib_ents_class:defaultAccess                   ( access:ulx( id_class ) )
+rlib_ents_class:help                            ( id_class.desc )

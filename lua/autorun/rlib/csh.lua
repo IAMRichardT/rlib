@@ -306,6 +306,8 @@ function helper.ok.addr( str )
 end
 
 /*
+*   helper > ok > steamid 32
+*
 *   checks to see if a provided steam32 is valid
 *
 *   @param  : str sid
@@ -319,6 +321,8 @@ function helper.ok.sid32( sid )
 end
 
 /*
+*   helper > ok > steamid 64
+*
 *   checks to see if a provided steam64 is valid
 *
 *   @param  : str sid
@@ -330,6 +334,8 @@ function helper.ok.sid64( sid )
 end
 
 /*
+*   helper > ok > str
+*
 *   checks for a valid string but also checks for blank or space chars
 *   similar to  helper.str:ok( ) but this one converts anything into a string to ensure
 *   the value is not missing
@@ -345,10 +351,10 @@ function helper.ok.str( str )
         str = tostring( str )
     end
 
-    if str == 'false' then return false end
+    if str == 'false' or str == 'nil' then return false end
 
     local text = str:gsub( '%s', '' )
-    if isstring( text ) and text ~= '' and text ~= 'NULL' and text ~= NULL then return true end
+    if isstring( text ) and text ~= '' and text ~= 'NULL' and text ~= NULL then return str end
     return false
 end
 
@@ -1112,6 +1118,36 @@ function helper.ent.find( ent, bKey )
 end
 
 /*
+*   helper > ents > pos
+*
+*   returns pos, angle of item in human readable format
+*
+*   @param  : ent, vec p
+*   @param  : ang a
+*   @return : str
+*/
+
+function helper.ent.pos( p, a )
+
+    local pos               = ( helper.ok.ent( p ) and p:GetPos( ) ) or isvector( p ) and p or Vector( 0, 0, 0 )
+    local ang               = ( helper.ok.ent( p ) and p:GetAngles( ) ) or isangle( a ) and a or Angle( 0, 0, 0 )
+
+    local pos_x             = math.floor( pos[ 1 ] )
+    local pos_y             = math.floor( pos[ 2 ] )
+    local pos_z             = math.floor( pos[ 3 ] )
+
+    local ang_x             = math.floor( ang[ 1 ] )
+    local ang_y             = math.floor( ang[ 2 ] )
+    local ang_z             = math.floor( ang[ 3 ] )
+
+    local pos_str           = string.format( '%i, %i, %i', pos_x, pos_y, pos_z )
+    local ang_str           = string.format( '%i, %i, %i', ang_x, ang_y, ang_z )
+
+    return pos_str, ang_str
+
+end
+
+/*
 *   packages > register
 *
 *   library includes numerous packages which will be registered and stored in their own table
@@ -1314,7 +1350,7 @@ end
 /*
 *   access > get arg
 *
-*   reurns permission arguments
+*   returns permission arguments
 *
 *   @call   : access:arg( perm_tbl )
 *           : access:arg( 'permission_name' )
@@ -1380,6 +1416,7 @@ end
 */
 
 function access:hasperm( pl, perm, bThrowErr )
+    perm = isstring( perm ) and perm or 'rlib_root'
     if not access:validate( pl, perm ) then
         local str_perm = perm and tostring( perm ) or lang( 'action_requested' )
         base.msg:route( pl, false, script, lang( 'perms_invalid' ), cfg.cmsg.clrs.target, str_perm )
@@ -1684,7 +1721,10 @@ function access:strict( pl, perm, mod )
 
     if not helper.ok.ply( pl ) then return false end
     if pl:IsSuperAdmin( ) then return true end
-    if not isstring( perm ) then return false end
+
+    if not isstring( perm ) then
+        perm = 'rlib_root'
+    end
 
     if mod then
         perm = self:getperm( perm, mod )
@@ -1728,10 +1768,11 @@ end
 */
 
 function access:allow_throwExcept( pl, perm, mod, msg )
-    local bChk = self:allow( pl, perm, mod )
+    perm        = isstring( perm ) and perm or 'rlib_root'
+    local bChk  = self:allow( pl, perm, mod )
     if not bChk then
         msg = isstring( msg ) and msg or 'You lack permission to'
-        base.msg:target( pl, ( mod and mod.name ) or mf.name, msg, cfg.cmsg.clrs.target_tri, tostring( perm ) )
+        base.msg:route( pl, ( mod and mod.name ) or mf.name, msg, cfg.cmsg.clrs.target_tri, tostring( perm ) )
         return false
     end
 
@@ -2351,6 +2392,31 @@ function helper.tbl:RemoveByID( tbl, id )
 end
 
 /*
+*   helper > table > has value
+*
+*   checks a table for a matching value in a specified field
+*
+*   @param  : tbl tbl
+*   @param  : str field
+*   @param  : str val
+*   @return : bool, tbl
+*/
+
+function helper.tbl:HasValue( tbl, field, val )
+    for k, v in helper.get.table( tbl ) do
+        if istable( v ) then
+            for a, b in helper.get.table( v ) do
+                if a ~= field then continue end
+                if b:lower( ) == val:lower( ) then return true, b end
+            end
+        elseif isstring( v ) then
+            if k ~= field then continue end
+            if v:lower( ) == val:lower( ) then return true, v end
+        end
+    end
+end
+
+/*
 *   helper > sortedkeys
 *
 *   assigns a clientconvar based on the parameters specified.
@@ -2690,10 +2756,14 @@ end
 */
 
 function helper.util:humanbool( val, bOnOff )
-    local b2s_true      = 'true'
-    local b2s_false     = 'false'
-    local b2h_true      = 'enabled'
-    local b2h_false     = 'disabled'
+    local b2s_true          = 'true'
+    local b2s_false         = 'false'
+    local b2h_true          = 'enabled'
+    local b2h_false         = 'disabled'
+
+    if istable( bOnOff ) then
+        b2h_true, b2h_false = bOnOff[ 1 ], bOnOff[ 2 ]
+    end
 
     if ( isstring( val ) ) then
         if ( table.HasValue( options_yes, val ) ) then

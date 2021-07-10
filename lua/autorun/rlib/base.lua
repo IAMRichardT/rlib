@@ -701,6 +701,20 @@ function base.sys:GetFPS( bRound )
 end
 
 /*
+*   sys > throw error
+*
+*   @oaram  : ply pl
+*   @param  : str msg
+*   @return : bool
+*/
+
+function base.sys:ThrowErr( pl, msg )
+    msg = isstring( msg ) and msg or 'You lack permission to'
+    base.msg:route( pl, ( mod and mod.name ) or mf.name, msg )
+    return false
+end
+
+/*
 *   sys :: debug
 *
 *   toggles debug mode
@@ -714,9 +728,9 @@ function base.sys:Debug( ... )
     *   functionality
     */
 
-    local time_id       = 'rlib_debug_delay'
-    local status        = args and args[ 1 ] or false
-    local dur           = args and args[ 2 ] or cfg.debug.time_default
+    local time_id           = 'rlib_debug_delay'
+    local status            = args and args[ 1 ] or false
+    local dur               = args and args[ 2 ] or cfg.debug.time_default
 
     if status then
         local param_status = helper.util:toggle( status )

@@ -94,12 +94,12 @@ end
 *   pmeta
 */
 
-local pmeta = FindMetaTable( 'Player' )
+local pmeta                 = FindMetaTable( 'Player' )
 
 if SERVER then
 
 /*
-*   pmeta > set alias
+*   set alias
 *
 *   sets the nick for a player, also takes other gamemodes into consideration to support different
 *   storage types and funcs
@@ -124,7 +124,7 @@ end
 end
 
 /*
-*   pmeta > alias
+*   alias
 *
 *   displays their real name (alias) to use on the server
 *   override can be applied to check for valid string first
@@ -142,7 +142,7 @@ function pmeta:palias( override )
 end
 
 /*
-*	pmeta > player model > revision 2
+*	player model > revision 2
 *
 *   a fix for certain models displaying /models/models/
 *
@@ -158,7 +158,7 @@ function pmeta:getmdl_rev2( )
 end
 
 /*
-*	pmeta > player model > get
+*	player model > get
 *
 *   returns the current model for the job of a player
 *
@@ -186,7 +186,7 @@ end
 pmeta.getmodel = pmeta.getmdl
 
 /*
-*	pmeta > uid > get
+*	uid > get
 *
 *   returns unique id or account id of ply
 *
@@ -199,7 +199,7 @@ function pmeta:uid( bUID )
 end
 
 /*
-*	pmeta > sid > get
+*	sid > get
 *
 *   returns steam64 or steam32 id of ply
 *
@@ -212,7 +212,7 @@ function pmeta:sid( bS32 )
 end
 
 /*
-*	pmeta > generate id
+*	generate id
 *
 *   returns an id based on the players account id
 *   useful for ply specific timer ids, etc.
@@ -232,7 +232,7 @@ function pmeta:gid( suffix, bUseS64 )
 end
 
 /*
-*   helper > association id
+*   association id
 *
 *   makes an id based on the specified ply unique id
 *       : special chars     => [ . ]
@@ -264,7 +264,7 @@ function pmeta:aid( ... )
 end
 
 /*
-*   helper > association id > 64
+*   association id > 64
 *
 *   makes an id based on the specified ply unique id
 *       : special chars     => [ . ]
@@ -296,7 +296,7 @@ function pmeta:aid64( ... )
 end
 
 /*
-*	pmeta > rp money > get
+*	rp money > get
 *
 *   returns current funds of player
 *
@@ -308,7 +308,7 @@ function pmeta:getmoney( bComma )
 end
 
 /*
-*	pmeta > rp money > salary
+*	rp money > salary
 *
 *   returns current salary of player
 *
@@ -320,7 +320,7 @@ function pmeta:getsalary( bComma )
 end
 
 /*
-*	pmeta > prestige > get
+*	prestige > get
 *
 *   returns ply prestige from any addons adding such feature
 */
@@ -330,7 +330,7 @@ function pmeta:getprestige( )
 end
 
 /*
-*	pmeta > stamina > get
+*	stamina > get
 *
 *   returns pl stamina
 */
@@ -340,7 +340,7 @@ function pmeta:getstamina( )
 end
 
 /*
-*	pmeta > energy > get
+*	energy > get
 *
 *   returns pl energy
 */
@@ -350,7 +350,7 @@ function pmeta:getenergy( )
 end
 
 /*
-*   pmeta > group > get
+*   group > get
 *
 *   returns the group assigned to the player
 *
@@ -365,20 +365,47 @@ end
 pmeta.group = pmeta.getgroup
 
 /*
-*	pmeta > inventory > get id
-*
-*	id associated with the inventory system
-*   used with itemstore addon for gmodstore
-*
-*	@return	: int
+*   scope > CLIENT
 */
 
-function pmeta:getinventory( )
-    return self.InventoryID or 0
+if CLIENT then
+
+    /*
+    *	inventory > get id
+    *
+    *	id associated with the inventory system
+    *   used with itemstore addon for gmodstore
+    *
+    *	@return	: int
+    */
+
+    function pmeta:getinventory( )
+        return self.InventoryID or 0
+    end
+
 end
 
 /*
-*   pmeta > get level
+*   inventory > get
+*/
+
+function pmeta:getinv( )
+    return self:GetNWInt( 'inv_id', 0 )
+end
+
+/*
+*   inventory > set
+*/
+
+function pmeta:setinv( id )
+    if not id then id = 0 end
+    id = tonumber( id )
+
+    self:SetNWInt( 'inv_id', id )
+end
+
+/*
+*   get level
 *
 *   Gets the current level of the player (relies on the DarkRP Leveling addon)
 *
@@ -395,7 +422,7 @@ end
 pmeta.level = pmeta.getlevel
 
 /*
-*   pmeta > get year
+*   get year
 *
 *   Gets the current year of the player (relies on the DarkRP Leveling addon, for gamemodes such as
 *	hogwartsrp
@@ -409,7 +436,7 @@ end
 pmeta.year = pmeta.getyear
 
 /*
-*   pmeta > get data
+*   get data
 *
 *   returns data associated to the specified ply table
 *
@@ -423,7 +450,7 @@ function pmeta:getdata( id )
 end
 
 /*
-*	pmeta > get xp
+*	get xp
 *
 *   returns the current role of the player
 *
@@ -433,10 +460,9 @@ end
 function pmeta:getxp( )
     return ( isfunction( self.GetXP ) and math.floor( self:GetXP( ) ) or ( isfunction( self.getDarkRPVar ) and self:getDarkRPVar( 'xp' ) ) or self:GetNWInt( 'xp' ) or self:GetNWInt( 'exp' ) ) or 0
 end
-pmeta.xp = pmeta.xp
 
 /*
-*   pmeta > get xp max
+*   get xp max
 *
 *   returns the max xp a ply can have for a current level / year
 *
@@ -448,7 +474,7 @@ function pmeta:getxpmax( )
 end
 
 /*
-*   pmeta > give xp
+*   give xp
 *
 *   gives the specified player xp
 *
@@ -467,7 +493,7 @@ function pmeta:givexp( xp )
 end
 
 /*
-*	pmeta > get job
+*	get job
 *
 *	returns ply current job
 *
@@ -482,7 +508,7 @@ end
 pmeta.job = pmeta.getjob
 
 /*
-*	pmeta > get job data
+*	get job data
 *
 *	returns the current role of the player
 *	if id provided, you can return values related to that particular user role
@@ -507,10 +533,10 @@ function pmeta:getjobdata( id )
 
     return RPExtraTeams[ team ]
 end
-pmeta.jobdata = pmeta.getjobdata
+pmeta.jdata = pmeta.getjobdata
 
 /*
-*   pmeta > distance
+*   distance
 *
 *   calculates distance between player and target
 *
@@ -531,7 +557,7 @@ pmeta.dist = pmeta.distance
 if SERVER then
 
     /*
-    *	pmeta > rcc
+    *	rcc
     *
     *	executes a console command on the specify player
     *

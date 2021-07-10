@@ -20,28 +20,27 @@
 *   standard tables and localization
 */
 
-rlib                    = rlib or { }
-local base              = rlib
-local mf                = base.manifest
-local prefix            = mf.prefix
-local script            = mf.name
-local settings          = base.settings
+local base                  = rlib
+local mf                    = base.manifest
+local prefix                = mf.prefix
+local script                = mf.name
+local settings              = base.settings
 
 /*
 *   lib includes
 */
 
-local access            = base.a
-local helper            = base.h
+local access                = base.a
+local helper                = base.h
 
 /*
 *   localizations
 */
 
-local math              = math
-local module            = module
-local smt               = setmetatable
-local sf                = string.format
+local math                  = math
+local module                = module
+local smt                   = setmetatable
+local sf                    = string.format
 
 /*
 *   simplifiy funcs
@@ -184,6 +183,20 @@ end
 
 function bIsInf( num )
     return not ( num ~= num or num == math.huge or num == -math.huge )
+end
+
+/*
+*   is float
+*
+*   checks if number is float
+*   used for percentages / whole numbers in calculations
+*
+*   @param  : int/float
+*   @return : bool
+*/
+
+function bFloat( num )
+    return ( ( num % 1 ) == 0 and false ) or true
 end
 
 /*
